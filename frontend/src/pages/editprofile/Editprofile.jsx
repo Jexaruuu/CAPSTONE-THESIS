@@ -317,75 +317,78 @@ const EditProfile = () => {
                     </section>
                 </form>
 
-                {/* Password Section */}
-                <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                    <div className="flex items-center mb-6">
-                        <div className="bg-blue-100 p-2 rounded-full mr-4">
-                            <i className="fas fa-lock text-blue-600 text-lg w-6 h-6 text-center"></i>
-                        </div>
-                        <h3 className="text-2xl font-semibold text-gray-800">
-                            Password Update
-                        </h3>
-                    </div>
+                <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 mt-6">
+  <div className="flex items-center mb-6">
+    <div className="bg-blue-100 p-2 rounded-full mr-4">
+      <i className="fas fa-lock text-blue-600 text-lg w-6 h-6 text-center"></i>
+    </div>
+    <h3 className="text-2xl font-semibold text-gray-800">Password Update</h3>
+  </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="block font-medium text-gray-700 mb-1">
-                                New Password
-                            </label>
-                            <input
-                                type="password"
-                                className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Leave blank to keep current password"
-                            />
-                        </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">New Password</label>
+      <input
+        type="password"
+        className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Leave blank to keep current password"
+      />
+    </div>
 
-                        <div>
-                            <label className="block font-medium text-gray-700 mb-1">
-                                Confirm Password
-                            </label>
-                            <input
-                                type="password"
-                                className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="Confirm your new password"
-                            />
-                        </div>
-                    </div>
-                </section>
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Confirm Password</label>
+      <input
+        type="password"
+        className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        placeholder="Confirm your new password"
+      />
+    </div>
+  </div>
+
+  {/* Update Password Button */}
+  <div className="mt-8">
+    <button
+      type="submit"
+      className="relative w-full max-w-[200px] rounded px-5 py-2.5 overflow-hidden group bg-[#000081] 
+                 hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
+                 text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 
+                 transition-all ease-out duration-300 cursor-pointer"
+    >
+      <span
+        className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform 
+                   translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"
+      ></span>
+      <span className="relative text-base font-semibold">Update Password</span>
+    </button>
+  </div>
+</section>
+
 
                 
 
-                {/* Form Submission */}
-                <div className="flex justify-between pt-8">
-                    <button
-                        type="button"
-                        onClick={() => navigate('/userhome')}
-                        className="relative overflow-hidden group bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 rounded-lg shadow-md"
-                    >
-                        Cancel
-                    </button>
-                    {/* <button
-                        type="submit"
-                        disabled={loading}
-                        className="relative w-60 rounded px-5 py-2.5 overflow-hidden group bg-[#000081] 
-             hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
-             text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 
-             transition-all ease-out duration-300 cursor-pointer"
-                    >
-                        <span
-                            className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform 
-               translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"
-                        ></span>
-                        <span className="relative text-base font-semibold">
-                            {loading ? "Updating..." : "Update Profile"}
-                        </span>
-                    </button> */}
-                </div>
-                {/* </form> */}
+{/* Form Submission */}
+<div className="relative pt-8">
+
+  <div className="text-center pt-8">
+    <button
+      type="submit">
+      <span
+        className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12"
+      ></span>
+      <span className="relative cursor-pointer text-[#000081] text-2xl">
+        <i className="fas fa-paper-plane mr-2"></i> Back
+      </span>
+    </button>
+    <p className="text-gray-500 mt-4 text-sm">Go back to previous page.</p>
+  </div>
+</div>
+
+
+
             </div>
 
             <Footer />
