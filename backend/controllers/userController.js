@@ -46,6 +46,38 @@ exports.updateUser = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+// UPDATE ONLY INFORMATION
+exports.updateInfo = async (req, res) => {
+    const { id } = req.params;
+    const { first_name, last_name, mobile, email } = req.body;
+
+    try {
+        const [result] = await db.query(
+            "UPDATE users SET first_name = ?, last_name = ?, mobile = ?, email = ? WHERE id = ?",
+            [first_name, last_name, mobile, email, id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Only destroy session if the password was changed
+        // if (password) {
+        //     req.session.destroy((err) => {
+        //         if (err) {
+        //             console.error(err);
+        //             return res.status(500).json({ message: "Error logging out" });
+        //         }
+        //         res.json({ message: "Password updated successfully. Please log out and log in again." });
+        //     });
+        // } 
+        else {
+            res.json({ message: "Profile updated successfully" });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 
 // Delete user
 exports.deleteUser = async (req, res) => {

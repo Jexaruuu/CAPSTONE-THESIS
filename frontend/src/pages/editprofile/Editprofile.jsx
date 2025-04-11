@@ -65,27 +65,27 @@ const EditProfile = () => {
     const handleDeleteAccountWithScroll = async () => {
         // Smooth scroll to the top
         window.scrollTo({ top: 0, behavior: "smooth" });
-    
+
         // Call the original handleDeleteAccount function
         await handleDeleteAccount();
     };
 
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
-    
+
         if (!email.endsWith("@gmail.com")) {
             return setError("Only Gmail addresses are allowed.");
         }
-    
+
         const mobilePattern = /^[0-9]{11}$/;
         if (!mobilePattern.test(mobile)) {
             return setError("Mobile number must be exactly 11 digits.");
         }
-    
+
         if (password && password !== confirmPassword) {
             return setError("Passwords do not match!");
         }
-    
+
         const userData = {
             first_name,
             last_name,
@@ -93,13 +93,13 @@ const EditProfile = () => {
             email,
             password: password || undefined, // Only send password if it's being changed
         };
-    
+
         setLoading(true);
         setError("");
-    
+
         try {
             const response = await axios.put(`http://localhost:3000/api/user/${userId}`, userData);
-    
+
             // Update local storage if email or name changed
             const currentUser = JSON.parse(localStorage.getItem("user"));
             if (currentUser) {
@@ -108,14 +108,14 @@ const EditProfile = () => {
                 currentUser.last_name = last_name;
                 localStorage.setItem("user", JSON.stringify(currentUser));
             }
-    
+
             // Check if the password was updated
             if (password) {
                 alert("Your password has been updated. Please log out and log in again.");
                 // Optionally log the user out by removing session data
                 localStorage.removeItem("userId");
                 localStorage.removeItem("user");
-    
+
                 // Redirect to the login page
                 navigate("/login");
             } else {
@@ -129,12 +129,69 @@ const EditProfile = () => {
             setLoading(false);
         }
     };
-    
+
+    const handleUpdateInfo = async (e) => {
+        e.preventDefault();
+
+        // if (!email.endsWith("@gmail.com")) {
+        //     return setError("Only Gmail addresses are allowed.");
+        // }
+
+        // const mobilePattern = /^[0-9]{11}$/;
+        // if (!mobilePattern.test(mobile)) {
+        //     return setError("Mobile number must be exactly 11 digits.");
+        // }
+
+        const userData = {
+            first_name,
+            last_name,
+            mobile,
+            email,
+        };
+
+        setLoading(true);
+        setError("");
+
+        try {
+            const response = await axios.put(`http://localhost:3000/api/user/update/${userId}`, userData);
+
+            // Update local storage if email or name changed
+            const currentUser = JSON.parse(localStorage.getItem("user"));
+            // if (currentUser) {
+                currentUser.email = email;
+                currentUser.first_name = first_name;
+                currentUser.last_name = last_name;
+                localStorage.setItem("user", JSON.stringify(currentUser));
+            // }
+
+            // // Check if the password was updated
+            // if (password) {
+            //     alert("Your password has been updated. Please log out and log in again.");
+            //     // Optionally log the user out by removing session data
+            //     localStorage.removeItem("userId");
+            //     localStorage.removeItem("user");
+
+            //     // Redirect to the login page
+            //     navigate("/login");
+            // }
+            // else {
+                alert("Profile updated successfully!");
+                navigate(0);
+            // }
+        } catch (error) {
+            console.error(error);
+            setError(error.response?.data?.message || "Error during profile update");
+        } 
+        // finally {
+        //     setLoading(false);
+        // }
+    };
+
 
     return (
         <div className="bg-[#F8FAFC] font-sans min-h-screen">
             <Navigation />
-            
+
             {/* Form Header */}
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <div className="text-center mb-12">
@@ -147,8 +204,22 @@ const EditProfile = () => {
                     <div className="w-24 h-1 bg-blue-500 mx-auto mt-4 rounded-full"></div>
                 </div>
 
-                <form onSubmit={handleUpdateProfile} className="space-y-8">
-                    {/* Personal Information Section */}
+                {/* <form onSubmit={handleUpdateProfile} className="space-y-8"> */}
+                {/* Personal Information Section */}
+                {error && (
+                    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <i className="fas fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm text-red-700">{error}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                <form className="form" onSubmit={handleUpdateInfo}>
                     <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                         <div className="flex items-center mb-6">
                             <div className="bg-blue-100 p-2 rounded-full mr-4">
@@ -158,7 +229,7 @@ const EditProfile = () => {
                                 Personal Information
                             </h3>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block font-medium text-gray-700 mb-1">
@@ -221,100 +292,91 @@ const EditProfile = () => {
                                 />
                             </div>
                         </div>
+                        <button type="submit" className="bg-yellow-200 p-4 mt-2">Submit</button>
                     </section>
+                </form>
 
-                    {/* Password Section */}
-                    <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                        <div className="flex items-center mb-6">
-                            <div className="bg-blue-100 p-2 rounded-full mr-4">
-                                <i className="fas fa-lock text-blue-600 text-lg w-6 h-6 text-center"></i>
-                            </div>
-                            <h3 className="text-2xl font-semibold text-gray-800">
-                                Password Update
-                            </h3>
+                {/* Password Section */}
+                <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                    <div className="flex items-center mb-6">
+                        <div className="bg-blue-100 p-2 rounded-full mr-4">
+                            <i className="fas fa-lock text-blue-600 text-lg w-6 h-6 text-center"></i>
                         </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block font-medium text-gray-700 mb-1">
-                                    New Password
-                                </label>
-                                <input
-                                    type="password"
-                                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Leave blank to keep current password"
-                                />
-                            </div>
+                        <h3 className="text-2xl font-semibold text-gray-800">
+                            Password Update
+                        </h3>
+                    </div>
 
-                            <div>
-                                <label className="block font-medium text-gray-700 mb-1">
-                                    Confirm Password
-                                </label>
-                                <input
-                                    type="password"
-                                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    placeholder="Confirm your new password"
-                                />
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block font-medium text-gray-700 mb-1">
+                                New Password
+                            </label>
+                            <input
+                                type="password"
+                                className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Leave blank to keep current password"
+                            />
                         </div>
-                    </section>
 
-                    {error && (
-                        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                    <i className="fas fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                <div className="ml-3">
-                                    <p className="text-sm text-red-700">{error}</p>
-                                </div>
-                            </div>
+                        <div>
+                            <label className="block font-medium text-gray-700 mb-1">
+                                Confirm Password
+                            </label>
+                            <input
+                                type="password"
+                                className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="Confirm your new password"
+                            />
                         </div>
-                    )}
+                    </div>
+                </section>
 
-                    {/* Form Submission */}
-                    <div className="flex justify-between pt-8">
-                        <button
-                            type="button"
-                            onClick={() => navigate('/userhome')}
-                            className="relative overflow-hidden group bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 rounded-lg shadow-md"
-                        >
-                            Cancel
-                        </button>
-                        <button
-  type="submit"
-  disabled={loading}
-  className="relative w-60 rounded px-5 py-2.5 overflow-hidden group bg-[#000081] 
+                
+
+                {/* Form Submission */}
+                <div className="flex justify-between pt-8">
+                    <button
+                        type="button"
+                        onClick={() => navigate('/userhome')}
+                        className="relative overflow-hidden group bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 rounded-lg shadow-md"
+                    >
+                        Cancel
+                    </button>
+                    {/* <button
+                        type="submit"
+                        disabled={loading}
+                        className="relative w-60 rounded px-5 py-2.5 overflow-hidden group bg-[#000081] 
              hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
              text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 
              transition-all ease-out duration-300 cursor-pointer"
->
-  <span
-    className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform 
+                    >
+                        <span
+                            className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform 
                translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"
-  ></span>
-  <span className="relative text-base font-semibold">
-    {loading ? "Updating..." : "Update Profile"}
-  </span>
-</button>
-                    </div>
-                </form>
+                        ></span>
+                        <span className="relative text-base font-semibold">
+                            {loading ? "Updating..." : "Update Profile"}
+                        </span>
+                    </button> */}
+                </div>
+                {/* </form> */}
 
                 {/* Delete Account Section */}
                 <div className="flex justify-center pt-8">
-                <button
-    onClick={handleDeleteAccountWithScroll}
-    className="text-red-600 hover:text-red-700 font-semibold"
->
-    Delete Account
-</button>
+                    <button
+                        onClick={handleDeleteAccountWithScroll}
+                        className="text-red-600 hover:text-red-700 font-semibold"
+                    >
+                        Delete Account
+                    </button>
                 </div>
             </div>
-            
+
             <Footer />
         </div>
     );
