@@ -189,7 +189,7 @@ const EditProfile = () => {
 
 
     return (
-        <div className="bg-[#F8FAFC] font-sans min-h-screen">
+        <div className="bg-[#F3F4F6] font-sans min-h-screen">
             <Navigation />
 
             {/* Form Header */}

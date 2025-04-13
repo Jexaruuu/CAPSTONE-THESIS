@@ -44,7 +44,7 @@ const infoCards = [
     {
       icon: "/professionals.png",
       title: "Our Workers",
-      description: "skilled and vetted workers ensuring reliable service every time."
+      description: "Skilled and vetted workers ensuring reliable service every time."
     },
     {
       icon: "/satisfaction.png",
