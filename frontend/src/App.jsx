@@ -29,8 +29,8 @@ function App() {
         <Route path="/taskerform" element={<ProtectedRoute element={<TaskerForm />} />} />
         <Route path="/about" element={<About />} />
         <Route path="/userabout" element={<ProtectedRoute element={<UserAbout/>} />} />
-        <Route path="/adminlogin" element={<ProtectedRoute element={<AdminLogin />} />} />
-        <Route path="/adminsignup" element={<ProtectedRoute element={<AdminSignup />} />} />
+        <Route path="/adminlogin" element={<AdminLogin/>} />
+        <Route path="/adminsignup" element={<AdminSignup />} />
         <Route path='/editprofile' element={<ProtectedRoute element={<EditProfile />} />} />
         <Route path="/userhome" element={<ProtectedRoute element={<UserHome />} />} />
         <Route path="/userheader" element={<ProtectedRoute element={<UserHeader />} />} />

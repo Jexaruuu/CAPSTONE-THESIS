@@ -6,6 +6,7 @@ const signupRoutes = require('./routes/signupRoutes');
 const loginRoutes = require('./routes/loginRoutes'); 
 const logoutRoutes = require('./routes/logoutRoutes'); 
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');  // Make sure to import adminRoutes
 
 const app = express(); // Initialize the app here
 
@@ -35,6 +36,7 @@ app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', logoutRoutes); 
 app.use('/api', userRoutes);
+app.use('/api/admin', adminRoutes);  // Use /api/admin prefix for admin routes
 
 // Test endpoint
 app.get('/', (req, res) => {
