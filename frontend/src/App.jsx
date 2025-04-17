@@ -15,6 +15,7 @@ import AdminSignup from "./pages/admin/Adminsignup";
 import EditProfile from "./pages/editprofile/Editprofile";
 import BookServices from "./pages/services/Bookservices";
 import UserHeader from "./components/header/Userheader";
+import AdminDashboard from "./pages/admin/Admindashboard";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/userabout" element={<ProtectedRoute element={<UserAbout/>} />} />
         <Route path="/adminlogin" element={<AdminLogin/>} />
         <Route path="/adminsignup" element={<AdminSignup />} />
+        <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path='/editprofile' element={<ProtectedRoute element={<EditProfile />} />} />
         <Route path="/userhome" element={<ProtectedRoute element={<UserHome />} />} />
         <Route path="/userheader" element={<ProtectedRoute element={<UserHeader />} />} />
