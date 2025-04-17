@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-axios.defaults.withCredentials = true; // Enable sending cookies/session
-
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState(""); // changed from email to username
@@ -14,11 +12,11 @@ const AdminLogin = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post("http://localhost:3000/api/admin/login", {
+      const response = await axios.post("http://localhost:3000/api/adminlogin", {
         username,
         password,
       });
-  
+
       if (response.data.success) {
         // Redirect to dashboard or show success message
         navigate("/admin/dashboard");

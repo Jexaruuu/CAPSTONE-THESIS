@@ -9,6 +9,7 @@ const userRoutes = require('./routes/userRoutes');
 
 // ✅ Updated variable name and path to match existing file
 const adminsignupRoutes = require('./routes/adminsignupRoutes');
+const adminloginRoutes = require('./routes/adminloginRoutes');
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/api', userRoutes);
 
 // ✅ Use the corrected adminRoutes
 app.use('/api', adminsignupRoutes); // this registers /api/adminsignup
+app.use('/api', adminloginRoutes);
 
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');

@@ -28,7 +28,7 @@ const AdminSignup = () => {
   
       if (response.data.success) {
         // Redirect to the dashboard or show success message
-        navigate("/admin/dashboard");
+        navigate("/adminlogin");
       } else {
         setError(response.data.message || "Signup failed");
       }
