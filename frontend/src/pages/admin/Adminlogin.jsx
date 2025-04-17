@@ -19,7 +19,7 @@ const AdminLogin = () => {
 
       if (response.data.success) {
         // Redirect to dashboard or show success message
-        navigate("/admin/dashboard");
+        navigate("/admindashboard");
       } else {
         setError(response.data.message || "Login failed");
       }
