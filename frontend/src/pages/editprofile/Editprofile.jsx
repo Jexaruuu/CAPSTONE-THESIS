@@ -11,6 +11,7 @@ const EditProfile = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+   const [currentPassword, setCurrentPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -187,6 +188,40 @@ const EditProfile = () => {
         // }
     };
 
+    // Add this function with your other handlers
+    const handleUpdatePassword = async (e) => {
+        e.preventDefault();
+        
+        if (!currentPassword) {
+            return setError("Current password is required");
+        }
+        
+        if (!password || password !== confirmPassword) {
+            return setError("Passwords don't match or are empty");
+        }
+    
+        try {
+            const response = await axios.put(
+                `http://localhost:3000/api/user/update-password/${userId}`,
+                {
+                    currentPassword: currentPassword,
+                    newPassword: password
+                },
+                {
+                    withCredentials: true
+                }
+            );
+    
+            alert(response.data.message);
+            localStorage.removeItem("userId");
+            localStorage.removeItem("user");
+            navigate("/login");
+        } catch (error) {
+            console.error(error);
+            setError(error.response?.data?.message || "Error updating password. Please check your current password.");
+        }
+    };
+
 
     return (
         <div className="bg-[#F3F4F6] font-sans min-h-screen">
@@ -318,55 +353,70 @@ const EditProfile = () => {
                 </form>
 
                 <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 mt-6">
-  <div className="flex items-center mb-6">
-    <div className="bg-blue-100 p-2 rounded-full mr-4">
-      <i className="fas fa-lock text-blue-600 text-lg w-6 h-6 text-center"></i>
-    </div>
-    <h3 className="text-2xl font-semibold text-gray-800">Password Update</h3>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <label className="block font-medium text-gray-700 mb-1">New Password</label>
-      <input
-        type="password"
-        className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Leave blank to keep current password"
-      />
+    <div className="flex items-center mb-6">
+        <div className="bg-blue-100 p-2 rounded-full mr-4">
+            <i className="fas fa-lock text-blue-600 text-lg w-6 h-6 text-center"></i>
+        </div>
+        <h3 className="text-2xl font-semibold text-gray-800">Password Update</h3>
     </div>
 
-    <div>
-      <label className="block font-medium text-gray-700 mb-1">Confirm Password</label>
-      <input
-        type="password"
-        className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Confirm your new password"
-      />
-    </div>
-  </div>
+    <form onSubmit={handleUpdatePassword}>
+        <div className="grid grid-cols-1 gap-6">
+            <div>
+                <label className="block font-medium text-gray-700 mb-1">Current Password*</label>
+                <input
+                    type="password"
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                    required
+                />
+            </div>
+            <div>
+                <label className="block font-medium text-gray-700 mb-1">New Password*</label>
+                <input
+                    type="password"
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    required
+                    minLength="6"
+                />
+            </div>
+            <div>
+                <label className="block font-medium text-gray-700 mb-1">Confirm New Password*</label>
+                <input
+                    type="password"
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    required
+                    minLength="6"
+                />
+            </div>
+        </div>
 
-  {/* Update Password Button */}
-  <div className="mt-8">
-    <button
-      type="submit"
-      className="relative w-full max-w-[200px] rounded px-5 py-2.5 overflow-hidden group bg-[#000081] 
-                 hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
-                 text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 
-                 transition-all ease-out duration-300 cursor-pointer"
-    >
-      <span
-        className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform 
-                   translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"
-      ></span>
-      <span className="relative text-base font-semibold">Update Password</span>
-    </button>
-  </div>
+        {/* Update Password Button */}
+        <div className="mt-8">
+            <button
+                type="submit"
+                className="relative w-full max-w-[200px] rounded px-5 py-2.5 overflow-hidden group bg-[#000081] 
+                         hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
+                         text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 
+                         transition-all ease-out duration-300 cursor-pointer"
+            >
+                <span
+                    className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform 
+                               translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"
+                ></span>
+                <span className="relative text-base font-semibold">Update Password</span>
+            </button>
+        </div>
+    </form>
 </section>
-
 
                 
 

@@ -60,19 +60,55 @@ exports.updateInfo = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Only destroy session if the password was changed
-        // if (password) {
-        //     req.session.destroy((err) => {
-        //         if (err) {
-        //             console.error(err);
-        //             return res.status(500).json({ message: "Error logging out" });
-        //         }
-        //         res.json({ message: "Password updated successfully. Please log out and log in again." });
-        //     });
-        // } 
         else {
             res.json({ message: "Profile updated successfully" });
         }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+exports.updatePassword = async (req, res) => {
+    const { id } = req.params;
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+        // 1. Get the user from database
+        const [users] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
+        if (users.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const user = users[0];
+
+        // 2. Verify current password
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Current password is incorrect" });
+        }
+
+        // 3. Hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // 4. Update only the password
+        const [result] = await db.query(
+            "UPDATE users SET password = ? WHERE id = ?",
+            [hashedPassword, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Destroy session since password changed
+        req.session.destroy((err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: "Error logging out" });
+            }
+            res.json({ message: "Password updated successfully. Please log in again." });
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
