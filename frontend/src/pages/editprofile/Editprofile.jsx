@@ -163,19 +163,7 @@ const EditProfile = () => {
                 currentUser.first_name = first_name;
                 currentUser.last_name = last_name;
                 localStorage.setItem("user", JSON.stringify(currentUser));
-            // }
-
-            // // Check if the password was updated
-            // if (password) {
-            //     alert("Your password has been updated. Please log out and log in again.");
-            //     // Optionally log the user out by removing session data
-            //     localStorage.removeItem("userId");
-            //     localStorage.removeItem("user");
-
-            //     // Redirect to the login page
-            //     navigate("/login");
-            // }
-            // else {
+    
                 alert("Profile updated successfully!");
                 navigate(0);
             // }
@@ -183,9 +171,6 @@ const EditProfile = () => {
             console.error(error);
             setError(error.response?.data?.message || "Error during profile update");
         } 
-        // finally {
-        //     setLoading(false);
-        // }
     };
 
     // Add this function with your other handlers

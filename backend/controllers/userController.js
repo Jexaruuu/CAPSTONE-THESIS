@@ -1,4 +1,6 @@
 const db = require("../db"); // Assuming db.js is correctly set up for MySQL
+const bcrypt = require('bcryptjs');
+
 
 // Get user by ID
 exports.getUserById = async (req, res) => {
@@ -105,9 +107,13 @@ exports.updatePassword = async (req, res) => {
         req.session.destroy((err) => {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ message: "Error logging out" });
+                return res.status(500).json({ 
+                    message: "Error logging out",
+                    error: err.message // Include error details
+                });
             }
-            res.json({ message: "Password updated successfully. Please log in again." });
+            res.clearCookie('connect.sid'); // Clear session cookie explicitly
+            res.json({ message: "Password updated. Please login again." });
         });
     } catch (err) {
         console.error(err);
