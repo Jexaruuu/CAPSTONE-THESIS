@@ -20,7 +20,7 @@ const AdminSignup = () => {
     }
   
     try {
-      const response = await axios.post("http://localhost:3000/api/admin/signup", {
+      const response = await axios.post("http://localhost:3000/api/adminsignup", {
         username,
         password,
         confirmPassword,

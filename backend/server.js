@@ -6,15 +6,17 @@ const signupRoutes = require('./routes/signupRoutes');
 const loginRoutes = require('./routes/loginRoutes'); 
 const logoutRoutes = require('./routes/logoutRoutes'); 
 const userRoutes = require('./routes/userRoutes');
-const adminRoutes = require('./routes/adminRoutes');  // Make sure to import adminRoutes
 
-const app = express(); // Initialize the app here
+// ✅ Updated variable name and path to match existing file
+const adminsignupRoutes = require('./routes/adminsignupRoutes');
 
-// CORS configuration - Allow specific origin with credentials
+const app = express();
+
+// CORS configuration
 app.use(cors({
-    origin: "http://localhost:5173", // Specify the frontend URL
-    methods: "GET,POST,PUT,DELETE", // Allow specific HTTP methods
-    credentials: true // Allow credentials (cookies/session) to be sent
+    origin: "http://localhost:5173",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true
 }));
 
 app.use(express.json());
@@ -25,9 +27,9 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: { 
-        secure: false,  // Set to `true` when using HTTPS
-        httpOnly: true, // Prevent JavaScript access to cookies
-        sameSite: "None", // Enable cross-origin requests with credentials
+        secure: false,
+        httpOnly: true,
+        sameSite: "None",
     }
 }));
 
@@ -36,9 +38,10 @@ app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', logoutRoutes); 
 app.use('/api', userRoutes);
-app.use('/api/admin', adminRoutes);  // Use /api/admin prefix for admin routes
 
-// Test endpoint
+// ✅ Use the corrected adminRoutes
+app.use('/api', adminsignupRoutes); // this registers /api/adminsignup
+
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');
 });
