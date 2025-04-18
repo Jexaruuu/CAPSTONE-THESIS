@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  HomeIcon,
-  UsersIcon,
-  FileTextIcon,
-  LogOutIcon,
-  SettingsIcon,
-} from "lucide-react";
+import {HomeIcon,UsersIcon,FileTextIcon,LogOutIcon,SettingsIcon,} from "lucide-react";
 import axios from "axios";
 
 const AdminDashboard = () => {
   const [active, setActive] = useState("Dashboard");
+  const [admin, setAdminName] = useState({ first_name: "", last_name: "" });
+
+  useEffect(() => {
+    axios.get("/api/admin/profile", { withCredentials: true })
+      .then((res) => setAdminName(res.data))
+      .catch((err) => console.error("Error fetching admin profile:", err));
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
@@ -22,6 +23,12 @@ const AdminDashboard = () => {
             <div className="flex items-center mb-10">
               <img src="/logo.png" alt="Logo" className="w-56 h-56 mr-2" />
             </div>
+            <div className="text-center mb-6">
+  <p className="text-lg font-semibold">
+    {admin.first_name} {admin.last_name}
+  </p>
+  <p className="text-sm text-gray-500">Admin</p>
+</div>
 
             <nav className="space-y-2">
               <button

@@ -11,6 +11,8 @@ const userRoutes = require('./routes/userRoutes');
 // ✅ Updated variable name and path to match existing file
 const adminsignupRoutes = require('./routes/adminsignupRoutes');
 const adminloginRoutes = require('./routes/adminloginRoutes');
+const adminRoutes = require("./routes/adminRoutes");
+
 
 const app = express();
 
@@ -44,6 +46,7 @@ app.use('/api', userRoutes);
 // ✅ Use the corrected adminRoutes
 app.use('/api', adminsignupRoutes); // this registers /api/adminsignup
 app.use('/api', adminloginRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 app.get('/', (req, res) => {
