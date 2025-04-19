@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {HomeIcon,UsersIcon,FileTextIcon,LogOutIcon,SettingsIcon,} from "lucide-react";
+import {HomeIcon,UsersIcon,FileTextIcon,LogOutIcon,SettingsIcon} from "lucide-react";
 import axios from "axios";
 
 const AdminDashboard = () => {
   const [active, setActive] = useState("Dashboard");
   const [adminName, setAdminName] = useState({ first_name: "", last_name: "" });
 
-  useEffect(() => {axios.get("/api/admin/profile", { withCredentials: true })
-      .then((res) => setAdminName(res.data))
-      .catch((err) => console.error("Error fetching admin profile:", err));
+  useEffect(() => {
+    axios.get("/api/admin/profile", { withCredentials: true })
+      .then((res) => {
+        setAdminName(res.data); // Update admin name in the state
+      })
+      .catch((err) => {
+        console.error("Error fetching admin profile:", err);
+      });
   }, []);
-  
-console.log(adminName);
+
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
       <div className="flex">
@@ -24,6 +28,7 @@ console.log(adminName);
               <img src="/logo.png" alt="Logo" className="w-56 h-56 mr-2" />
             </div>
             <div className="text-center mb-6">
+              {/* Display admin's first and last name */}
               <p className="text-lg font-semibold">
                 {adminName.first_name} {adminName.last_name}
               </p>
@@ -33,11 +38,7 @@ console.log(adminName);
             <nav className="space-y-2">
               <button
                 onClick={() => setActive("Dashboard")}
-                className={`flex items-center w-full px-4 py-2 rounded-md transition ${
-                  active === "Dashboard"
-                    ? "bg-[#000081] text-white"
-                    : "hover:bg-[#0d05d2] hover:text-white"
-                }`}
+                className={`flex items-center w-full px-4 py-2 rounded-md transition ${active === "Dashboard" ? "bg-[#000081] text-white" : "hover:bg-[#0d05d2] hover:text-white"}`}
               >
                 <HomeIcon className="mr-3 w-5 h-5" />
                 Dashboard
@@ -45,11 +46,7 @@ console.log(adminName);
 
               <button
                 onClick={() => setActive("Users")}
-                className={`flex items-center w-full px-4 py-2 rounded-md transition ${
-                  active === "Users"
-                    ? "bg-[#000081] text-white"
-                    : "hover:bg-[#0d05d2] hover:text-white"
-                }`}
+                className={`flex items-center w-full px-4 py-2 rounded-md transition ${active === "Users" ? "bg-[#000081] text-white" : "hover:bg-[#0d05d2] hover:text-white"}`}
               >
                 <UsersIcon className="mr-3 w-5 h-5" />
                 Manage Users
@@ -57,11 +54,7 @@ console.log(adminName);
 
               <button
                 onClick={() => setActive("Applications")}
-                className={`flex items-center w-full px-4 py-2 rounded-md transition ${
-                  active === "Applications"
-                    ? "bg-[#000081] text-white"
-                    : "hover:bg-[#0d05d2] hover:text-white"
-                }`}
+                className={`flex items-center w-full px-4 py-2 rounded-md transition ${active === "Applications" ? "bg-[#000081] text-white" : "hover:bg-[#0d05d2] hover:text-white"}`}
               >
                 <FileTextIcon className="mr-3 w-5 h-5" />
                 Applications
@@ -69,11 +62,7 @@ console.log(adminName);
 
               <button
                 onClick={() => setActive("Settings")}
-                className={`flex items-center w-full px-4 py-2 rounded-md transition ${
-                  active === "Settings"
-                    ? "bg-[#000081] text-white"
-                    : "hover:bg-[#0d05d2] hover:text-white"
-                }`}
+                className={`flex items-center w-full px-4 py-2 rounded-md transition ${active === "Settings" ? "bg-[#000081] text-white" : "hover:bg-[#0d05d2] hover:text-white"}`}
               >
                 <SettingsIcon className="mr-3 w-5 h-5" />
                 Settings
@@ -101,16 +90,10 @@ console.log(adminName);
           </h2>
 
           <div className="bg-white p-6 rounded-lg">
-            {active === "Dashboard" && (
-              <p>Welcome, Admin! Here’s a quick look at your system status.</p>
-            )}
+            {active === "Dashboard" && <p>Welcome, Admin! Here’s a quick look at your system status.</p>}
             {active === "Users" && <p>List of registered clients and workers.</p>}
-            {active === "Applications" && (
-              <p>Submitted service applications will appear here.</p>
-            )}
-            {active === "Settings" && (
-              <p>Update admin preferences or system config.</p>
-            )}
+            {active === "Applications" && <p>Submitted service applications will appear here.</p>}
+            {active === "Settings" && <p>Update admin preferences or system config.</p>}
           </div>
         </main>
       </div>
