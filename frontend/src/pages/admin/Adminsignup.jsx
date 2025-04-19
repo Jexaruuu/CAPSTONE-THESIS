@@ -1,3 +1,4 @@
+// AdminSignup.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,6 +17,7 @@ const AdminSignup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -38,7 +40,9 @@ const AdminSignup = () => {
         setError(response.data.message || "Signup failed");
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      const msg =
+        err.response?.data?.message || "An error occurred. Please try again.";
+      setError(msg);
     }
   };
 

@@ -49,9 +49,8 @@ app.use('/api', userRoutes);
 // ✅ Use the corrected adminRoutes
 app.use('/api', adminsignupRoutes); // this registers /api/adminsignup
 app.use('/api', adminloginRoutes);
-app.use("/api", adminRoutes);
 app.use("/api", adminlogoutRoutes);
-
+app.use("/api", adminRoutes);
 
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');

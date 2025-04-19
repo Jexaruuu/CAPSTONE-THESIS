@@ -4,31 +4,30 @@ import axios from "axios";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState(""); // changed from email to username
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await axios.post("http://localhost:3000/api/adminlogin", {
         username,
         password,
-      });
-  
+      });      
+
       if (response.status === 200 && response.data.success) {
         navigate("/admindashboard");
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message); // This will display "Invalid username or password"
+        setError(err.response.data.message);
       } else {
         setError("An error occurred. Please try again.");
       }
     }
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
