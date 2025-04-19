@@ -16,15 +16,16 @@ const AdminLogin = () => {
         username,
         password,
       });
-
-      if (response.data.success) {
-        // Redirect to dashboard or show success message
+  
+      if (response.status === 200 && response.data.success) {
         navigate("/admindashboard");
-      } else {
-        setError(response.data.message || "Login failed");
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message); // This will display "Invalid username or password"
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     }
   };
   

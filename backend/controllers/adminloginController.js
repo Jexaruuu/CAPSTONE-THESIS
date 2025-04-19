@@ -10,6 +10,7 @@ const adminLogin = async (req, res) => {
   }
 
   try {
+    // Correct handling of db.execute result
     const [admin] = await db.execute('SELECT * FROM admins WHERE username = ?', [username]);
     console.log("Query result:", admin);
 
@@ -22,14 +23,8 @@ const adminLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    // Store admin data in session (or JWT token)
-    req.session.admin = {
-      id: admin[0].id,
-      firstName: admin[0].first_name,
-      lastName: admin[0].last_name,
-      email: admin[0].email,
-      username: admin[0].username
-    };
+    // ✅ Correct session variable assignment
+    req.session.adminId = admin[0].id;
 
     res.status(200).json({
       success: true,
@@ -47,6 +42,5 @@ const adminLogin = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 module.exports = { adminLogin };
