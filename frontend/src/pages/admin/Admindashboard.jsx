@@ -5,14 +5,27 @@ import axios from "axios";
 
 const AdminDashboard = () => {
   const [active, setActive] = useState("Dashboard");
-  const [adminName, setAdminName] = useState({ first_name: "", last_name: "" });
+  const [admin, setAdminName] = useState({ first_name: "", last_name: "" });
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     axios.get("http://localhost:3000/api/admin", { withCredentials: true })
       .then((res) => {
-        console.log("Admin profile fetched:", res.data); // 👀 Debug log
-        setAdminName(res.data);
+        console.log("Admin profile fetched:", res.data);
+  
+        // Save admin data to localStorage
+        let adminData = res.data;
+  
+        // Normalize field names
+        if (adminData.firstName || adminData.lastName) {
+          adminData.first_name = adminData.first_name || adminData.firstName;
+          adminData.last_name = adminData.last_name || adminData.lastName;
+          delete adminData.firstName;
+          delete adminData.lastName;
+        }
+  
+        localStorage.setItem("admins", JSON.stringify(adminData)); // Store it
+        setAdminName(adminData); // Update the state
       })
       .catch((err) => {
         console.error("Error fetching admin profile:", err);
@@ -50,7 +63,7 @@ const AdminDashboard = () => {
   ) : (
     <>
       <p className="text-lg font-semibold">
-        {adminName.first_name || "Admin"} {adminName.last_name || ""}
+      {`${admin.first_name} ${admin.last_name}`}
       </p>
       <p className="text-sm text-gray-500">Admin</p>
     </>
