@@ -6,16 +6,33 @@ import axios from "axios";
 const AdminDashboard = () => {
   const [active, setActive] = useState("Dashboard");
   const [adminName, setAdminName] = useState({ first_name: "", last_name: "" });
-
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
-    axios.get("/api/admin/profile", { withCredentials: true })
+    axios.get("http://localhost:3000/api/admin", { withCredentials: true })
       .then((res) => {
-        setAdminName(res.data); // Update admin name in the state
+        console.log("Admin profile fetched:", res.data); // 👀 Debug log
+        setAdminName(res.data);
       })
       .catch((err) => {
         console.error("Error fetching admin profile:", err);
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
+  
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:3000/api/logout", {}, { withCredentials: true });
+      // Optional: Clear any admin data from state if needed
+      setAdminName({ first_name: "", last_name: "" });
+      navigate("/adminlogin");
+    } catch (err) {
+      console.error("Logout failed:", err);
+      alert("Logout failed. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
@@ -28,12 +45,17 @@ const AdminDashboard = () => {
               <img src="/logo.png" alt="Logo" className="w-56 h-56 mr-2" />
             </div>
             <div className="text-center mb-6">
-              {/* Display admin's first and last name */}
-              <p className="text-lg font-semibold">
-                {adminName.first_name} {adminName.last_name}
-              </p>
-              <p className="text-sm text-gray-500">Admin</p>
-            </div>
+  {loading ? (
+    <p className="text-sm text-gray-500">Loading...</p>
+  ) : (
+    <>
+      <p className="text-lg font-semibold">
+        {adminName.first_name || "Admin"} {adminName.last_name || ""}
+      </p>
+      <p className="text-sm text-gray-500">Admin</p>
+    </>
+  )}
+</div>
 
             <nav className="space-y-2">
               <button
@@ -71,13 +93,13 @@ const AdminDashboard = () => {
           </div>
 
           {/* Bottom logout button */}
-          <Link
-            to="/adminlogin"
-            className="flex items-center px-4 py-2 bg-red-600 text-white hover:bg-red-700 hover:text-white rounded-md transition"
-          >
-            <LogOutIcon className="mr-3 w-5 h-5" />
-            Logout
-          </Link>
+          <button
+  onClick={handleLogout}
+  className="flex items-center px-4 py-2 bg-red-600 text-white hover:bg-red-700 hover:text-white rounded-md transition"
+>
+  <LogOutIcon className="mr-3 w-5 h-5" />
+  Logout
+</button>
         </aside>
 
         {/* Main Dashboard Content */}

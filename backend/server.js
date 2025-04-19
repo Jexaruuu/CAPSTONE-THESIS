@@ -8,10 +8,13 @@ const logoutRoutes = require('./routes/logoutRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 
+
 // ✅ Updated variable name and path to match existing file
 const adminsignupRoutes = require('./routes/adminsignupRoutes');
 const adminloginRoutes = require('./routes/adminloginRoutes');
+const adminlogoutRoutes = require("./routes/adminlogoutRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+
 
 
 const app = express();
@@ -30,12 +33,12 @@ app.use(session({
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { 
-        secure: false,
-        httpOnly: true,
-        sameSite: "None",
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      sameSite: "None", // For cross-origin cookies if needed
     }
-}));
+  }));
 
 // Routes
 app.use('/api', signupRoutes);
@@ -46,7 +49,8 @@ app.use('/api', userRoutes);
 // ✅ Use the corrected adminRoutes
 app.use('/api', adminsignupRoutes); // this registers /api/adminsignup
 app.use('/api', adminloginRoutes);
-app.use("/api/admin", adminRoutes);
+app.use("/api", adminRoutes);
+app.use("/api", adminlogoutRoutes);
 
 
 app.get('/', (req, res) => {
