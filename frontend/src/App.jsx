@@ -16,6 +16,7 @@ import EditProfile from "./pages/editprofile/Editprofile";
 import BookServices from "./pages/services/Bookservices";
 import UserHeader from "./components/header/Userheader";
 import AdminDashboard from "./pages/admin/Admindashboard";
+import ClientForm from "./pages/clientform/Clientform";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path='/editprofile' element={<ProtectedRoute element={<EditProfile />} />} />
         <Route path="/userhome" element={<ProtectedRoute element={<UserHome />} />} />
         <Route path="/userheader" element={<ProtectedRoute element={<UserHeader />} />} />
+        <Route path="/clientform" element={<ClientForm/>} />
       </Routes>
     </Router>
   );
