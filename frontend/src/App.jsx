@@ -37,7 +37,7 @@ function App() {
         <Route path='/editprofile' element={<ProtectedRoute element={<EditProfile />} />} />
         <Route path="/userhome" element={<ProtectedRoute element={<UserHome />} />} />
         <Route path="/userheader" element={<ProtectedRoute element={<UserHeader />} />} />
-        <Route path="/clientform" element={<ClientForm/>} />
+        <Route path="/clientform" element={<ProtectedRoute element={<ClientForm />} />} />
       </Routes>
     </Router>
   );

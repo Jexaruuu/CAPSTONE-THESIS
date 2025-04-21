@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navigation from "../../components/navigation/Navigation"
+import Navigation from "../../components/navigation/navigation"
 import Footer from "../../components/footer/Footer";
 
 const services = [
