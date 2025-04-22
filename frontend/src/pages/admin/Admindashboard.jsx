@@ -1,51 +1,42 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {HomeIcon,UsersIcon,FileTextIcon,LogOutIcon,SettingsIcon} from "lucide-react";
+import { HomeIcon, UsersIcon, FileTextIcon, LogOutIcon, SettingsIcon } from "lucide-react";
 import axios from "axios";
 
 const AdminDashboard = () => {
   const [active, setActive] = useState("Dashboard");
-  const [admin, setAdminName] = useState({ first_name: "", last_name: "" });
+  const [admin, setAdminName] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
+
+  console.log(localStorage.getItem("userId"))
+
   useEffect(() => {
-    axios.get("http://localhost:3000/api/admin", { withCredentials: true })
+    axios.get(`http://localhost:3000/api/admin/${localStorage.getItem("userId")}`,)
       .then((res) => {
-        console.log("Admin profile fetched:", res.data);
-  
-        // Save admin data to localStorage
-        let adminData = res.data;
-  
-        // Normalize field names
-        if (adminData.firstName || adminData.lastName) {
-          adminData.first_name = adminData.first_name || adminData.firstName;
-          adminData.last_name = adminData.last_name || adminData.lastName;
-          delete adminData.firstName;
-          delete adminData.lastName;
-        }
-  
-        localStorage.setItem("admins", JSON.stringify(adminData)); // Store it
-        setAdminName(adminData); // Update the state
+        setAdminName(res.data);
       })
       .catch((err) => {
-        console.error("Error fetching admin profile:", err);
-      })
-      .finally(() => setLoading(false));
+        console.error("Failed to fetch admin data:", err);
+      });
   }, []);
-  
+
+  console.log(admin)
+
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await axios.post("http://localhost:3000/api/logout", {}, { withCredentials: true });
-      // Optional: Clear any admin data from state if needed
-      setAdminName({ first_name: "", last_name: "" });
-      navigate("/adminlogin");
-    } catch (err) {
-      console.error("Logout failed:", err);
-      alert("Logout failed. Please try again.");
-    }
+  const handleLogout = () => {
+    // Clear all localStorage data related to admin
+    localStorage.removeItem("user");
+    localStorage.removeItem("userId");
+  
+    // Optionally clear any other keys if you use them
+    // localStorage.clear(); // ← Uncomment if you want to clear everything
+  
+    // Navigate to login page
+    navigate("/adminlogin");
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
@@ -58,17 +49,21 @@ const AdminDashboard = () => {
               <img src="/logo.png" alt="Logo" className="w-56 h-56 mr-2" />
             </div>
             <div className="text-center mb-6">
-  {loading ? (
-    <p className="text-sm text-gray-500">Loading...</p>
-  ) : (
-    <>
-      <p className="text-lg font-semibold">
-      {`${admin.first_name} ${admin.last_name}`}
-      </p>
-      <p className="text-sm text-gray-500">Admin</p>
-    </>
-  )}
-</div>
+            <p className="text-lg font-semibold">
+                    {`${admin.first_name} ${admin.last_name}`}
+                  </p>
+                  <p className="text-sm text-gray-500">Admin</p>
+              {/* {loading ? (
+                <p className="text-sm text-gray-500">Loading...</p>
+              ) : (
+                <>
+                  <p className="text-lg font-semibold">
+                    {`${admin.first_name} ${admin.last_name}`}
+                  </p>
+                  <p className="text-sm text-gray-500">Admin</p>
+                </>
+              )} */}
+            </div>
 
             <nav className="space-y-2">
               <button
@@ -107,12 +102,12 @@ const AdminDashboard = () => {
 
           {/* Bottom logout button */}
           <button
-  onClick={handleLogout}
-  className="flex items-center px-4 py-2 bg-red-600 text-white hover:bg-red-700 hover:text-white rounded-md transition"
->
-  <LogOutIcon className="mr-3 w-5 h-5" />
-  Logout
-</button>
+            onClick={handleLogout}
+            className="flex items-center px-4 py-2 bg-red-600 text-white hover:bg-red-700 hover:text-white rounded-md transition"
+          >
+            <LogOutIcon className="mr-3 w-5 h-5" />
+            Logout
+          </button>
         </aside>
 
         {/* Main Dashboard Content */}

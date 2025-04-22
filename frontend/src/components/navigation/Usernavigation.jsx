@@ -6,6 +6,7 @@ const UserNavigation = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
+  console.log(localStorage.getItem("userId"));
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {

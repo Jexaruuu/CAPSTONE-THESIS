@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -8,24 +8,49 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      navigate("/admindashboard", { replace: true });
+    }
+  }, [navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       const response = await axios.post("http://localhost:3000/api/adminlogin", {
         username,
-        password,
-      });      
+        password
+      });
 
-      if (response.status === 200 && response.data.success) {
-        navigate("/admindashboard");
+      console.log("Full login response:", response.data);
+
+      const userData = response.data.user || response.data.admin;
+
+      if (!userData) {
+        setError("Login failed: No user data returned.");
+        return;
       }
+
+      const cleanedUser = {
+        ...userData,
+        first_name: userData.first_name || userData.firstName,
+        last_name: userData.last_name || userData.lastName,
+      };
+
+      delete cleanedUser.firstName;
+      delete cleanedUser.lastName;
+
+      localStorage.setItem("user", JSON.stringify(cleanedUser));
+      localStorage.setItem("userId", userData.id);
+
+      navigate("/admindashboard", { replace: true });
+
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("An error occurred. Please try again.");
-      }
+      console.error("Login error:", err);
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
