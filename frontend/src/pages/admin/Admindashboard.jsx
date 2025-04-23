@@ -8,35 +8,46 @@ const AdminDashboard = () => {
   const [admin, setAdminName] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
-  console.log(localStorage.getItem("userId"))
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/admin/${localStorage.getItem("userId")}`,)
-      .then((res) => {
-        setAdminName(res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch admin data:", err);
-      });
-  }, []);
+    const userId = localStorage.getItem("userId");
 
-  console.log(admin)
-
-  const navigate = useNavigate();
+    if (!userId) {
+      // If no userId in localStorage, redirect to login
+      navigate("/adminlogin");
+    } else {
+      // Fetch admin data only if authenticated
+      axios.get(`http://localhost:3000/api/admin/${userId}`)
+        .then((res) => {
+          setAdminName(res.data);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch admin data:", err);
+          // Redirect to login if there's an error (e.g., session expired)
+          navigate("/adminlogin");
+        });
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
     // Clear all localStorage data related to admin
     localStorage.removeItem("user");
     localStorage.removeItem("userId");
-  
+
     // Optionally clear any other keys if you use them
     // localStorage.clear(); // ← Uncomment if you want to clear everything
-  
-    // Navigate to login page
-    navigate("/adminlogin");
+
+    // Make an API call to logout on the server
+    axios.post("http://localhost:3000/api/logout")
+      .then((response) => {
+        // After successful logout, navigate to login page
+        navigate("/adminlogin");
+      })
+      .catch((err) => {
+        console.error("Logout failed:", err);
+      });
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
@@ -49,20 +60,10 @@ const AdminDashboard = () => {
               <img src="/logo.png" alt="Logo" className="w-56 h-56 mr-2" />
             </div>
             <div className="text-center mb-6">
-            <p className="text-lg font-semibold">
-                    {`${admin.first_name} ${admin.last_name}`}
-                  </p>
-                  <p className="text-sm text-gray-500">Admin</p>
-              {/* {loading ? (
-                <p className="text-sm text-gray-500">Loading...</p>
-              ) : (
-                <>
-                  <p className="text-lg font-semibold">
-                    {`${admin.first_name} ${admin.last_name}`}
-                  </p>
-                  <p className="text-sm text-gray-500">Admin</p>
-                </>
-              )} */}
+              <p className="text-lg font-semibold">
+                {`${admin.first_name} ${admin.last_name}`}
+              </p>
+              <p className="text-sm text-gray-500">Admin</p>
             </div>
 
             <nav className="space-y-2">
