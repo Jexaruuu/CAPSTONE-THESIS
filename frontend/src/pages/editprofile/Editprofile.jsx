@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
@@ -407,20 +408,23 @@ const EditProfile = () => {
 
 {/* Form Submission */}
 <div className="relative pt-8">
-
+  {/* Updated Back Button with the same style as the "Book Service" button */}
   <div className="text-center pt-8">
-    <button
-      type="submit">
-      <span
-        className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12"
-      ></span>
-      <span className="relative cursor-pointer text-[#000081] text-2xl">
-        <i className="fas fa-paper-plane mr-2"></i> Back
+    <Link to="/userhome"
+      type="submit"
+      className="relative overflow-hidden group bg-[#000081] hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:ring-2 hover:ring-offset-2 hover:ring-blue-400"
+    >
+      <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+      <span className="relative">
+        <i className="fas fa-arrow-left mr-2"></i> Back
       </span>
-    </button>
+    </Link>
     <p className="text-gray-500 mt-4 text-sm">Go back to previous page.</p>
   </div>
 </div>
+
+
+
 
 
 

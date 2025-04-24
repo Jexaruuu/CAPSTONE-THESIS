@@ -41,7 +41,7 @@ const Navigation = () => {
           </div>
           
           <nav>
-  <ul className="flex space-x-6 text-[18px]">
+  <ul className="flex space-x-6 text-[16px]">
     {[
       { name: "Home", path: "/" },
       { name: "About", path: "/about" },
