@@ -131,7 +131,7 @@ const Header = () => {
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#efefef] bg-opacity-70 text-black flex flex-col items-center">
                   <h3 className="font-bold text-lg mb-2">{proj.name}</h3>
                   <p className="text-[14px] font-semibold">Service Rate / Hour: {proj.rate}</p>
-                  <Link to="/bookservices">
+                  <Link to="/clientform">
   <button
     className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white mt-2 
              hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 

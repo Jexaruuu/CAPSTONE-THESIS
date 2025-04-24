@@ -230,7 +230,42 @@ const ClientForm = () => {
                 </p>
               )}
             </div>
+
+            {/* Profile Picture Upload */}
+            <div className="mt-6">
+              <label className="block font-medium text-gray-700 mb-1">Profile Picture <span className="text-red-500">*</span></label>
+              <div className="flex items-center space-x-6">
+                <div className="shrink-0">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
+                    {watch("profilePicture")?.length > 0 ? (
+                      <img className="h-full w-full object-cover" src={URL.createObjectURL(watch("profilePicture")[0])} alt="Profile preview" />
+                    ) : (
+                      <div className="bg-gray-100 h-full w-full flex items-center justify-center">
+                        <i className="fas fa-user text-3xl text-gray-400"></i>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <label className="block">
+                  <span className="sr-only">Choose profile photo</span>
+                  <input 
+                    type="file" 
+                    {...register("profilePicture", { required: "Profile picture is required" })}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    accept="image/*"
+                  />
+                  {errors.profilePicture && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <i className="fas fa-exclamation-circle mr-1"></i> {errors.profilePicture.message}
+                    </p>
+                  )}
+                </label>
+              </div>
+              <p className="text-sm text-gray-500 mt-2">This will be visible to workers - please upload a clear headshot.</p>
+            </div>
           </section>
+
+          
 
           {/* Service Information Section */}
           <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
