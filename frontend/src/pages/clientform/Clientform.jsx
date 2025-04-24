@@ -78,7 +78,7 @@ const ClientForm = () => {
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
   const onSubmit = (data) => console.log(data);
   
-  const heroImages = ["/home-service1.jpg", "/home-service2.jpg", "/home-service3.jpg"];
+  const heroImages = ["carpenter.jpg", "electrician.jpg", "plumber.jpg"];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(true);
   
@@ -121,7 +121,7 @@ const ClientForm = () => {
         <section className="relative text-center flex flex-col justify-center items-center text-white w-full h-auto py-10 z-10 px-4">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">Book Quality Home Services in Bacolod City</h1>
-            <p className="text-xl mb-8 text-gray-200">Reliable professionals for all your home maintenance needs</p>
+            <p className="text-xl mb-8 text-gray-200">Reliable workers for all your home maintenance needs</p>
           </div>
         </section>
       </div>

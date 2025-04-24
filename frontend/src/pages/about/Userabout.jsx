@@ -15,9 +15,7 @@ const UserAbout = () => {
           backgroundPosition: "center",
         }}
       >
-        <h1 className="text-4xl md:text-5xl font-bold drop-shadow-lg">
-          Quality Home Services You Can Trust
-        </h1>
+        <h1 className="text-4xl md:text-5xl font-bold drop-shadow-lg">Quality Home Services You Can Trust</h1>
       </div>
       
    

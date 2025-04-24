@@ -116,13 +116,14 @@ const BookService = () => {
       
         <section className="relative text-center flex flex-col justify-center items-center text-white w-full h-auto py-10 z-10">
           <div className="bg-opacity-50 px-6 py-4 rounded">
-            <h2 className="text-4xl font-bold">Book trusted home help today</h2>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">JD Homecare Services</h1>
+          <p className="text-xl mb-8 text-gray-200">We’re here to help you keep your home safe, clean, and cared for—because you deserve the best in home service.</p>
           </div>
         </section>
       </div>
 
       <div className="py-10 px-5">
-  <h2 className="text-center text-[30px] font-bold mb-6">Hire Trusted Workers</h2>
+  <h2 className="text-center text-[30px] font-bold mb-6">Our Available Services</h2>
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center max-w-5xl mx-auto">
     {services.map((service, index) => (
       <div key={index} className="bg-white rounded-lg shadow-md p-5 flex flex-col">

@@ -74,7 +74,8 @@ const Header = () => {
       <div className="relative h-96 bg-cover bg-center transition-opacity duration-1000 flex justify-center items-center" style={{ backgroundImage: `url(${heroImages[currentImageIndex]})`, opacity: fade ? 1 : 0 }}>
         <div className="absolute inset-0 bg-black opacity-60"></div>
         <section className="relative text-white w-full py-10 z-10 text-center flex flex-col items-center">
-          <h2 className="text-4xl font-bold">Book trusted home help today</h2>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">Welcome to JD Homecare</h1>
+          <p className="text-xl mb-8 text-gray-200">Where quality service and heartfelt care come together to make your home a better place.</p>
         </section>
       </div>
 
