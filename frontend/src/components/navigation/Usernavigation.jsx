@@ -134,7 +134,7 @@ const UserNavigation = () => {
               <div className="flex justify-end">
                 <ul className="flex space-x-6 text-[16px]">
                   <li className="relative group w-max">
-                    <Link to="/available-workers" className="text-gray-700 font-medium hover:text-[#0d05d2]">
+                    <Link to="/availableworkers" className="text-gray-700 font-medium hover:text-[#0d05d2]">
                       Available Workers
                       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
                     </Link>
