@@ -14,8 +14,8 @@ const AdminDashboard = () => {
   const [active, setActive] = useState("Dashboard");
   const [admin, setAdminName] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [totalAdmins, setTotalAdmins] = useState(0);
+  // const [totalUsers, setTotalUsers] = useState(0);
+  // const [totalAdmins, setTotalAdmins] = useState(0);
   const [clock, setClock] = useState(new Date().toLocaleTimeString());
   const [date, setDate] = useState(new Date().toLocaleDateString("en-US"));
 
@@ -46,17 +46,21 @@ const AdminDashboard = () => {
     }
   }, [navigate]);
 
-  useEffect(() => {
-    if (active === "Dashboard") {
-      axios.get("http://localhost:3000/api/stats/users")
-        .then((res) => setTotalUsers(res.data.totalUsers))
-        .catch((err) => console.error("Failed to fetch users count:", err));
+  const [counts, setCounts] = useState({ admins: 0, users: 0 });
 
-      axios.get("http://localhost:3000/api/stats/admins")
-        .then((res) => setTotalAdmins(res.data.totalAdmins))
-        .catch((err) => console.error("Failed to fetch admins count:", err));
-    }
-  }, [active]);
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/count/count', );
+        setCounts(response.data);
+      } catch (error) {
+        console.error('Error fetching counts:', error);
+      }
+    };
+
+    fetchCounts();
+  }, []);
+  
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -219,11 +223,11 @@ const AdminDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="bg-blue-100 border-l-4 border-blue-500 p-4 rounded shadow">
                     <p className="text-lg font-semibold text-blue-800">Total Users</p>
-                    <p className="text-3xl font-bold text-blue-900">{totalUsers}</p>
+                    <p className="text-3xl font-bold text-blue-900">{counts.users}</p>
                   </div>
                   <div className="bg-green-100 border-l-4 border-green-500 p-4 rounded shadow">
                     <p className="text-lg font-semibold text-green-800">Total Admins</p>
-                    <p className="text-3xl font-bold text-green-900">{totalAdmins}</p>
+                    <p className="text-3xl font-bold text-green-900">{counts.admins}</p>
                   </div>
                 </div>
               </>

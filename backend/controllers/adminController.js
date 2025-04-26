@@ -66,4 +66,20 @@ const updateAdminPassword = async (req, res) => {
   }
 };
 
-module.exports = { getAdminProfile, updateAdminInfo, updateAdminPassword };
+const countUserAndAdmin = async (req, res) => {
+  try {
+    const [userResult] = await db.execute('SELECT COUNT(*) as userCount FROM users');
+    const [adminResult] = await db.execute('SELECT COUNT(*) as adminCount FROM admins');
+
+    res.status(200).json({
+      users: userResult[0].userCount,
+      admins: adminResult[0].adminCount,
+    });
+  } catch (error) {
+    console.error('Error counting users and admins:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+module.exports = { getAdminProfile, updateAdminInfo, updateAdminPassword, countUserAndAdmin };

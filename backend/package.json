@@ -4,11 +4,11 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "nodemon ./src/server.js",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "axios": "^1.8.4",
@@ -21,7 +21,7 @@
     "mysql2": "^3.14.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.10"
   },
   "type": "commonjs"
 }

@@ -7,5 +7,6 @@ const adminController = require('../controllers/adminController');
 router.get('/admin/:id', adminController.getAdminProfile);  // Get admin profile
 router.put('/admin/update/:id', adminController.updateAdminInfo);  // Update admin profile info
 router.put('/admin/update-password/:id', adminController.updateAdminPassword);  // Update admin password
+router.get('/count/count', adminController.countUserAndAdmin);
 
 module.exports = router;
