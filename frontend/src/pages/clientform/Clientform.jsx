@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import axios from "axios";
 
-// Reusable components to reduce repetition
 const SectionHeader = ({ icon, title }) => (
   <div className="flex items-center mb-6">
     <div className="bg-blue-100 p-2 rounded-full mr-4">
@@ -20,7 +20,7 @@ const FormField = ({ label, name, register, errors, type = "text", required = fa
     </label>
     {children || (
       type === "select" ? (
-        <select 
+        <select
           {...register(name, required && { required: `${label} is required` })}
           className={`w-full border ${errors[name] ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
         >
@@ -32,7 +32,7 @@ const FormField = ({ label, name, register, errors, type = "text", required = fa
           ))}
         </select>
       ) : (
-        <input 
+        <input
           type={type}
           {...register(name, required && { required: `${label} is required` })}
           className={`w-full border ${errors[name] ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
@@ -52,10 +52,10 @@ const CheckboxField = ({ id, label, description, register, errors, required = fa
   <>
     <div className="flex items-start">
       <div className="flex items-center h-5 mt-1">
-        <input 
+        <input
           id={id}
-          type="checkbox" 
-          {...register(id, required && { required: `You must ${label.toLowerCase()}` })} 
+          type="checkbox"
+          {...register(id, required && { required: `You must ${label.toLowerCase()}` })}
           className={`focus:ring-blue-500 h-4 w-4 ${errors[id] ? "text-red-500 border-red-300" : "text-blue-600 border-gray-300"} rounded`}
         />
       </div>
@@ -75,14 +75,17 @@ const CheckboxField = ({ id, label, description, register, errors, required = fa
 );
 
 const ClientForm = () => {
-  const { register, handleSubmit, formState: { errors }, watch } = useForm();
-  const onSubmit = (data) => console.log(data);
-  
-  const heroImages = ["carpenter.jpg", "electrician.jpg", "plumber.jpg"];
+  const { register, handleSubmit, formState: { errors }, watch, reset } = useForm();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(true);
-  
-  const selectedService = watch("serviceType");
+  const heroImages = ["carpenter.jpg", "electrician.jpg", "plumber.jpg"];
+
+  const barangays = [
+    "Alangilan", "Alijis", "Banago", "Bata", "Cabug", "Estefania",
+    "Felisa", "Granada", "Handumanan", "Lopez Jaena", "Mandalagan",
+    "Mansilingan", "Montevista", "Pahanocoy", "Punta Taytay",
+    "Singcang-Airport", "Sum-ag", "Taculing", "Tangub", "Villa Esperanza"
+  ];
 
   const serviceDetails = {
     carpenter: "Furniture repair, installation, and other woodwork services",
@@ -92,29 +95,65 @@ const ClientForm = () => {
     laundry: "Laundry and dry cleaning services"
   };
 
-  const barangays = [
-    "Alangilan", "Alijis", "Banago", "Bata", "Cabug", "Estefania", 
-    "Felisa", "Granada", "Handumanan", "Lopez Jaena", "Mandalagan", 
-    "Mansilingan", "Montevista", "Pahanocoy", "Punta Taytay", 
-    "Singcang-Airport", "Sum-ag", "Taculing", "Tangub", "Villa Esperanza"
-  ];
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+
+      if (data.profilePicture?.length > 0) {
+        formData.append('profilePicture', data.profilePicture[0]);
+      } else {
+        alert("Please upload a profile picture before submitting.");
+        return;
+      }
+
+      if (data.serviceImage?.length > 0) {
+        formData.append('serviceImage', data.serviceImage[0]);
+      }
+
+      formData.append('firstName', data.firstName);
+      formData.append('lastName', data.lastName);
+      formData.append('contactNumber', data.contactNumber);
+      formData.append('email', data.email);
+      formData.append('street', data.street);
+      formData.append('barangay', data.barangay);
+      formData.append('additionalAddress', data.additionalAddress);
+      formData.append('serviceType', data.serviceType);
+      formData.append('serviceDescription', data.serviceDescription);
+      formData.append('preferredDate', data.preferredDate);
+      formData.append('preferredTime', data.preferredTime);
+      formData.append('urgentRequest', data.urgentRequest ? 'on' : '');
+
+      const response = await axios.post('http://localhost:3000/api/clients/bookservice', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
+      });
+
+      alert(response.data.message);
+      reset();
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      alert('Failed to book service.');
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
       setFade(false);
       setTimeout(() => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
+        setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
         setFade(true);
       }, 500);
     }, 5000);
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, []);
+
+  const selectedService = watch("serviceType");
 
   return (
     <div className="bg-[#F8FAFC] font-sans min-h-screen">
       <Navigation />
       
-      {/* Hero Section with Image Transition */}
+      {/* Hero Section */}
       <div className="relative w-full h-96 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 flex flex-col justify-center items-center" 
         style={{ backgroundImage: `url(${heroImages[currentImageIndex]})`, backgroundSize: "cover", opacity: fade ? 1 : 0, boxShadow: "inset 0 0 0 2000px rgba(0, 0, 0, 0.6)" }}
       >
@@ -127,8 +166,8 @@ const ClientForm = () => {
       </div>
 
       {/* Application Form Container */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Form Header */}
+        {/* Form */}
+        <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">JD HOMECARE Service Request</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">Fill out this form to book a home service. Fields marked with * are required.</p>
@@ -136,6 +175,7 @@ const ClientForm = () => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
           {/* Personal Information Section */}
           <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
             <SectionHeader icon="user" title="Personal Information" />
@@ -329,7 +369,41 @@ const ClientForm = () => {
                 required 
               />
             </div>
+
+            {/* Service Image Upload */}
+<div>
+  <label className="block font-medium text-gray-700 mt-10">Upload Service Image (optional)</label>
+  <div className="flex items-center space-x-6">
+    <div className="shrink-0">
+      <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-300">
+        {watch("serviceImage")?.length > 0 ? (
+          <img
+            className="h-full w-full object-cover"
+            src={URL.createObjectURL(watch("serviceImage")[0])}
+            alt="Service preview"
+          />
+        ) : (
+          <div className="bg-gray-100 h-full w-full flex items-center justify-center">
+            <i className="fas fa-wrench text-3xl text-gray-400"></i>
+          </div>
+        )}
+      </div>
+    </div>
+    <label className="block">
+      <span className="sr-only">Choose service photo</span>
+      <input
+        type="file"
+        {...register("serviceImage")}
+        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        accept="image/*"
+      />
+    </label>
+  </div>
+  <p className="text-sm text-gray-500 mt-2">Upload a photo of the item or area you need fixed (optional).</p>
+</div>
           </section>
+
+          
 
           {/* Additional Information Section */}
           <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
@@ -354,8 +428,8 @@ const ClientForm = () => {
             </div>
           </section>
 
-          {/* Form Submission */}
-          <div className="text-center pt-8">
+           {/* Submit Button */}
+           <div className="text-center pt-8">
             <button 
               type="submit" 
               className="relative overflow-hidden group bg-[#000081] hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:ring-2 hover:ring-offset-2 hover:ring-blue-400"

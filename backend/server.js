@@ -6,36 +6,39 @@ const signupRoutes = require('./routes/signupRoutes');
 const loginRoutes = require('./routes/loginRoutes'); 
 const logoutRoutes = require('./routes/logoutRoutes'); 
 const userRoutes = require('./routes/userRoutes');
-
-// ✅ Keep only 1 fileUpload import here
+const clientRoutes = require('./routes/clientRoutes');
 const fileUpload = require('express-fileupload');
 
-// ✅ Correct app initialization before using any middleware
-const app = express();
+const app = express(); // Correct initialization before using any middleware
 
 const adminsignupRoutes = require('./routes/adminsignupRoutes');
 const adminloginRoutes = require('./routes/adminloginRoutes');
 const adminlogoutRoutes = require("./routes/adminlogoutRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-
-// ✅ New imports for Tasker form
 const taskerRoutes = require('./routes/taskerRoutes');
 
-// ✅ Now your middlewares
+// ✅ Correct middleware order:
 
-// CORS configuration
+// CORS
 app.use(cors({
     origin: "http://localhost:5173",
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));
 
+// File Upload Middleware FIRST!
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: '/tmp/',
+}));
+
+
+// Then Body Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ For handling file uploads (Tasker form)
-app.use(fileUpload()); // correct position after express.json()
-app.use('/uploads', express.static('uploads')); // serve uploads folder statically
+// Serve uploads folder
+app.use('/uploads', express.static('uploads'));
 
 // Session configuration
 app.use(session({
@@ -49,26 +52,24 @@ app.use(session({
     }
 }));
 
-// ✅ Your existing routes
+// Routes
 app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', logoutRoutes); 
 app.use('/api', userRoutes);
-
 app.use('/api', adminsignupRoutes); 
 app.use('/api', adminloginRoutes);
-app.use("/api", adminlogoutRoutes);
-app.use("/api", adminRoutes);
-
-// ✅ New route for tasker form
+app.use('/api', adminlogoutRoutes);
+app.use('/api', adminRoutes);
 app.use('/api/taskers', taskerRoutes);
+app.use('/api/clients', clientRoutes); // ✅ no problem here
 
-// ✅ Default route
+// Default Route
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');
 });
 
-// ✅ Server listening
+// Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
