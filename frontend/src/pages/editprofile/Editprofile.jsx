@@ -23,7 +23,10 @@ const EditProfile = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/api/user/${userId}`);
+                const response = await axios.get(`http://localhost:3000/api/user/${userId}`, {
+                    withCredentials: true
+                  });
+                
                 const userData = response.data;
                 setFirstName(userData.first_name || "");
                 setLastName(userData.last_name || "");
@@ -31,15 +34,22 @@ const EditProfile = () => {
                 setEmail(userData.email || "");
             } catch (err) {
                 console.error(err);
-                setError("Failed to fetch user data");
+                if (err.response && err.response.status === 404) {
+                    // User not found - logout the user
+                    localStorage.removeItem("userId");
+                    localStorage.removeItem("user");
+                    navigate("/login");
+                } else {
+                    setError("Failed to fetch user data");
+                }
             }
-        };
 
         if (userId) {
             fetchUser();
         } else {
             setError("User not logged in");
         }
+    };
     }, [userId]);
 
     // Handle account deletion
@@ -57,6 +67,7 @@ const EditProfile = () => {
 
             localStorage.removeItem("userId");
             localStorage.removeItem("user");
+            
             navigate("/");
         } catch (error) {
             console.error(error);
