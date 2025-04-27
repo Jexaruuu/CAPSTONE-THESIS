@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import axios from "axios"; 
 
-// Reusable components to reduce repetition
+// Reusable components...
 const SectionHeader = ({ icon, title }) => (
   <div className="flex items-center mb-6">
     <div className="bg-blue-100 p-2 rounded-full mr-4">
@@ -107,12 +108,12 @@ const CheckboxField = ({ id, label, description, register, errors, required = fa
   </>
 );
 
+// 🧩 Now your main TaskerForm Component
 const TaskerForm = () => {
-  const { register, handleSubmit, formState: { errors }, watch } = useForm();
-  const onSubmit = (data) => console.log(data);
-  
+  const { register, handleSubmit, formState: { errors }, watch, reset } = useForm();
+  const [submitStatus, setSubmitStatus] = useState("");
+
   const heroImages = ["/carpenter1.jpg","/electrician1.jpg","/plumber1.jpg","/carwash2.jpg","/laundry2.jpg"];
-  
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(true);
   const [activeSection, setActiveSection] = useState("personal");
@@ -150,6 +151,34 @@ const TaskerForm = () => {
     { id: "government", icon: "landmark", text: "Government IDs" },
     { id: "agreements", icon: "file-signature", text: "Agreements" }
   ];
+
+  // 🧩 THE FINAL onSubmit
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      for (const key in data) {
+        if (data[key] instanceof FileList) {
+          if (data[key].length > 0) {
+            formData.append(key, data[key][0]);
+          }
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
+
+      const response = await axios.post("http://localhost:3000/api/taskers/submit", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+
+      console.log("Tasker form submitted:", response.data);
+      setSubmitStatus("success");
+      reset();
+    } catch (error) {
+      console.error("Error submitting tasker form:", error);
+      setSubmitStatus("error");
+    }
+  };
 
   return (
     <div className="bg-[#F8FAFC] font-sans min-h-screen">

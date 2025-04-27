@@ -7,17 +7,21 @@ const loginRoutes = require('./routes/loginRoutes');
 const logoutRoutes = require('./routes/logoutRoutes'); 
 const userRoutes = require('./routes/userRoutes');
 
+// ✅ Keep only 1 fileUpload import here
+const fileUpload = require('express-fileupload');
 
+// ✅ Correct app initialization before using any middleware
+const app = express();
 
-// ✅ Updated variable name and path to match existing file
 const adminsignupRoutes = require('./routes/adminsignupRoutes');
 const adminloginRoutes = require('./routes/adminloginRoutes');
 const adminlogoutRoutes = require("./routes/adminlogoutRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
+// ✅ New imports for Tasker form
+const taskerRoutes = require('./routes/taskerRoutes');
 
-
-const app = express();
+// ✅ Now your middlewares
 
 // CORS configuration
 app.use(cors({
@@ -27,6 +31,11 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ✅ For handling file uploads (Tasker form)
+app.use(fileUpload()); // correct position after express.json()
+app.use('/uploads', express.static('uploads')); // serve uploads folder statically
 
 // Session configuration
 app.use(session({
@@ -34,28 +43,32 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: false,
-      httpOnly: true,
-      sameSite: "None", // For cross-origin cookies if needed
+        secure: false,
+        httpOnly: true,
+        sameSite: "None",
     }
-  }));
+}));
 
-// Routes
+// ✅ Your existing routes
 app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', logoutRoutes); 
 app.use('/api', userRoutes);
 
-// ✅ Use the corrected adminRoutes
-app.use('/api', adminsignupRoutes); // this registers /api/adminsignup
+app.use('/api', adminsignupRoutes); 
 app.use('/api', adminloginRoutes);
 app.use("/api", adminlogoutRoutes);
 app.use("/api", adminRoutes);
 
+// ✅ New route for tasker form
+app.use('/api/taskers', taskerRoutes);
+
+// ✅ Default route
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');
 });
 
+// ✅ Server listening
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
