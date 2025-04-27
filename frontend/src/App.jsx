@@ -18,6 +18,7 @@ import UserHeader from "./components/header/Userheader";
 import AdminDashboard from "./pages/admin/Admindashboard";
 import ClientForm from "./pages/clientform/Clientform";
 import AvailableWorkers from "./pages/availableworkers/workers";
+import UserAvailableServices from "./pages/servicerequest/Servicerequest";
 
 function App() {
   return (
@@ -39,7 +40,8 @@ function App() {
         <Route path="/userhome" element={<ProtectedRoute element={<UserHome />} />} />
         <Route path="/userheader" element={<ProtectedRoute element={<UserHeader />} />} />
         <Route path="/clientform" element={<ProtectedRoute element={<ClientForm />} />} />
-        <Route path="/availableworkers" element={<ProtectedRoute element={<AvailableWorkers />} />} />
+        <Route path="/availableworkers" element={<ProtectedRoute element={<AvailableWorkers />} />} />\
+        <Route path="/servicerequest" element={<ProtectedRoute element={<UserAvailableServices />} />} />
       </Routes>
     </Router>
   );
