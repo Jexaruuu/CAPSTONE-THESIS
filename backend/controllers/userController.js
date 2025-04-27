@@ -116,22 +116,29 @@ exports.updatePassword = async (req, res) => {
 
 // Delete user
 exports.deleteUser = async (req, res) => {
-  const { id } = req.params;
-
-  if (!req.session.userId || req.session.userId !== id) {
-    return res.status(403).json({ message: "Not authorized to delete this account" });
-  }
-
-  try {
-    await db.query("DELETE FROM users WHERE id = ?", [id]);
-    await db.query("ALTER TABLE users AUTO_INCREMENT = 1");
-
-    res.json({ message: "User deleted successfully and ID reset to 1" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error deleting user" });
-  }
-};
+    const { id } = req.params;
+  
+    try {
+      if (req.session.userId && req.session.userId == id) {
+        await db.query("DELETE FROM users WHERE id = ?", [id]);
+        await db.query("ALTER TABLE users AUTO_INCREMENT = 1");
+        return res.json({ message: "User deleted successfully and ID reset to 1" });
+      }
+  
+      if (req.session.admin) {
+        await db.query("DELETE FROM users WHERE id = ?", [id]);
+        await db.query("ALTER TABLE users AUTO_INCREMENT = 1");
+        return res.json({ message: "Admin deleted the user successfully and ID reset to 1" });
+      }
+  
+      return res.status(403).json({ message: "Not authorized to delete this account" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error deleting user" });
+    }
+  };
+  
+  
 
 // ✅ NEW: Fetch all users
 exports.getAllUsers = async (req, res) => {

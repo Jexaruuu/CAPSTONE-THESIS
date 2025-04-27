@@ -41,34 +41,34 @@ const AdminDashboard = () => {
     }
   }, [navigate]);
 
+  const fetchCounts = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/count/count');
+      setCounts(response.data);
+    } catch (error) {
+      console.error('Error fetching counts:', error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/users');
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  const fetchAdmins = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/admins');
+      setAdmins(response.data);
+    } catch (error) {
+      console.error('Error fetching admins:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/count/count');
-        setCounts(response.data);
-      } catch (error) {
-        console.error('Error fetching counts:', error);
-      }
-    };
-
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/users');
-        setUsers(response.data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    const fetchAdmins = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/admins');
-        setAdmins(response.data);
-      } catch (error) {
-        console.error('Error fetching admins:', error);
-      }
-    };
-
     fetchCounts();
     fetchUsers();
     fetchAdmins();
@@ -85,28 +85,32 @@ const AdminDashboard = () => {
   const handleDeleteUser = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        await axios.delete(`http://localhost:3000/api/users/${userId}`);
+        await axios.delete(`http://localhost:3000/api/user/${userId}`, { withCredentials: true });
         setUsers(users.filter(user => user.id !== userId));
       } catch (error) {
         console.error("Error deleting user:", error);
       }
     }
   };
+  
+  
 
   const handleDeleteAdmin = async (adminId) => {
     if (window.confirm("Are you sure you want to delete this admin?")) {
       try {
-        await axios.delete(`http://localhost:3000/api/admins/${adminId}`);
-        setAdmins(admins.filter(admin => admin.id !== adminId));
+        await axios.delete(`http://localhost:3000/api/admin/${adminId}`, { withCredentials: true });
+        fetchAdmins();
+        fetchCounts();
       } catch (error) {
         console.error("Error deleting admin:", error);
       }
     }
   };
+  
 
   const handleViewProfile = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/users/${userId}`);
+      const response = await axios.get(`http://localhost:3000/api/user/${userId}`);
       setSelectedProfile(response.data);
       setModalOpen(true);
     } catch (error) {
