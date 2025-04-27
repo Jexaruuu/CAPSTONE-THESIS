@@ -1,10 +1,10 @@
 const logout = (req, res) => {
     if (req.session.user) {
-        delete req.session.user; // 🔥 Only remove the user part
+        delete req.session.user;  // ✅ Only delete user part
     }
-    res.clearCookie("connect.sid");
-    res.status(200).json({ message: "Logout successful" });
+    return res.status(200).json({ message: "Logout successful" });
 };
+
 
 
 module.exports = { logout };
