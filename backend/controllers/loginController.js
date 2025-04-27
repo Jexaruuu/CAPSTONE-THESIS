@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const db = require('../db'); 
+const db = require('../db');
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -11,24 +11,32 @@ const login = async (req, res) => {
     try {
         const [user] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
 
-if (!user || user.length === 0) {
-    return res.status(401).json({ message: "Invalid email or password" });
-}
+        if (!user || user.length === 0) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
 
-const validPassword = await bcrypt.compare(password, user[0].password);
+        const validPassword = await bcrypt.compare(password, user[0].password);
 
-if (!validPassword) {
-    return res.status(401).json({ message: "Invalid email or password" });
-}
+        if (!validPassword) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
 
-        res.status(200).json({ 
-            message: "Login successful", 
-            user: { 
-                id: user[0].id, 
-                email: user[0].email, 
-                firstName: user[0].first_name, 
-                lastName: user[0].last_name 
-            } 
+        // ✅ Save the logged-in user info inside session
+        req.session.user = {
+            id: user[0].id,
+            email: user[0].email,
+            firstName: user[0].first_name,
+            lastName: user[0].last_name
+        };
+
+        res.status(200).json({
+            message: "Login successful",
+            user: {
+                id: user[0].id,
+                email: user[0].email,
+                firstName: user[0].first_name,
+                lastName: user[0].last_name
+            }
         });
 
     } catch (error) {

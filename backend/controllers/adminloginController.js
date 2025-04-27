@@ -20,7 +20,11 @@ const adminLogin = async (req, res) => {
             return res.status(401).json({ message: "Invalid username or password" });
         }
 
-        req.session.adminId = admin[0].id;
+        req.session.admin = {
+            id: admin[0].id,
+            username: admin[0].username
+        };
+        
 
         res.status(200).json({
             success: true, // ✅ Added this line
