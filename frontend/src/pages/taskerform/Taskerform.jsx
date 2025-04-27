@@ -49,38 +49,63 @@ const FormField = ({ label, name, register, errors, type = "text", required = fa
   </div>
 );
 
-const FileUpload = ({ label, name, register, errors, required = false, hint }) => (
-  <div className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-all">
-    <label className="block font-medium text-gray-700 mb-2">
-      {label} {required && <span className="text-red-500">*</span>}
-    </label>
-    <div className="flex items-center justify-center w-full">
-      <label className="flex flex-col w-full h-32 border-2 border-dashed hover:border-blue-400 hover:bg-gray-50 transition-all rounded-lg cursor-pointer">
-        <div className="flex flex-col items-center justify-center pt-7">
-          <i className="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-          <p className="text-sm text-gray-500">
-            <span className="font-semibold">Click to upload</span> or drag and drop
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            PDF, JPG, or PNG (max. 5MB)
-          </p>
-        </div>
-        <input 
-          type="file" 
-          {...register(name, required && { required: `${label} is required` })} 
-          className="hidden" 
-          accept=".pdf,.jpg,.jpeg,.png"
-        />
+const FileUpload = ({ label, name, register, errors, watch, required = false, hint }) => {
+  const selectedFile = watch(name)?.[0];
+  const isImage = selectedFile && selectedFile.type.startsWith("image/");
+
+  return (
+    <div className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-all">
+      <label className="block font-medium text-gray-700 mb-2">
+        {label} {required && <span className="text-red-500">*</span>}
       </label>
+      <div className="flex items-center justify-center w-full">
+        <label
+          className={`flex flex-col w-full ${
+            isImage ? "h-60" : "h-32"  // 👈 h-60 for image uploaded (medium height)
+          } border-2 border-dashed hover:border-blue-400 hover:bg-gray-50 transition-all rounded-lg cursor-pointer relative overflow-hidden`}
+        >
+          {selectedFile ? (
+            isImage ? (
+              <img
+                src={URL.createObjectURL(selectedFile)}
+                alt="Preview"
+                className="w-full h-full object-cover rounded-lg" // 👈 object-cover makes it fit nicely inside the box
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center pt-7">
+                <i className="fas fa-file-upload text-3xl text-blue-500 mb-2"></i>
+                <p className="text-sm font-semibold text-gray-700">{selectedFile.name}</p>
+                <p className="text-xs text-gray-500 mt-1">Uploaded</p>
+              </div>
+            )
+          ) : (
+            <div className="flex flex-col items-center justify-center pt-7">
+              <i className="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+              <p className="text-sm text-gray-500">
+                <span className="font-semibold">Click to upload</span> or drag and drop
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                PDF, JPG, or PNG (max. 5MB)
+              </p>
+            </div>
+          )}
+          <input 
+            type="file" 
+            {...register(name, required && { required: `${label} is required` })} 
+            className="hidden" 
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+        </label>
+      </div>
+      {hint && <p className="text-sm text-gray-500 mt-2">{hint}</p>}
+      {errors[name] && (
+        <p className="text-red-500 text-sm mt-1 flex items-center">
+          <i className="fas fa-exclamation-circle mr-1"></i> {errors[name].message}
+        </p>
+      )}
     </div>
-    {hint && <p className="text-sm text-gray-500 mt-2">{hint}</p>}
-    {errors[name] && (
-      <p className="text-red-500 text-sm mt-1 flex items-center">
-        <i className="fas fa-exclamation-circle mr-1"></i> {errors[name].message}
-      </p>
-    )}
-  </div>
-);
+  );
+};
 
 const CheckboxField = ({ id, label, description, register, errors, required = false }) => (
   <>
@@ -198,6 +223,19 @@ const TaskerForm = () => {
 
       {/* Application Form Container */}
       <div className="max-w-6xl mx-auto px-4 py-8">
+
+  {/* Notifications */}
+  {submitStatus === "success" && (
+    <div className="mb-6 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300 flex items-center">
+      <i className="fas fa-check-circle mr-2"></i> Application submitted successfully!
+    </div>
+  )}
+  {submitStatus === "error" && (
+    <div className="mb-6 p-4 rounded-lg bg-red-100 text-red-700 border border-red-300 flex items-center">
+      <i className="fas fa-exclamation-circle mr-2"></i> Please complete all required fields correctly.
+    </div>
+  )}
+
         {/* Form Navigation */}
         <div className="bg-white rounded-lg shadow-sm mb-8 sticky top-4 z-10 flex justify-center">
           <nav className="flex overflow-x-auto">
@@ -407,40 +445,45 @@ const TaskerForm = () => {
             
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FileUpload 
-                  label="Primary ID (Front)" 
-                  name="primaryIDFront" 
-                  register={register} 
-                  errors={errors} 
-                  required 
-                  hint="UMID, Passport, Driver's License, etc."
-                />
+              <FileUpload 
+  label="Primary ID (Front)" 
+  name="primaryIDFront" 
+  register={register} 
+  errors={errors} 
+  watch={watch} // 👈 ADD THIS!
+  required 
+  hint="UMID, Passport, Driver's License, etc."
+/>
 
-                <FileUpload 
-                  label="Primary ID (Back)" 
-                  name="primaryIDBack" 
-                  register={register} 
-                  errors={errors}
-                />
+
+<FileUpload 
+  label="Primary ID (Back)" 
+  name="primaryIDBack" 
+  register={register} 
+  errors={errors}
+  watch={watch}
+    hint="UMID, Passport, Driver's License, etc."
+/>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FileUpload 
-                  label="Secondary ID" 
-                  name="secondaryID" 
-                  register={register} 
-                  errors={errors} 
-                  required 
-                  hint="SSS ID, PhilHealth ID, etc."
-                />
+              <FileUpload 
+  label="Secondary ID" 
+  name="secondaryID" 
+  register={register} 
+  errors={errors}
+  watch={watch}
+    hint="UMID, Passport, Driver's License, etc."
+/>
 
-                <FileUpload 
-                  label="NBI/Police Clearance" 
-                  name="clearance" 
-                  register={register} 
-                  errors={errors} 
-                  required
-                />
+<FileUpload 
+  label="NBI/Police Clearance" 
+  name="clearance" 
+  register={register} 
+  errors={errors}
+  watch={watch}
+  hint="Barangay Certificate, Utility Bill"
+/>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -449,7 +492,7 @@ const TaskerForm = () => {
                   name="proofOfAddress" 
                   register={register} 
                   errors={errors} 
-                  required 
+                  watch={watch}
                   hint="Barangay Certificate, Utility Bill"
                 />
 
@@ -458,7 +501,8 @@ const TaskerForm = () => {
                   name="medicalCertificate" 
                   register={register} 
                   errors={errors} 
-                  required
+                  watch={watch}
+                  hint="Barangay Certificate, Utility Bill"
                 />
               </div>
 
@@ -467,6 +511,7 @@ const TaskerForm = () => {
                 name="certificates" 
                 register={register} 
                 errors={errors} 
+                watch={watch}
                 hint="TESDA, Training Certificates, etc."
               />
             </div>
