@@ -32,7 +32,6 @@ app.use(fileUpload({
   tempFileDir: '/tmp/',
 }));
 
-
 // Then Body Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -56,13 +55,13 @@ app.use(session({
 app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', logoutRoutes); 
-app.use('/api', userRoutes);
+app.use('/api', userRoutes);  // ✅ This now includes /users (fetch all) too!
 app.use('/api', adminsignupRoutes); 
 app.use('/api', adminloginRoutes);
 app.use('/api', adminlogoutRoutes);
-app.use('/api', adminRoutes);
+app.use('/api', adminRoutes);  // ✅ This now includes /admins and delete /admin/:id
 app.use('/api/taskers', taskerRoutes);
-app.use('/api/clients', clientRoutes); // ✅ no problem here
+app.use('/api/clients', clientRoutes);
 
 // Default Route
 app.get('/', (req, res) => {
