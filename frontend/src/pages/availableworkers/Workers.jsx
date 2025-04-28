@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
-import { useNavigate } from "react-router-dom"; // ✅ NEW for navigation
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const UserAvailableWorkers = () => {
@@ -9,7 +9,16 @@ const UserAvailableWorkers = () => {
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [approvedWorkers, setApprovedWorkers] = useState([]);
-  const navigate = useNavigate(); // ✅ React Router navigation
+  const navigate = useNavigate();
+
+  // ✅ For hero section image transition
+  const heroImages = [
+    "/carwash.jpg",
+    "/plumber.jpg",
+    "/electrician.jpg",
+  ];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [fade, setFade] = useState(true);
 
   const categories = ["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"];
 
@@ -24,6 +33,17 @@ const UserAvailableWorkers = () => {
 
   useEffect(() => {
     fetchApprovedWorkers();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+        setFade(true);
+      }, 500);
+    }, 5000); 
+    return () => clearInterval(interval);
   }, []);
 
   const filteredWorkers =
@@ -41,26 +61,37 @@ const UserAvailableWorkers = () => {
     setSelectedWorker(null);
   };
 
-  // ✅ New: Handle Hire Now click
   const handleHireNow = (worker) => {
-    navigate(`/hire/${worker.id}`, { state: { worker } }); 
+    navigate(`/hire/${worker.id}`, { state: { worker } });
   };
 
   return (
     <div className="font-sans">
       <Navigation />
 
-      {/* Header */}
-      <div className="relative h-64 flex items-center justify-center text-white text-center px-4"
+      {/* ✅ New Hero Section with Transition */}
+      <div
+        className="relative w-full h-96 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 flex flex-col justify-center items-center"
         style={{
-          backgroundImage: "url('/homerepair.jpg')",
+          backgroundImage: `url(${heroImages[currentImageIndex]})`,
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          opacity: fade ? 1 : 0,
+          boxShadow: "inset 0 0 0 2000px rgba(0, 0, 0, 0.6)"
         }}
       >
-        <h1 className="text-4xl md:text-5xl font-bold drop-shadow-lg">Available Workers</h1>
+        <section className="relative text-center flex flex-col justify-center items-center text-white w-full h-auto py-10 z-10 px-4">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              Find Trusted Home Service Workers
+            </h1>
+            <p className="text-xl mb-8 text-gray-200">
+              Connect with skilled workers ready to help you with your home needs.
+            </p>
+          </div>
+        </section>
       </div>
 
+      {/* Main Section */}
       <div className="flex max-w-7xl mx-auto px-6 py-12 gap-8">
         {/* Sidebar */}
         <div className="w-full md:w-1/4">
@@ -81,75 +112,75 @@ const UserAvailableWorkers = () => {
         </div>
 
         {/* Workers Grid */}
-<div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-  {filteredWorkers.map((worker, index) => (
-    <div
-      key={index}
-      className="bg-white rounded-2xl shadow-xl p-6 flex flex-col justify-between text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl border border-gray-100"
-    >
-      <div>
-        <img
-          src={`http://localhost:3000${worker.profilePicture}`}
-          alt={worker.fullName}
-          className="mx-auto mb-4 h-32 w-32 object-cover rounded-full border-4 border-blue-100 shadow"
-        />
-        <h3 className="text-lg font-bold mb-1 text-gray-800">{worker.fullName}</h3>
-        <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full mb-2">
-          {worker.jobType}
-        </span>
+        <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredWorkers.map((worker, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-2xl shadow-xl p-6 flex flex-col justify-between text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl border border-gray-100"
+            >
+              <div>
+                <img
+                  src={`http://localhost:3000${worker.profilePicture}`}
+                  alt={worker.fullName}
+                  className="mx-auto mb-4 h-32 w-32 object-cover rounded-full border-4 border-blue-100 shadow"
+                />
+                <h3 className="text-lg font-bold mb-1 text-gray-800">{worker.fullName}</h3>
+                <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full mb-2">
+                  {worker.jobType}
+                </span>
 
-        {/* Service Categories Badges */}
-        {worker.serviceCategory && (
-          <div className="flex flex-wrap justify-center gap-1 mb-2">
-            {Array.isArray(worker.serviceCategory)
-              ? worker.serviceCategory.map((service, idx) => (
-                  <span
-                    key={idx}
-                    className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
-                  >
-                    {service}
-                  </span>
-                ))
-              : worker.serviceCategory.split(',').map((service, idx) => (
-                  <span
-                    key={idx}
-                    className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
-                  >
-                    {service.trim()}
-                  </span>
-                ))}
-          </div>
-        )}
+                {/* Service Categories Badges */}
+                {worker.serviceCategory && (
+                  <div className="flex flex-wrap justify-center gap-1 mb-2">
+                    {Array.isArray(worker.serviceCategory)
+                      ? worker.serviceCategory.map((service, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
+                          >
+                            {service}
+                          </span>
+                        ))
+                      : worker.serviceCategory.split(',').map((service, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
+                          >
+                            {service.trim()}
+                          </span>
+                        ))}
+                  </div>
+                )}
 
-        <div className="text-gray-600 text-sm space-y-1">
-          <p>Age: {worker.age}</p>
-          <p>Gender: {worker.gender}</p>
-          <p>Experience: {worker.experience} years</p>
-          <p>Skills: {worker.skills}</p>
+                <div className="text-gray-600 text-sm space-y-1">
+                  <p>Age: {worker.age}</p>
+                  <p>Gender: {worker.gender}</p>
+                  <p>Experience: {worker.experience} years</p>
+                  <p>Skills: {worker.skills}</p>
+                </div>
+
+                <p className="text-green-600 font-bold text-lg mt-2">
+                  ₱{worker.pricePerHour} <span className="text-sm">/ hour</span>
+                </p>
+              </div>
+
+              <div className="mt-6 flex justify-center gap-4">
+                <button
+                  onClick={() => openModal(worker)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-xl shadow"
+                >
+                  View Profile
+                </button>
+                <button
+                  onClick={() => handleHireNow(worker)}
+                  className="bg-green-600 hover:bg-green-700 text-white text-sm px-5 py-2 rounded-xl shadow"
+                >
+                  Hire Now
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-
-        <p className="text-green-600 font-bold text-lg mt-2">
-          ₱{worker.pricePerHour} <span className="text-sm">/ hour</span>
-        </p>
-      </div>
-
-      <div className="mt-6 flex justify-center gap-4">
-        <button
-          onClick={() => openModal(worker)}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-xl shadow"
-        >
-          View Profile
-        </button>
-        <button
-          onClick={() => handleHireNow(worker)}
-          className="bg-green-600 hover:bg-green-700 text-white text-sm px-5 py-2 rounded-xl shadow"
-        >
-          Hire Now
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
       </div>
 
       {/* Modal */}
@@ -172,7 +203,7 @@ const UserAvailableWorkers = () => {
               <p className="text-gray-700 text-sm mb-1">Age: {selectedWorker.age}</p>
               <p className="text-gray-700 text-sm mb-1">Gender: {selectedWorker.gender}</p>
               <p className="text-blue-600 font-semibold mb-1">{selectedWorker.jobType}</p>
-              <p className="text-blue-600 font-medium text-sm mb-1">{selectedWorker.serviceCategory}</p> {/* ✅ NEW line */}
+              <p className="text-blue-600 font-medium text-sm mb-1">{selectedWorker.serviceCategory}</p>
               <p className="text-gray-600 text-sm mb-1">Experience: {selectedWorker.experience} years</p>
               <p className="text-gray-600 text-sm mb-2">Skills: {selectedWorker.skills}</p>
               <p className="text-green-700 font-bold text-lg">₱{selectedWorker.pricePerHour} / hour</p>

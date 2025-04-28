@@ -77,15 +77,20 @@ const approveTasker = async (req, res) => {
   }
 };
 
-// 🔥 Reject and delete tasker
+// 🔥 Reject and delete tasker (and also delete related data)
 const rejectTasker = async (req, res) => {
   const { id } = req.params;
   try {
+    // Delete related data first to avoid foreign key issues
+    await db.query('DELETE FROM tasker_documents WHERE id = ?', [id]);
+    await db.query('DELETE FROM tasker_government WHERE id = ?', [id]);
+    await db.query('DELETE FROM tasker_professional WHERE id = ?', [id]);
     await db.query('DELETE FROM tasker_personal WHERE id = ?', [id]);
-    res.json({ message: 'Tasker application rejected and deleted successfully' });
+
+    res.json({ message: 'Tasker and related data rejected and deleted successfully' });
   } catch (error) {
     console.error('Error rejecting and deleting tasker:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error while rejecting tasker' });
   }
 };
 

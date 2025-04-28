@@ -160,10 +160,15 @@ const AdminDashboard = () => {
 
   const handleRejectTasker = async (id) => {
     if (window.confirm("Reject this tasker?")) {
-      await axios.put(`http://localhost:3000/api/taskers/reject/${id}`);
-      fetchTaskers();
+      try {
+        await axios.delete(`http://localhost:3000/api/taskers/reject/${id}`);
+        fetchTaskers();
+      } catch (error) {
+        console.error("Error rejecting tasker:", error);
+      }
     }
   };
+  
 
   const getStatusBadge = (status) => {
     if (status === "approved") return <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>;
