@@ -1,4 +1,4 @@
-const { createTasker } = require('../models/taskerModel');
+const { createTasker, fetchTaskersWithFullInfo } = require('../models/taskerModel');
 const db = require('../db');
 const path = require('path');
 const fs = require('fs');
@@ -150,6 +150,17 @@ const getAllApprovedTaskers = async (req, res) => {
   }
 };
 
+// ✅ New controller: Get taskers with full info
+const getTaskersWithFullInfo = async (req, res) => {
+  try {
+    const taskers = await fetchTaskersWithFullInfo();
+    res.json(taskers);
+  } catch (error) {
+    console.error('Error fetching taskers with full info:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // 💰 Reasonable price generator
 const getPricePerHour = (jobType) => {
   if (!jobType) return 200; // fallback
@@ -169,5 +180,6 @@ module.exports = {
   approveTasker,
   rejectTasker,
   getTaskerProfile,
-  getAllApprovedTaskers // ✅ Added without touching existing
+  getAllApprovedTaskers,
+  getTaskersWithFullInfo // ✅ Added without touching existing
 };

@@ -49,4 +49,27 @@ const createTasker = async (taskerData) => {
   ]);
 };
 
-module.exports = { createTasker };
+// ✅ New: Fetch taskers with personal and professional info
+const fetchTaskersWithFullInfo = async () => {
+  const [taskers] = await db.query(`
+    SELECT 
+      tp.id,
+      tp.fullName,
+      tp.age,
+      tp.gender,
+      tp.profilePicture,
+      tf.jobType,
+      tf.serviceCategory,
+      tf.experience
+    FROM 
+      tasker_personal tp
+    LEFT JOIN 
+      tasker_professional tf ON tp.id = tf.id
+  `);
+  return taskers;
+};
+
+module.exports = { 
+  createTasker,
+  fetchTaskersWithFullInfo // ✅ export it
+};

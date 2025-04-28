@@ -114,7 +114,7 @@ const handleViewServiceRequest = (request) => {
 
   const fetchTaskers = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/taskers');
+      const response = await axios.get('http://localhost:3000/api/taskers/fullinfo');
       setTaskers(response.data);
     } catch (error) {
       console.error('Error fetching taskers:', error);
@@ -595,7 +595,6 @@ const handleRejectServiceRequest = async (serviceId) => {
       Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.
     </p>
 
-    {/* ✨ Final Fix: no max-w, just w-full inside tight grid */}
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
       {taskers.map((tasker) => (
         <div
@@ -615,18 +614,26 @@ const handleRejectServiceRequest = async (serviceId) => {
           <h3 className="text-lg font-bold text-gray-800 mb-1 text-center break-words">
             {tasker.fullName}
           </h3>
-          <p className="text-gray-600 mb-1 text-sm">
-            Age: <span className="font-semibold">{tasker.age}</span>
+          <p className="text-gray-600 text-sm text-center">
+            Gender: <span className="font-semibold">{tasker.gender || "N/A"}</span>
           </p>
-          <p className="text-blue-700 font-semibold text-sm mb-2">
-            {tasker.jobType}
+          <p className="text-gray-600 text-sm text-center">
+            Job: <span className="font-semibold">{tasker.jobType || "N/A"}</span>
+          </p>
+          <p className="text-gray-600 text-sm text-center">
+            Category: <span className="font-semibold">{tasker.serviceCategory || "N/A"}</span>
+          </p>
+          <p className="text-gray-600 text-sm text-center">
+            Experience: <span className="font-semibold">{tasker.experience || "N/A"} yrs</span>
           </p>
 
           {/* Status Badge */}
-          <div className="mb-3">{getStatusBadge(tasker.status)}</div>
+          <div className="mb-3 mt-2">
+            {getStatusBadge(tasker.status)}
+          </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-2 w-full mt-4">
             <button
               onClick={() => handleViewTaskerProfile(tasker.id)}
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
@@ -651,6 +658,7 @@ const handleRejectServiceRequest = async (serviceId) => {
     </div>
   </div>
 )}
+
 
 {active === "ServiceRequests" && (
   <div>
