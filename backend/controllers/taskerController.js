@@ -87,13 +87,15 @@ const approveTasker = async (req, res) => {
 const rejectTasker = async (req, res) => {
   const { id } = req.params;
   try {
-    await db.query('UPDATE tasker_personal SET status = "rejected" WHERE id = ?', [id]);
-    res.json({ message: 'Tasker rejected successfully' });
+    // Delete the tasker from the database instead of just rejecting
+    await db.query('DELETE FROM tasker_personal WHERE id = ?', [id]);
+    res.json({ message: 'Tasker application rejected and deleted successfully' });
   } catch (error) {
-    console.error('Error rejecting tasker:', error);
+    console.error('Error rejecting and deleting tasker:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // 🔥 NEW: View full tasker profile from 4 tables
 const getTaskerProfile = async (req, res) => {
