@@ -16,6 +16,9 @@ const AdminDashboard = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // ✅ New for Applications
+  const [taskers, setTaskers] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,10 +71,21 @@ const AdminDashboard = () => {
     }
   };
 
+  // ✅ New Fetch Taskers for Applications
+  const fetchTaskers = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/taskers');
+      setTaskers(response.data);
+    } catch (error) {
+      console.error('Error fetching taskers:', error);
+    }
+  };
+
   useEffect(() => {
     fetchCounts();
     fetchUsers();
     fetchAdmins();
+    fetchTaskers(); // ✅ Fetch Taskers also
   }, []);
 
   const handleLogout = () => {
@@ -92,8 +106,6 @@ const AdminDashboard = () => {
       }
     }
   };
-  
-  
 
   const handleDeleteAdmin = async (adminId) => {
     if (window.confirm("Are you sure you want to delete this admin?")) {
@@ -106,7 +118,6 @@ const AdminDashboard = () => {
       }
     }
   };
-  
 
   const handleViewProfile = async (userId) => {
     try {
@@ -126,6 +137,27 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Failed to fetch admin profile:", error);
     }
+  };
+
+  // ✅ New Approve / Reject Tasker
+  const handleApproveTasker = async (id) => {
+    if (window.confirm("Approve this tasker?")) {
+      await axios.put(`http://localhost:3000/api/taskers/approve/${id}`);
+      fetchTaskers();
+    }
+  };
+
+  const handleRejectTasker = async (id) => {
+    if (window.confirm("Reject this tasker?")) {
+      await axios.put(`http://localhost:3000/api/taskers/reject/${id}`);
+      fetchTaskers();
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    if (status === "approved") return <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>;
+    if (status === "rejected") return <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>;
+    return <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>;
   };
 
   return (
@@ -165,8 +197,8 @@ const AdminDashboard = () => {
         </aside>
 
         {/* Main content */}
-        {/* [TO BE CONTINUED NEXT MESSAGE] */}
         <main className="flex-1 p-6 relative">
+          {/* Profile Modal (existing) */}
           {modalOpen && selectedProfile && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md space-y-4 relative">
@@ -186,7 +218,8 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          <div className="absolute top-6 right-6 text-lg font-semibold text-gray-700 flex items-center space-x-4">
+            {/* Clock & Date */}
+            <div className="absolute top-6 right-6 text-lg font-semibold text-gray-700 flex items-center space-x-4">
             <div>🕒 {clock}</div>
             <div>📅 {date}</div>
           </div>
@@ -322,7 +355,61 @@ const AdminDashboard = () => {
               </>
             )}
 
-            {active === "Applications" && <p>Submitted service applications will appear here.</p>}
+             {/* ✨ New Applications View ✨ */}
+             {active === "Applications" && (
+  <div>
+    <p className="mb-6">Manage the users and admins easily from here.</p>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-start">
+      {taskers.map((tasker) => (
+        <div
+          key={tasker.id}
+          className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-full transition-transform transform hover:scale-[1.02] hover:shadow-2xl duration-300"
+        >
+          {/* Profile Picture */}
+          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-200 shadow-md mb-4">
+            <img
+              src={`http://localhost:3000${tasker.profilePicture}`}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Text Info */}
+          <h3 className="text-xl font-bold text-gray-800 mb-1 text-center break-words">{tasker.fullName}</h3>
+          <p className="text-gray-600 mb-1">Age: <span className="font-semibold">{tasker.age}</span></p>
+          <p className="text-blue-700 font-semibold mb-3">{tasker.jobType}</p>
+          
+          {/* Status Badge */}
+          <div className="mb-4">{getStatusBadge(tasker.status)}</div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-2 w-full">
+            <button
+              onClick={() => setSelectedProfile(tasker)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition-all duration-300 w-full"
+            >
+              View
+            </button>
+            <button
+              onClick={() => handleApproveTasker(tasker.id)}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition-all duration-300 w-full"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleRejectTasker(tasker.id)}
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-lg transition-all duration-300 w-full"
+            >
+              Reject
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+
             {active === "ServiceRequests" && <p>All submitted service requests will be displayed here.</p>}
             {active === "Settings" && <p>Update admin preferences or system config.</p>}
           </div>

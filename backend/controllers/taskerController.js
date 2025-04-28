@@ -1,4 +1,5 @@
 const { createTasker } = require('../models/taskerModel');
+const db = require('../db');  // ✅ Needed to fetch/update taskers
 const path = require('path');
 const fs = require('fs');
 
@@ -59,5 +60,42 @@ const submitTaskerForm = async (req, res) => {
   }
 };
 
-// ✅ Export the controller
-module.exports = { submitTaskerForm };
+// 🔥 Updated: Fetch from tasker_personal
+const getAllTaskers = async (req, res) => {
+  try {
+    const [taskers] = await db.query('SELECT * FROM tasker_personal');
+    res.json(taskers);
+  } catch (error) {
+    console.error('Error fetching taskers:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const approveTasker = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('UPDATE tasker_personal SET status = "approved" WHERE id = ?', [id]);
+    res.json({ message: 'Tasker approved successfully' });
+  } catch (error) {
+    console.error('Error approving tasker:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const rejectTasker = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('UPDATE tasker_personal SET status = "rejected" WHERE id = ?', [id]);
+    res.json({ message: 'Tasker rejected successfully' });
+  } catch (error) {
+    console.error('Error rejecting tasker:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = {
+  submitTaskerForm,
+  getAllTaskers,
+  approveTasker,
+  rejectTasker
+};
