@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import { useNavigate } from "react-router-dom"; // ✅ NEW for navigation
 import axios from "axios";
 
 const UserAvailableWorkers = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [approvedWorkers, setApprovedWorkers] = useState([]); // ✅ For dynamic workers
+  const [approvedWorkers, setApprovedWorkers] = useState([]);
+  const navigate = useNavigate(); // ✅ React Router navigation
 
   const categories = ["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"];
 
@@ -27,7 +29,7 @@ const UserAvailableWorkers = () => {
   const filteredWorkers =
     selectedCategory === "All"
       ? approvedWorkers
-      : approvedWorkers.filter((worker) => worker.jobType === selectedCategory);
+      : approvedWorkers.filter((worker) => worker.jobType?.toLowerCase() === selectedCategory.toLowerCase());
 
   const openModal = (worker) => {
     setSelectedWorker(worker);
@@ -39,10 +41,17 @@ const UserAvailableWorkers = () => {
     setSelectedWorker(null);
   };
 
+  // ✅ New: Handle Hire Now click
+  const handleHireNow = (worker) => {
+    navigate(`/hire/${worker.id}`, { state: { worker } }); 
+    // You can later create a /hire/:id page and receive worker info using `useLocation`
+  };
+
   return (
     <div className="font-sans">
       <Navigation />
 
+      {/* Header */}
       <div className="relative h-64 flex items-center justify-center text-white text-center px-4"
         style={{
           backgroundImage: "url('/homerepair.jpg')",
@@ -75,7 +84,7 @@ const UserAvailableWorkers = () => {
         {/* Workers Grid */}
         <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredWorkers.map((worker, index) => (
-            <div key={index} className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between text-center h-[480px]">
+            <div key={index} className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between text-center h-[540px]">
               <div>
                 <img
                   src={`http://localhost:3000${worker.profilePicture}`}
@@ -85,6 +94,7 @@ const UserAvailableWorkers = () => {
                 <h3 className="text-lg font-semibold mb-1">{worker.fullName}</h3>
                 <p className="text-yellow-700 font-medium mb-1">{worker.jobType}</p>
                 <p className="text-gray-600 text-sm mb-1">Age: {worker.age}</p>
+                <p className="text-gray-600 text-sm mb-1">Gender: {worker.gender}</p>
                 <p className="text-gray-600 text-sm mb-1">Experience: {worker.experience} years</p>
                 <p className="text-gray-600 text-sm mb-2">Skills: {worker.skills}</p>
                 <p className="text-green-700 font-bold">₱{worker.pricePerHour} / hour</p>
@@ -97,6 +107,7 @@ const UserAvailableWorkers = () => {
                   View Profile
                 </button>
                 <button
+                  onClick={() => handleHireNow(worker)}
                   className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
                 >
                   Hire Now
@@ -109,7 +120,7 @@ const UserAvailableWorkers = () => {
 
       {/* Modal */}
       {showModal && selectedWorker && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-md p-6 rounded-lg relative">
             <button
               onClick={closeModal}
@@ -118,20 +129,21 @@ const UserAvailableWorkers = () => {
               &times;
             </button>
             <div className="text-center">
-  <img
-    src={`http://localhost:3000${worker.profilePicture}`}
-    alt={worker.fullName}
-    className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
-  />
-  <h3 className="text-lg font-bold mb-1">{worker.fullName}</h3>
-  <p className="text-gray-700 text-sm mb-1">Age: {worker.age}</p>
-  <p className="text-gray-700 text-sm mb-1">Gender: {worker.gender}</p>
-  <p className="text-blue-600 font-semibold mb-1">{worker.jobType}</p>
-  <p className="text-gray-600 text-sm mb-1">Experience: {worker.experience} years</p>
-  <p className="text-gray-600 text-sm mb-2">Skills: {worker.skills}</p>
-  <p className="text-green-600 font-bold text-lg">₱{worker.pricePerHour} / hour</p>
+              <img
+                src={`http://localhost:3000${selectedWorker.profilePicture}`}
+                alt={selectedWorker.fullName}
+                className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
+              />
+              <h3 className="text-xl font-bold mb-1">{selectedWorker.fullName}</h3>
+              <p className="text-gray-700 text-sm mb-1">Age: {selectedWorker.age}</p>
+              <p className="text-gray-700 text-sm mb-1">Gender: {selectedWorker.gender}</p>
+              <p className="text-blue-600 font-semibold mb-1">{selectedWorker.jobType}</p>
+              <p className="text-gray-600 text-sm mb-1">Experience: {selectedWorker.experience} years</p>
+              <p className="text-gray-600 text-sm mb-2">Skills: {selectedWorker.skills}</p>
+              <p className="text-green-700 font-bold text-lg">₱{selectedWorker.pricePerHour} / hour</p>
               <button
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
+                onClick={() => handleHireNow(selectedWorker)}
+                className="mt-4 bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 text-sm"
               >
                 Hire Now
               </button>
