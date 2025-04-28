@@ -13,11 +13,10 @@ const AdminDashboard = () => {
   const [counts, setCounts] = useState({ admins: 0, users: 0 });
   const [users, setUsers] = useState([]);
   const [admins, setAdmins] = useState([]);
+  const [taskers, setTaskers] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-
-  // ✅ New for Applications
-  const [taskers, setTaskers] = useState([]);
+  const [isTaskerProfile, setIsTaskerProfile] = useState(false); // ✅ New state to track if tasker
 
   const navigate = useNavigate();
 
@@ -71,7 +70,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // ✅ New Fetch Taskers for Applications
   const fetchTaskers = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/taskers');
@@ -85,7 +83,7 @@ const AdminDashboard = () => {
     fetchCounts();
     fetchUsers();
     fetchAdmins();
-    fetchTaskers(); // ✅ Fetch Taskers also
+    fetchTaskers();
   }, []);
 
   const handleLogout = () => {
@@ -123,6 +121,7 @@ const AdminDashboard = () => {
     try {
       const response = await axios.get(`http://localhost:3000/api/user/${userId}`);
       setSelectedProfile(response.data);
+      setIsTaskerProfile(false); // ✅ It is a normal user
       setModalOpen(true);
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
@@ -133,13 +132,25 @@ const AdminDashboard = () => {
     try {
       const response = await axios.get(`http://localhost:3000/api/admins/${adminId}`);
       setSelectedProfile(response.data);
+      setIsTaskerProfile(false); // ✅ It is a normal admin
       setModalOpen(true);
     } catch (error) {
       console.error("Failed to fetch admin profile:", error);
     }
   };
 
-  // ✅ New Approve / Reject Tasker
+  // ✅ New: handleViewTaskerProfile
+  const handleViewTaskerProfile = async (taskerId) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/taskers/${taskerId}`);
+      setSelectedProfile(response.data);
+      setIsTaskerProfile(true); // ✅ It is a tasker
+      setModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch tasker profile:", error);
+    }
+  };
+
   const handleApproveTasker = async (id) => {
     if (window.confirm("Approve this tasker?")) {
       await axios.put(`http://localhost:3000/api/taskers/approve/${id}`);
@@ -200,23 +211,78 @@ const AdminDashboard = () => {
         <main className="flex-1 p-6 relative">
           {/* Profile Modal (existing) */}
           {modalOpen && selectedProfile && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md space-y-4 relative">
-                <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-                <h2 className="text-2xl font-bold text-center mb-4 text-indigo-600">Profile Details</h2>
-                <div className="space-y-2 text-left text-gray-700">
-                  <p><strong>First Name:</strong> {selectedProfile.first_name}</p>
-                  <p><strong>Last Name:</strong> {selectedProfile.last_name}</p>
-                  {selectedProfile.email && <p><strong>Email:</strong> {selectedProfile.email}</p>}
-                  {selectedProfile.mobile && <p><strong>Mobile:</strong> {selectedProfile.mobile}</p>}
-                  {selectedProfile.address && <p><strong>Address:</strong> {selectedProfile.address}</p>}
-                  {selectedProfile.birth_date && <p><strong>Birth Date:</strong> {selectedProfile.birth_date}</p>}
-                  {selectedProfile.gender && <p><strong>Gender:</strong> {selectedProfile.gender}</p>}
-                  {selectedProfile.created_at && <p><strong>Joined:</strong> {new Date(selectedProfile.created_at).toLocaleDateString()}</p>}
-                </div>
-              </div>
-            </div>
-          )}
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-y-auto p-4">
+    <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-4 relative">
+      <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+      
+      {/* Title */}
+      <h2 className="text-2xl font-bold text-center mb-6 text-indigo-600">
+        {isTaskerProfile ? "Tasker Full Profile" : "Profile Details"}
+      </h2>
+
+      {/* Normal User/Admin View */}
+      {!isTaskerProfile && (
+        <div className="space-y-2 text-left text-gray-700">
+          <p><strong>First Name:</strong> {selectedProfile.first_name}</p>
+          <p><strong>Last Name:</strong> {selectedProfile.last_name}</p>
+          {selectedProfile.email && <p><strong>Email:</strong> {selectedProfile.email}</p>}
+          {selectedProfile.mobile && <p><strong>Mobile:</strong> {selectedProfile.mobile}</p>}
+          {selectedProfile.address && <p><strong>Address:</strong> {selectedProfile.address}</p>}
+          {selectedProfile.birth_date && <p><strong>Birth Date:</strong> {selectedProfile.birth_date}</p>}
+          {selectedProfile.gender && <p><strong>Gender:</strong> {selectedProfile.gender}</p>}
+          {selectedProfile.created_at && <p><strong>Joined:</strong> {new Date(selectedProfile.created_at).toLocaleDateString()}</p>}
+        </div>
+      )}
+
+      {/* Tasker Full Details */}
+      {isTaskerProfile && (
+        <div className="text-left text-gray-700 space-y-6">
+          {/* Personal Info */}
+          <div>
+            <h3 className="text-lg font-bold text-indigo-600 mb-2">Personal Information</h3>
+            <p><strong>Full Name:</strong> {selectedProfile.personal?.fullName}</p>
+            <p><strong>Birth Date:</strong> {selectedProfile.personal?.birthDate}</p>
+            <p><strong>Age:</strong> {selectedProfile.personal?.age}</p>
+            <p><strong>Gender:</strong> {selectedProfile.personal?.gender}</p>
+            <p><strong>Contact:</strong> {selectedProfile.personal?.contactNumber}</p>
+            <p><strong>Email:</strong> {selectedProfile.personal?.email}</p>
+            <p><strong>Address:</strong> {selectedProfile.personal?.address}</p>
+          </div>
+
+          {/* Professional Info */}
+          <div>
+            <h3 className="text-lg font-bold text-indigo-600 mb-2">Professional Information</h3>
+            <p><strong>Job Type:</strong> {selectedProfile.professional?.jobType}</p>
+            <p><strong>Service Category:</strong> {selectedProfile.professional?.serviceCategory}</p>
+            <p><strong>Years of Experience:</strong> {selectedProfile.professional?.experience}</p>
+            <p><strong>Skills:</strong> {selectedProfile.professional?.skills}</p>
+          </div>
+
+          {/* Government Info */}
+          <div>
+            <h3 className="text-lg font-bold text-indigo-600 mb-2">Government Numbers</h3>
+            <p><strong>TIN Number:</strong> {selectedProfile.government?.tinNumber}</p>
+            <p><strong>SSS Number:</strong> {selectedProfile.government?.sssNumber}</p>
+            <p><strong>PhilHealth Number:</strong> {selectedProfile.government?.philHealthNumber}</p>
+            <p><strong>Pag-IBIG Number:</strong> {selectedProfile.government?.pagIbigNumber}</p>
+          </div>
+
+          {/* Documents Info */}
+          <div>
+            <h3 className="text-lg font-bold text-indigo-600 mb-2">Documents</h3>
+            <p><strong>Primary ID Front:</strong> {selectedProfile.documents?.primaryIDFront ? 'Uploaded' : 'N/A'}</p>
+            <p><strong>Primary ID Back:</strong> {selectedProfile.documents?.primaryIDBack ? 'Uploaded' : 'N/A'}</p>
+            <p><strong>Secondary ID:</strong> {selectedProfile.documents?.secondaryID ? 'Uploaded' : 'N/A'}</p>
+            <p><strong>Clearance:</strong> {selectedProfile.documents?.clearance ? 'Uploaded' : 'N/A'}</p>
+            <p><strong>Proof of Address:</strong> {selectedProfile.documents?.proofOfAddress ? 'Uploaded' : 'N/A'}</p>
+            <p><strong>Medical Certificate:</strong> {selectedProfile.documents?.medicalCertificate ? 'Uploaded' : 'N/A'}</p>
+            <p><strong>Certificates:</strong> {selectedProfile.documents?.certificates ? 'Uploaded' : 'N/A'}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
             {/* Clock & Date */}
             <div className="absolute top-6 right-6 text-lg font-semibold text-gray-700 flex items-center space-x-4">
@@ -358,7 +424,7 @@ const AdminDashboard = () => {
              {/* ✨ New Applications View ✨ */}
              {active === "Applications" && (
   <div>
-    <p className="mb-6">Manage the users and admins easily from here.</p>
+    <p className="mb-6"> Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.</p>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-start">
       {taskers.map((tasker) => (
         <div
@@ -385,7 +451,7 @@ const AdminDashboard = () => {
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 w-full">
             <button
-              onClick={() => setSelectedProfile(tasker)}
+              onClick={() => handleViewTaskerProfile(tasker.id)} // ✅ Fixed here!
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition-all duration-300 w-full"
             >
               View

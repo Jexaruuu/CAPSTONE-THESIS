@@ -60,7 +60,7 @@ const submitTaskerForm = async (req, res) => {
   }
 };
 
-// 🔥 Updated: Fetch from tasker_personal
+// 🔥 Fetch from tasker_personal
 const getAllTaskers = async (req, res) => {
   try {
     const [taskers] = await db.query('SELECT * FROM tasker_personal');
@@ -71,6 +71,7 @@ const getAllTaskers = async (req, res) => {
   }
 };
 
+// 🔥 Approve Tasker
 const approveTasker = async (req, res) => {
   const { id } = req.params;
   try {
@@ -82,6 +83,7 @@ const approveTasker = async (req, res) => {
   }
 };
 
+// 🔥 Reject Tasker
 const rejectTasker = async (req, res) => {
   const { id } = req.params;
   try {
@@ -93,9 +95,35 @@ const rejectTasker = async (req, res) => {
   }
 };
 
+// 🔥 NEW: View full tasker profile from 4 tables
+const getTaskerProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [personal] = await db.query('SELECT * FROM tasker_personal WHERE id = ?', [id]);
+    const [professional] = await db.query('SELECT * FROM tasker_professional WHERE id = ?', [id]);
+    const [documents] = await db.query('SELECT * FROM tasker_documents WHERE id = ?', [id]);
+    const [government] = await db.query('SELECT * FROM tasker_government WHERE id = ?', [id]);
+
+    if (personal.length === 0) {
+      return res.status(404).json({ message: 'Tasker not found' });
+    }
+
+    res.json({
+      personal: personal[0],
+      professional: professional[0],
+      documents: documents[0],
+      government: government[0]
+    });
+  } catch (error) {
+    console.error('Error fetching full tasker profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   submitTaskerForm,
   getAllTaskers,
   approveTasker,
-  rejectTasker
+  rejectTasker,
+  getTaskerProfile // ✅ Added here safely
 };
