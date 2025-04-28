@@ -519,15 +519,19 @@ const AdminDashboard = () => {
              {/* ✨ New Applications View ✨ */}
              {active === "Applications" && (
   <div>
-    <p className="mb-6"> Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.</p>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-start">
+    <p className="mb-6">
+      Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.
+    </p>
+
+    {/* ✨ Final Fix: no max-w, just w-full inside tight grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
       {taskers.map((tasker) => (
         <div
           key={tasker.id}
-          className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-full transition-transform transform hover:scale-[1.02] hover:shadow-2xl duration-300"
+          className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-[250px] transition-transform transform hover:scale-[1.02] hover:shadow-2xl duration-300"
         >
           {/* Profile Picture */}
-          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-200 shadow-md mb-4">
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow-md mb-4">
             <img
               src={`http://localhost:3000${tasker.profilePicture}`}
               alt="Profile"
@@ -536,30 +540,36 @@ const AdminDashboard = () => {
           </div>
 
           {/* Text Info */}
-          <h3 className="text-xl font-bold text-gray-800 mb-1 text-center break-words">{tasker.fullName}</h3>
-          <p className="text-gray-600 mb-1">Age: <span className="font-semibold">{tasker.age}</span></p>
-          <p className="text-blue-700 font-semibold mb-3">{tasker.jobType}</p>
-          
+          <h3 className="text-lg font-bold text-gray-800 mb-1 text-center break-words">
+            {tasker.fullName}
+          </h3>
+          <p className="text-gray-600 mb-1 text-sm">
+            Age: <span className="font-semibold">{tasker.age}</span>
+          </p>
+          <p className="text-blue-700 font-semibold text-sm mb-2">
+            {tasker.jobType}
+          </p>
+
           {/* Status Badge */}
-          <div className="mb-4">{getStatusBadge(tasker.status)}</div>
+          <div className="mb-3">{getStatusBadge(tasker.status)}</div>
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 w-full">
             <button
-              onClick={() => handleViewTaskerProfile(tasker.id)} // ✅ Fixed here!
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition-all duration-300 w-full"
+              onClick={() => handleViewTaskerProfile(tasker.id)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
             >
               View
             </button>
             <button
               onClick={() => handleApproveTasker(tasker.id)}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition-all duration-300 w-full"
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
             >
               Approve
             </button>
             <button
               onClick={() => handleRejectTasker(tasker.id)}
-              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-lg transition-all duration-300 w-full"
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
             >
               Reject
             </button>
@@ -569,7 +579,6 @@ const AdminDashboard = () => {
     </div>
   </div>
 )}
-
 
             {active === "ServiceRequests" && <p>All submitted service requests will be displayed here.</p>}
             {active === "Settings" && <p>Update admin preferences or system config.</p>}

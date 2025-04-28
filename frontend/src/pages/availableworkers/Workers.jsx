@@ -44,7 +44,6 @@ const UserAvailableWorkers = () => {
   // ✅ New: Handle Hire Now click
   const handleHireNow = (worker) => {
     navigate(`/hire/${worker.id}`, { state: { worker } }); 
-    // You can later create a /hire/:id page and receive worker info using `useLocation`
   };
 
   return (
@@ -82,40 +81,75 @@ const UserAvailableWorkers = () => {
         </div>
 
         {/* Workers Grid */}
-        <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredWorkers.map((worker, index) => (
-            <div key={index} className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between text-center h-[540px]">
-              <div>
-                <img
-                  src={`http://localhost:3000${worker.profilePicture}`}
-                  alt={worker.fullName}
-                  className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
-                />
-                <h3 className="text-lg font-semibold mb-1">{worker.fullName}</h3>
-                <p className="text-yellow-700 font-medium mb-1">{worker.jobType}</p>
-                <p className="text-gray-600 text-sm mb-1">Age: {worker.age}</p>
-                <p className="text-gray-600 text-sm mb-1">Gender: {worker.gender}</p>
-                <p className="text-gray-600 text-sm mb-1">Experience: {worker.experience} years</p>
-                <p className="text-gray-600 text-sm mb-2">Skills: {worker.skills}</p>
-                <p className="text-green-700 font-bold">₱{worker.pricePerHour} / hour</p>
-              </div>
-              <div className="mt-4 flex justify-center gap-3">
-                <button
-                  onClick={() => openModal(worker)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm"
-                >
-                  View Profile
-                </button>
-                <button
-                  onClick={() => handleHireNow(worker)}
-                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
-                >
-                  Hire Now
-                </button>
-              </div>
-            </div>
-          ))}
+<div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+  {filteredWorkers.map((worker, index) => (
+    <div
+      key={index}
+      className="bg-white rounded-2xl shadow-xl p-6 flex flex-col justify-between text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl border border-gray-100"
+    >
+      <div>
+        <img
+          src={`http://localhost:3000${worker.profilePicture}`}
+          alt={worker.fullName}
+          className="mx-auto mb-4 h-32 w-32 object-cover rounded-full border-4 border-blue-100 shadow"
+        />
+        <h3 className="text-lg font-bold mb-1 text-gray-800">{worker.fullName}</h3>
+        <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full mb-2">
+          {worker.jobType}
+        </span>
+
+        {/* Service Categories Badges */}
+        {worker.serviceCategory && (
+          <div className="flex flex-wrap justify-center gap-1 mb-2">
+            {Array.isArray(worker.serviceCategory)
+              ? worker.serviceCategory.map((service, idx) => (
+                  <span
+                    key={idx}
+                    className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
+                  >
+                    {service}
+                  </span>
+                ))
+              : worker.serviceCategory.split(',').map((service, idx) => (
+                  <span
+                    key={idx}
+                    className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
+                  >
+                    {service.trim()}
+                  </span>
+                ))}
+          </div>
+        )}
+
+        <div className="text-gray-600 text-sm space-y-1">
+          <p>Age: {worker.age}</p>
+          <p>Gender: {worker.gender}</p>
+          <p>Experience: {worker.experience} years</p>
+          <p>Skills: {worker.skills}</p>
         </div>
+
+        <p className="text-green-600 font-bold text-lg mt-2">
+          ₱{worker.pricePerHour} <span className="text-sm">/ hour</span>
+        </p>
+      </div>
+
+      <div className="mt-6 flex justify-center gap-4">
+        <button
+          onClick={() => openModal(worker)}
+          className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-xl shadow"
+        >
+          View Profile
+        </button>
+        <button
+          onClick={() => handleHireNow(worker)}
+          className="bg-green-600 hover:bg-green-700 text-white text-sm px-5 py-2 rounded-xl shadow"
+        >
+          Hire Now
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
       </div>
 
       {/* Modal */}
@@ -138,6 +172,7 @@ const UserAvailableWorkers = () => {
               <p className="text-gray-700 text-sm mb-1">Age: {selectedWorker.age}</p>
               <p className="text-gray-700 text-sm mb-1">Gender: {selectedWorker.gender}</p>
               <p className="text-blue-600 font-semibold mb-1">{selectedWorker.jobType}</p>
+              <p className="text-blue-600 font-medium text-sm mb-1">{selectedWorker.serviceCategory}</p> {/* ✅ NEW line */}
               <p className="text-gray-600 text-sm mb-1">Experience: {selectedWorker.experience} years</p>
               <p className="text-gray-600 text-sm mb-2">Skills: {selectedWorker.skills}</p>
               <p className="text-green-700 font-bold text-lg">₱{selectedWorker.pricePerHour} / hour</p>
