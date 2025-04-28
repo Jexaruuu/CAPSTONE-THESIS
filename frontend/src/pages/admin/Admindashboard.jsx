@@ -18,6 +18,48 @@ const AdminDashboard = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isTaskerProfile, setIsTaskerProfile] = useState(false); // ✅ New state to track if tasker
 
+  // ✨ [NEW] After existing states
+const [serviceRequests, setServiceRequests] = useState([]); 
+const [selectedRequest, setSelectedRequest] = useState(null); // For viewing service details
+const [requestModalOpen, setRequestModalOpen] = useState(false);
+
+// ✨ [NEW] fetchServiceRequests
+const fetchServiceRequests = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/clients/requests');
+    setServiceRequests(response.data);
+  } catch (error) {
+    console.error('Error fetching service requests:', error);
+  }
+};
+
+// ✨ [Update] Inside your useEffect where you call fetchCounts(), fetchUsers(), fetchAdmins(), fetchTaskers()
+useEffect(() => {
+  fetchCounts();
+  fetchUsers();
+  fetchAdmins();
+  fetchTaskers();
+  fetchServiceRequests(); // <-- ✨ Add this
+}, []);
+
+// ✨ [NEW] Handle Delete Service Request
+const handleDeleteServiceRequest = async (clientId) => {
+  if (window.confirm("Are you sure you want to delete this service request?")) {
+    try {
+      await axios.delete(`http://localhost:3000/api/clients/${clientId}`);
+      fetchServiceRequests(); // Refresh list after delete
+    } catch (error) {
+      console.error('Error deleting service request:', error);
+    }
+  }
+};
+
+// ✨ [NEW] Handle View Service Request
+const handleViewServiceRequest = (request) => {
+  setSelectedRequest(request);
+  setRequestModalOpen(true);
+};
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -168,6 +210,30 @@ const AdminDashboard = () => {
       }
     }
   };
+
+  // Approve Service Request
+const handleApproveServiceRequest = async (serviceId) => {
+  if (window.confirm("Approve this service request?")) {
+    try {
+      await axios.put(`http://localhost:3000/api/clients/approve/${serviceId}`);
+      fetchServiceRequests(); // refresh after approval
+    } catch (error) {
+      console.error('Error approving service request:', error);
+    }
+  }
+};
+
+// Reject Service Request
+const handleRejectServiceRequest = async (serviceId) => {
+  if (window.confirm("Reject this service request?")) {
+    try {
+      await axios.put(`http://localhost:3000/api/clients/reject/${serviceId}`);
+      fetchServiceRequests(); // refresh after rejection
+    } catch (error) {
+      console.error('Error rejecting service request:', error);
+    }
+  }
+};
   
 
   const getStatusBadge = (status) => {
@@ -219,9 +285,9 @@ const AdminDashboard = () => {
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-y-auto p-4">
     <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-4 relative">
       <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-      
-      {/* Title */}
-      <h2 className="text-2xl font-bold text-center mb-6 text-indigo-600">
+
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-center mb-6 text-indigo-600">
         {isTaskerProfile ? "Tasker Full Profile" : "Profile Details"}
       </h2>
 
@@ -239,6 +305,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      
       {/* Tasker Full Details */}
       {isTaskerProfile && (
   <div className="text-left text-gray-700 flex flex-col md:flex-row gap-6">
@@ -585,7 +652,124 @@ const AdminDashboard = () => {
   </div>
 )}
 
-            {active === "ServiceRequests" && <p>All submitted service requests will be displayed here.</p>}
+{active === "ServiceRequests" && (
+  <div>
+    <p className="mb-6 text-lg font-semibold text-gray-700">
+      All service requests submitted by clients.
+    </p>
+
+    {/* ✨ Card layout */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
+      {serviceRequests.map((request) => (
+        <div
+          key={request.client_id}
+          className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-[250px] transition-transform transform hover:scale-[1.02] hover:shadow-2xl duration-300"
+        >
+          {/* Profile Picture */}
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow-md mb-4">
+            <img
+              src={`http://localhost:3000${request.profile_picture}`}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Client Info */}
+          <h3 className="text-lg font-bold text-gray-800 mb-1 text-center break-words">
+            {request.first_name} {request.last_name}
+          </h3>
+          <p className="text-gray-600 text-sm text-center">
+            {request.barangay}, {request.street}
+          </p>
+
+          {/* ✨ Service Need */}
+          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
+            Service Need: {request.service_type}
+          </p>
+
+          {/* Status Badge */}
+          <div className="mb-3 mt-2">
+            {request.status === "approved" && (
+              <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>
+            )}
+            {request.status === "rejected" && (
+              <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>
+            )}
+            {!request.status && (
+              <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-2 w-full mt-4">
+            <button
+              onClick={() => handleViewServiceRequest(request)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
+            >
+              View Request
+            </button>
+            <button
+              onClick={() => handleApproveServiceRequest(request.service_id)}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleRejectServiceRequest(request.service_id)}
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
+            >
+              Reject
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  
+    {/* 🚀 THIS PART IS YOUR SERVICE REQUEST MODAL */}
+    {requestModalOpen && selectedRequest && (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-y-auto p-4">
+        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-4 relative">
+          <button onClick={() => setRequestModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+
+          <h2 className="text-2xl font-bold text-center mb-6 text-indigo-600">Service Request Details</h2>
+
+          <div className="text-gray-700 space-y-4">
+            <div className="flex flex-col items-center">
+              <img
+                src={`http://localhost:3000${selectedRequest.profile_picture}`}
+                alt="Profile"
+                className="w-32 h-32 rounded-full object-cover mb-4"
+              />
+              <h3 className="text-lg font-bold">{selectedRequest.first_name} {selectedRequest.last_name}</h3>
+            </div>
+
+            <p><strong>Contact Number:</strong> {selectedRequest.contact_number}</p>
+            <p><strong>Email:</strong> {selectedRequest.email}</p>
+            <p><strong>Address:</strong> {selectedRequest.street}, {selectedRequest.barangay}, {selectedRequest.additional_address}</p>
+            <p><strong>Service Type:</strong> {selectedRequest.service_type}</p>
+            <p><strong>Service Description:</strong> {selectedRequest.service_description}</p>
+            <p><strong>Preferred Date:</strong> {selectedRequest.preferred_date}</p>
+            <p><strong>Preferred Time:</strong> {selectedRequest.preferred_time}</p>
+            <p><strong>Urgent Request:</strong> {selectedRequest.urgent_request ? "Yes" : "No"}</p>
+
+            {/* Service Image */}
+            {selectedRequest.service_image && (
+              <div>
+                <h3 className="font-semibold mb-2">Service Image:</h3>
+                <img
+                  src={`http://localhost:3000${selectedRequest.service_image}`}
+                  alt="Service"
+                  className="w-full h-60 object-cover rounded-lg border"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+)}
+
             {active === "Settings" && <p>Update admin preferences or system config.</p>}
           </div>
         </main>
