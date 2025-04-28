@@ -273,9 +273,16 @@ const handleRejectServiceRequest = async (serviceId) => {
             </nav>
           </div>
 
-          <button onClick={handleLogout} className="relative w-full rounded px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold">
-            <span className="relative flex items-center text-base"><LogOutIcon className="mr-3 w-5 h-5" /> Logout</span>
-          </button>
+          <button
+  onClick={handleLogout}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative flex items-center text-base font-semibold">
+    <LogOutIcon className="mr-3 w-5 h-5" /> Logout
+  </span>
+</button>
+
         </aside>
 
         {/* Main content */}
@@ -486,26 +493,26 @@ const handleRejectServiceRequest = async (serviceId) => {
               <>
                 <p className="mb-6">Manage the users and admins easily from here.</p>
                 <div className="flex space-x-4 mb-8">
-                  <button
-                    onClick={() => setSubActive("Clients")}
-                    className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
-                      subActive === "Clients"
-                        ? "bg-blue-700 text-white"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
-                    }`}
-                  >
-                    Users
-                  </button>
-                  <button
-                    onClick={() => setSubActive("Admins")}
-                    className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
-                      subActive === "Admins"
-                        ? "bg-green-700 text-white"
-                        : "bg-green-500 text-white hover:bg-green-600"
-                    }`}
-                  >
-                    Admins
-                  </button>
+                <button
+  onClick={() => setSubActive("Clients")}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-indigo-500 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">
+    Users
+  </span>
+</button>
+
+<button
+  onClick={() => setSubActive("Admins")}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-500 hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">
+    Admins
+  </span>
+</button>
+
                 </div>
               </>
             )}
@@ -515,35 +522,38 @@ const handleRejectServiceRequest = async (serviceId) => {
                 <h3 className="text-2xl font-bold mb-6 text-blue-700">Users List</h3>
                 <div className="overflow-x-auto rounded-lg shadow">
                   <table className="min-w-full bg-white">
-                    <thead>
-                      <tr className="bg-blue-100 text-gray-700 uppercase text-sm leading-normal">
-                        <th className="py-3 px-6 text-left">First Name</th>
-                        <th className="py-3 px-6 text-left">Last Name</th>
-                        <th className="py-3 px-6 text-center">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-gray-600 text-sm font-light">
-                      {users.map((user) => (
-                        <tr key={user.id} className="border-b hover:bg-gray-100 transition duration-300">
-                          <td className="py-3 px-6 text-left">{user.first_name}</td>
-                          <td className="py-3 px-6 text-left">{user.last_name}</td>
-                          <td className="py-3 px-6 text-center space-x-2">
-                            <button
-                              onClick={() => handleViewProfile(user.id)}
-                              className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-all duration-300"
-                            >
-                              View Profile
-                            </button>
-                            <button
-                              onClick={() => handleDeleteUser(user.id)}
-                              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-all duration-300"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
+                  <thead>
+  <tr className="bg-blue-100 text-gray-700 uppercase text-sm leading-normal">
+    <th className="py-3 px-6 text-left">First Name</th>
+    <th className="py-3 px-6 text-left">Last Name</th>
+    <th className="py-3 px-6 text-right">Actions</th> {/* ✨ Change text-center -> text-right */}
+  </tr>
+</thead>
+<tbody className="text-gray-600 text-sm font-light">
+  {users.map((user) => (
+    <tr key={user.id} className="border-b hover:bg-gray-100 transition duration-300">
+      <td className="py-3 px-6 text-left">{user.first_name}</td>
+      <td className="py-3 px-6 text-left">{user.last_name}</td>
+      <td className="py-3 px-6 text-right space-x-2"> {/* ✨ Change text-center -> text-right */}
+        <button
+          onClick={() => handleViewProfile(user.id)}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-blue-500 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-base font-semibold">View Profile</span>
+        </button>
+
+        <button
+          onClick={() => handleDeleteUser(user.id)}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-base font-semibold">Delete</span>
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
                   </table>
                 </div>
               </>
@@ -554,35 +564,39 @@ const handleRejectServiceRequest = async (serviceId) => {
                 <h3 className="text-2xl font-bold mb-6 text-green-700">Admins List</h3>
                 <div className="overflow-x-auto rounded-lg shadow">
                   <table className="min-w-full bg-white">
-                    <thead>
-                      <tr className="bg-green-100 text-gray-700 uppercase text-sm leading-normal">
-                        <th className="py-3 px-6 text-left">First Name</th>
-                        <th className="py-3 px-6 text-left">Last Name</th>
-                        <th className="py-3 px-6 text-center">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-gray-600 text-sm font-light">
-                      {admins.map((admin) => (
-                        <tr key={admin.id} className="border-b hover:bg-gray-100 transition duration-300">
-                          <td className="py-3 px-6 text-left">{admin.first_name}</td>
-                          <td className="py-3 px-6 text-left">{admin.last_name}</td>
-                          <td className="py-3 px-6 text-center space-x-2">
-                            <button
-                              onClick={() => handleViewAdminProfile(admin.id)}
-                              className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-all duration-300"
-                            >
-                              View Profile
-                            </button>
-                            <button
-                              onClick={() => handleDeleteAdmin(admin.id)}
-                              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-all duration-300"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
+                  <thead>
+  <tr className="bg-green-100 text-gray-700 uppercase text-sm leading-normal">
+    <th className="py-3 px-6 text-left">First Name</th>
+    <th className="py-3 px-6 text-left">Last Name</th>
+    <th className="py-3 px-6 text-right">Actions</th> {/* ✨ Change text-center -> text-right */}
+  </tr>
+</thead>
+<tbody className="text-gray-600 text-sm font-light">
+  {admins.map((admin) => (
+    <tr key={admin.id} className="border-b hover:bg-gray-100 transition duration-300">
+      <td className="py-3 px-6 text-left">{admin.first_name}</td>
+      <td className="py-3 px-6 text-left">{admin.last_name}</td>
+      <td className="py-3 px-6 text-right space-x-2"> {/* ✨ Change text-center -> text-right */}
+        <button
+          onClick={() => handleViewAdminProfile(admin.id)}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-blue-500 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-base font-semibold">View Profile</span>
+        </button>
+
+        <button
+          onClick={() => handleDeleteAdmin(admin.id)}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-base font-semibold">Delete</span>
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
                   </table>
                 </div>
               </>
@@ -639,7 +653,8 @@ const handleRejectServiceRequest = async (serviceId) => {
           <div className="flex flex-col gap-2 w-full mt-4">
             <button
               onClick={() => handleViewTaskerProfile(tasker.id)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
+              className="relative rounded px-5 py-2.5 overflow-hidden group bg-indigo-500 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+
             >
               View
             </button>
