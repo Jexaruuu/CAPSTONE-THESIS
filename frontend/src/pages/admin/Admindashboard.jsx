@@ -195,28 +195,46 @@ const handleViewServiceRequest = (request) => {
 
   const handleApproveTasker = async (id) => {
     if (window.confirm("Approve this tasker?")) {
-      await axios.put(`http://localhost:3000/api/taskers/approve/${id}`);
-      fetchTaskers();
+      try {
+        await axios.put(`http://localhost:3000/api/taskers/approve/${id}`); // ✅ correct
+        setTaskers((prevTaskers) =>
+          prevTaskers.map((tasker) =>
+            tasker.id === id ? { ...tasker, status: "approved" } : tasker
+          )
+        );
+      } catch (error) {
+        console.error("Error approving tasker:", error);
+      }
     }
   };
-
+  
+  
   const handleRejectTasker = async (id) => {
     if (window.confirm("Reject this tasker?")) {
       try {
-        await axios.delete(`http://localhost:3000/api/taskers/reject/${id}`);
-        fetchTaskers();
+        await axios.put(`http://localhost:3000/api/taskers/reject/${id}`); // ✅ PUT not DELETE
+        setTaskers((prevTaskers) =>
+          prevTaskers.map((tasker) =>
+            tasker.id === id ? { ...tasker, status: "rejected" } : tasker
+          )
+        );
       } catch (error) {
         console.error("Error rejecting tasker:", error);
       }
     }
   };
+  
 
-  // Approve Service Request
+// Approve Service Request
 const handleApproveServiceRequest = async (serviceId) => {
   if (window.confirm("Approve this service request?")) {
     try {
       await axios.put(`http://localhost:3000/api/clients/approve/${serviceId}`);
-      fetchServiceRequests(); // refresh after approval
+      setServiceRequests((prevRequests) =>
+        prevRequests.map((req) =>
+          req.service_id === serviceId ? { ...req, status: "approved" } : req
+        )
+      );
     } catch (error) {
       console.error('Error approving service request:', error);
     }
@@ -228,7 +246,11 @@ const handleRejectServiceRequest = async (serviceId) => {
   if (window.confirm("Reject this service request?")) {
     try {
       await axios.put(`http://localhost:3000/api/clients/reject/${serviceId}`);
-      fetchServiceRequests(); // refresh after rejection
+      setServiceRequests((prevRequests) =>
+        prevRequests.map((req) =>
+          req.service_id === serviceId ? { ...req, status: "rejected" } : req
+        )
+      );
     } catch (error) {
       console.error('Error rejecting service request:', error);
     }
@@ -236,11 +258,16 @@ const handleRejectServiceRequest = async (serviceId) => {
 };
   
 
-  const getStatusBadge = (status) => {
-    if (status === "approved") return <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>;
-    if (status === "rejected") return <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>;
-    return <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>;
-  };
+const getStatusBadge = (status) => {
+  if (status === "approved") {
+    return <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>;
+  }
+  if (status === "rejected") {
+    return <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>;
+  }
+  return <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>;
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
@@ -255,21 +282,66 @@ const handleRejectServiceRequest = async (serviceId) => {
               <p className="text-md text-gray-500">Admin</p>
             </div>
             <nav className="space-y-2">
-              <button onClick={() => { setActive("Dashboard"); setSubActive(""); }} className={`relative w-full rounded px-4 py-2.5 ${active === "Dashboard" ? "bg-[#000081] text-white" : "hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white"}`}>
-                <span className="relative flex items-center text-base font-semibold"><HomeIcon className="mr-3 w-5 h-5" /> Dashboard</span>
-              </button>
-              <button onClick={() => { setActive("Users"); setSubActive(""); }} className={`relative w-full rounded px-4 py-2.5 ${(active === "Users" || subActive === "Clients" || subActive === "Admins") ? "bg-[#000081] text-white" : "hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white"}`}>
-                <span className="relative flex items-center text-base font-semibold"><UsersIcon className="mr-3 w-5 h-5" /> Manage Users</span>
-              </button>
-              <button onClick={() => { setActive("Applications"); setSubActive(""); }} className={`relative w-full rounded px-4 py-2.5 ${active === "Applications" ? "bg-[#000081] text-white" : "hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white"}`}>
-                <span className="relative flex items-center text-base font-semibold"><FileTextIcon className="mr-3 w-5 h-5" /> Applications</span>
-              </button>
-              <button onClick={() => { setActive("ServiceRequests"); setSubActive(""); }} className={`relative w-full rounded px-4 py-2.5 ${active === "ServiceRequests" ? "bg-[#000081] text-white" : "hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white"}`}>
-                <span className="relative flex items-center text-base font-semibold"><ClipboardListIcon className="mr-3 w-5 h-5" /> Service Requests</span>
-              </button>
-              <button onClick={() => { setActive("Settings"); setSubActive(""); }} className={`relative w-full rounded px-4 py-2.5 ${active === "Settings" ? "bg-[#000081] text-white" : "hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white"}`}>
-                <span className="relative flex items-center text-base font-semibold"><SettingsIcon className="mr-3 w-5 h-5" /> Settings</span>
-              </button>
+            <button
+  onClick={() => { setActive("Dashboard"); setSubActive(""); }}
+  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+    ${active === "Dashboard"
+      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+  `}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative flex items-center text-base font-semibold"><HomeIcon className="mr-3 w-5 h-5" /> Dashboard</span>
+</button>
+
+<button
+  onClick={() => { setActive("Users"); setSubActive(""); }}
+  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+    ${(active === "Users" || subActive === "Clients" || subActive === "Admins")
+      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+  `}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative flex items-center text-base font-semibold"><UsersIcon className="mr-3 w-5 h-5" /> Manage Users</span>
+</button>
+
+<button
+  onClick={() => { setActive("Applications"); setSubActive(""); }}
+  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+    ${active === "Applications"
+      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+  `}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative flex items-center text-base font-semibold"><FileTextIcon className="mr-3 w-5 h-5" /> Applications</span>
+</button>
+
+<button
+  onClick={() => { setActive("ServiceRequests"); setSubActive(""); }}
+  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+    ${active === "ServiceRequests"
+      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+  `}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative flex items-center text-base font-semibold"><ClipboardListIcon className="mr-3 w-5 h-5" /> Service Requests</span>
+</button>
+
+<button
+  onClick={() => { setActive("Settings"); setSubActive(""); }}
+  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+    ${active === "Settings"
+      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+  `}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative flex items-center text-base font-semibold"><SettingsIcon className="mr-3 w-5 h-5" /> Settings</span>
+</button>
+
             </nav>
           </div>
 
@@ -495,7 +567,7 @@ const handleRejectServiceRequest = async (serviceId) => {
                 <div className="flex space-x-4 mb-8">
                 <button
   onClick={() => setSubActive("Clients")}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-indigo-500 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
 >
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
   <span className="relative text-base font-semibold">
@@ -505,7 +577,8 @@ const handleRejectServiceRequest = async (serviceId) => {
 
 <button
   onClick={() => setSubActive("Admins")}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-500 hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400
+"
 >
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
   <span className="relative text-base font-semibold">
@@ -537,7 +610,7 @@ const handleRejectServiceRequest = async (serviceId) => {
       <td className="py-3 px-6 text-right space-x-2"> {/* ✨ Change text-center -> text-right */}
         <button
           onClick={() => handleViewProfile(user.id)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-blue-500 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-400 transition-all ease-out duration-300"
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
         >
           <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
           <span className="relative text-base font-semibold">View Profile</span>
@@ -545,7 +618,8 @@ const handleRejectServiceRequest = async (serviceId) => {
 
         <button
           onClick={() => handleDeleteUser(user.id)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-600 text-white hover:bg-gradient-to-r hover:from-red-600 hover:to-red-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400
+"
         >
           <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
           <span className="relative text-base font-semibold">Delete</span>
@@ -579,7 +653,7 @@ const handleRejectServiceRequest = async (serviceId) => {
       <td className="py-3 px-6 text-right space-x-2"> {/* ✨ Change text-center -> text-right */}
         <button
           onClick={() => handleViewAdminProfile(admin.id)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-blue-500 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-400 transition-all ease-out duration-300"
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
         >
           <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
           <span className="relative text-base font-semibold">View Profile</span>
@@ -653,23 +727,27 @@ const handleRejectServiceRequest = async (serviceId) => {
           <div className="flex flex-col gap-2 w-full mt-4">
             <button
               onClick={() => handleViewTaskerProfile(tasker.id)}
-              className="relative rounded px-5 py-2.5 overflow-hidden group bg-indigo-500 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+              className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
 
             >
-              View
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-base font-semibold">View</span>
             </button>
             <button
-              onClick={() => handleApproveTasker(tasker.id)}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handleRejectTasker(tasker.id)}
-              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
-            >
-              Reject
-            </button>
+  onClick={() => handleApproveTasker(tasker.id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Approve</span>
+</button>
+<button
+  onClick={() => handleRejectTasker(tasker.id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Reject</span>
+</button>
+
           </div>
         </div>
       ))}
@@ -728,24 +806,30 @@ const handleRejectServiceRequest = async (serviceId) => {
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 w-full mt-4">
-            <button
-              onClick={() => handleViewServiceRequest(request)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
-            >
-              View Request
-            </button>
-            <button
-              onClick={() => handleApproveServiceRequest(request.service_id)}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handleRejectServiceRequest(request.service_id)}
-              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1.5 rounded-lg transition-all duration-300 w-full text-sm"
-            >
-              Reject
-            </button>
+          <button
+  onClick={() => handleViewServiceRequest(request)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">View Request</span>
+</button>
+
+<button
+  onClick={() => handleApproveServiceRequest(request.service_id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Approve</span>
+</button>
+
+<button
+  onClick={() => handleRejectServiceRequest(request.service_id, request.client_id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+>
+  <span className="relative text-base font-semibold">Reject</span>
+</button>
+
+
           </div>
         </div>
       ))}

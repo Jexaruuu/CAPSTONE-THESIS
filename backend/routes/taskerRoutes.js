@@ -6,7 +6,7 @@ const {
   rejectTasker,
   getTaskerProfile,
   getAllApprovedTaskers,
-  getTaskersWithFullInfo // ✅ import it
+  getTaskersWithFullInfo
 } = require('../controllers/taskerController');
 
 const router = express.Router();
@@ -14,9 +14,10 @@ const router = express.Router();
 router.post('/submit', submitTaskerForm);
 router.get('/', getAllTaskers);
 router.get('/approved', getAllApprovedTaskers);
-router.get('/fullinfo', getTaskersWithFullInfo); // ✅ added new route
+router.get('/fullinfo', getTaskersWithFullInfo);
 router.put('/approve/:id', approveTasker);
-router.delete('/reject/:id', rejectTasker);
+router.put('/reject/:id', rejectTasker);// 🔥 Important: now it's PUT, not DELETE
 router.get('/:id', getTaskerProfile);
+
 
 module.exports = router;

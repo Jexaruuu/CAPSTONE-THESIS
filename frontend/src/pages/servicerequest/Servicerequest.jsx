@@ -1,72 +1,36 @@
 import React, { useState, useEffect } from "react";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import axios from "axios";
 
 const UserAvailableServices = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedService, setSelectedService] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [approvedServices, setApprovedServices] = useState([]);
 
-  // ✅ For hero section image transition
-  const heroImages = [
-    "/plumber.jpg",
-    "/electrician.jpg",
-    "/carpenter.jpg",
-  ];
+  // ✅ Hero Section Image Transition
+  const heroImages = ["/plumber.jpg", "/electrician.jpg", "/carpenter.jpg"];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(true);
 
-  const categories = ["All", "Home Repair", "Electrical", "Plumbing", "Car Wash", "Laundry Service"];
+  const categories = ["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"];
 
-  const services = [
-    {
-      title: "Home Repair",
-      category: "Home Repair",
-      description: "Expert carpentry, furniture repair, and home improvement services.",
-      image: "/services/home_repair.jpg",
-    },
-    {
-      title: "Electrical Installation",
-      category: "Electrical",
-      description: "Safe and professional electrical wiring and troubleshooting.",
-      image: "/services/electrical.jpg",
-    },
-    {
-      title: "Plumbing Services",
-      category: "Plumbing",
-      description: "Leak repairs, pipe installations, and drainage system maintenance.",
-      image: "/services/plumbing.jpg",
-    },
-    {
-      title: "Car Wash",
-      category: "Car Wash",
-      description: "Premium car washing, interior vacuuming, and detailing services.",
-      image: "/services/car_wash.jpg",
-    },
-    {
-      title: "Laundry Service",
-      category: "Laundry Service",
-      description: "Professional laundry for residential and commercial needs.",
-      image: "/services/laundry.jpg",
-    },
-  ];
+  // ✅ Fetch approved service requests from the backend
+  useEffect(() => {
+    const fetchApprovedServices = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/clients/approved"); // 👈 Updated endpoint
+        setApprovedServices(response.data);
+      } catch (error) {
+        console.error("Error fetching approved services:", error);
+      }
+    };
 
-  const filteredServices =
-    selectedCategory === "All"
-      ? services
-      : services.filter((service) => service.category === selectedCategory);
+    fetchApprovedServices();
+  }, []);
 
-  const openModal = (service) => {
-    setSelectedService(service);
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedService(null);
-  };
-
-  // ✅ Image transition effect for hero
+  // ✅ Hero Image Transition Effect
   useEffect(() => {
     const interval = setInterval(() => {
       setFade(false);
@@ -78,11 +42,28 @@ const UserAvailableServices = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const openModal = (service) => {
+    setSelectedService(service);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedService(null);
+  };
+
+  // ✅ Filter approved services by selected category
+  const filteredServices = selectedCategory === "All"
+    ? approvedServices
+    : approvedServices.filter((service) =>
+        service.service_type?.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+
   return (
     <div className="font-sans">
       <Navigation />
 
-      {/* ✅ New Hero Section */}
+      {/* ✅ Hero Section */}
       <div
         className="relative w-full h-96 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 flex flex-col justify-center items-center"
         style={{
@@ -104,7 +85,7 @@ const UserAvailableServices = () => {
         </section>
       </div>
 
-      {/* Services List */}
+      {/* Services Section */}
       <div className="flex max-w-7xl mx-auto px-6 py-12 gap-8">
         {/* Sidebar */}
         <div className="w-full md:w-1/4">
@@ -133,13 +114,23 @@ const UserAvailableServices = () => {
             >
               <div>
                 <img
-                  src={service.image}
-                  alt={service.title}
+                  src={`http://localhost:3000${service.service_image}`}
+                  alt={service.service_type}
                   className="mx-auto mb-4 h-32 w-32 object-cover rounded-full border-4 border-blue-100 shadow"
                 />
-                <h3 className="text-lg font-semibold mb-1 text-gray-800">{service.title}</h3>
-                <p className="text-sm text-yellow-700 font-medium mb-1">{service.category}</p>
-                <p className="text-gray-600 text-sm">{service.description}</p>
+                <h3 className="text-lg font-semibold mb-1 text-gray-800">
+                  {service.service_type || "Service"}
+                </h3>
+                <p className="text-sm text-yellow-700 font-medium mb-1">
+                  {service.barangay || "Location"}
+                </p>
+                <p className="text-gray-600 text-sm">
+                  {service.service_description
+                    ? (service.service_description.length > 60
+                        ? service.service_description.substring(0, 60) + "..."
+                        : service.service_description)
+                    : "No description available."}
+                </p>
               </div>
               <div className="mt-4 flex justify-center gap-3">
                 <button
@@ -147,11 +138,6 @@ const UserAvailableServices = () => {
                   className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-xl shadow"
                 >
                   View Details
-                </button>
-                <button
-                  className="bg-green-600 hover:bg-green-700 text-white text-sm px-5 py-2 rounded-xl shadow"
-                >
-                  Request Service
                 </button>
               </div>
             </div>
@@ -171,18 +157,19 @@ const UserAvailableServices = () => {
             </button>
             <div className="text-center">
               <img
-                src={selectedService.image}
-                alt={selectedService.title}
+                src={`http://localhost:3000${selectedService.service_image}`}
+                alt={selectedService.service_type}
                 className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
               />
-              <h2 className="text-xl font-semibold mb-1">{selectedService.title}</h2>
-              <p className="text-yellow-700 font-medium mb-1">{selectedService.category}</p>
-              <p className="text-gray-600 text-sm mb-4">{selectedService.description}</p>
-              <button
-                className="bg-green-600 hover:bg-green-700 text-white text-sm px-6 py-2 rounded-xl shadow"
-              >
-                Request Service
-              </button>
+              <h2 className="text-xl font-semibold mb-1">
+                {selectedService.service_type || "Service"}
+              </h2>
+              <p className="text-yellow-700 font-medium mb-1">
+                {selectedService.barangay || "Location"}
+              </p>
+              <p className="text-gray-600 text-sm mb-4">
+                {selectedService.service_description || "No description available."}
+              </p>
             </div>
           </div>
         </div>

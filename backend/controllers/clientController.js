@@ -2,7 +2,7 @@ const db = require('../db');
 const path = require('path');
 const fs = require('fs');
 
-// ✅ Existing: Book Service
+// ✅ Book a new service request
 const bookService = async (req, res) => {
   try {
     if (!req.body.firstName || !req.body.lastName || !req.body.contactNumber) {
@@ -78,18 +78,17 @@ const bookService = async (req, res) => {
   }
 };
 
-// ✅ NEW: Fetch All Service Requests
+// ✅ Fetch all service requests (pending, approved, rejected)
 const getServiceRequests = async (req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT c.id AS client_id, c.first_name, c.last_name, c.contact_number, c.email, 
              c.barangay, c.street, c.additional_address, c.profile_picture,
              s.id AS service_id, s.service_type, s.service_description, 
-             s.preferred_date, s.preferred_time, s.urgent_request, s.service_image
+             s.preferred_date, s.preferred_time, s.urgent_request, s.service_image, s.status
       FROM client_information c
       JOIN service_details s ON c.id = s.client_id
     `);
-
     res.json(rows);
   } catch (error) {
     console.error('Error fetching service requests:', error);
@@ -97,7 +96,7 @@ const getServiceRequests = async (req, res) => {
   }
 };
 
-// ✅ NEW: Delete Service Request
+// ✅ Delete service request completely (used when rejecting)
 const deleteClientRequest = async (req, res) => {
   const { id } = req.params;
   try {
@@ -110,4 +109,29 @@ const deleteClientRequest = async (req, res) => {
   }
 };
 
-module.exports = { bookService, getServiceRequests, deleteClientRequest };
+// ✅ Fetch approved only (for servicerequest.jsx frontend)
+const getApprovedServices = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        c.first_name, c.last_name, c.contact_number, c.email,
+        c.street, c.barangay, c.additional_address, c.profile_picture,
+        s.id AS service_id, s.service_type, s.service_description,
+        s.preferred_date, s.preferred_time, s.urgent_request, s.service_image, s.status
+      FROM client_information c
+      JOIN service_details s ON c.id = s.client_id
+      WHERE s.status = 'approved'
+    `);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching approved services:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { 
+  bookService, 
+  getServiceRequests, 
+  deleteClientRequest,
+  getApprovedServices
+};

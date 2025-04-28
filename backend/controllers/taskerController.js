@@ -57,7 +57,21 @@ const submitTaskerForm = async (req, res) => {
 // 🔥 Fetch all taskers
 const getAllTaskers = async (req, res) => {
   try {
-    const [taskers] = await db.query('SELECT * FROM tasker_personal');
+    const [taskers] = await db.query(`
+      SELECT 
+        tp.id,
+        tp.fullName,
+        tp.age,
+        tp.gender,
+        tp.profilePicture,
+        tf.jobType,
+        tf.experience,
+        tf.skills,
+        tp.status -- ✅ INCLUDE STATUS!!!
+      FROM tasker_personal tp
+      LEFT JOIN tasker_professional tf ON tp.id = tf.id
+    `);
+
     res.json(taskers);
   } catch (error) {
     console.error('Error fetching taskers:', error);
@@ -77,20 +91,15 @@ const approveTasker = async (req, res) => {
   }
 };
 
-// 🔥 Reject and delete tasker (and also delete related data)
+// ✅ Reject tasker (only update status, not delete)
 const rejectTasker = async (req, res) => {
   const { id } = req.params;
   try {
-    // Delete related data first to avoid foreign key issues
-    await db.query('DELETE FROM tasker_documents WHERE id = ?', [id]);
-    await db.query('DELETE FROM tasker_government WHERE id = ?', [id]);
-    await db.query('DELETE FROM tasker_professional WHERE id = ?', [id]);
-    await db.query('DELETE FROM tasker_personal WHERE id = ?', [id]);
-
-    res.json({ message: 'Tasker and related data rejected and deleted successfully' });
+    await db.query('UPDATE tasker_personal SET status = "rejected" WHERE id = ?', [id]);
+    res.json({ message: 'Tasker rejected successfully' });
   } catch (error) {
-    console.error('Error rejecting and deleting tasker:', error);
-    res.status(500).json({ message: 'Server error while rejecting tasker' });
+    console.error('Error rejecting tasker:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -137,7 +146,6 @@ const getAllApprovedTaskers = async (req, res) => {
       WHERE tp.status = 'approved'
     `);
 
-    // Add price per hour
     const taskersWithPrice = taskers.map(tasker => ({
       ...tasker,
       pricePerHour: getPricePerHour(tasker.jobType)
@@ -163,7 +171,7 @@ const getTaskersWithFullInfo = async (req, res) => {
 
 // 💰 Reasonable price generator
 const getPricePerHour = (jobType) => {
-  if (!jobType) return 200; // fallback
+  if (!jobType) return 200;
   switch (jobType.toLowerCase()) {
     case 'carpenter': return 250;
     case 'electrician': return 300;
@@ -181,5 +189,5 @@ module.exports = {
   rejectTasker,
   getTaskerProfile,
   getAllApprovedTaskers,
-  getTaskersWithFullInfo // ✅ Added without touching existing
+  getTaskersWithFullInfo
 };
