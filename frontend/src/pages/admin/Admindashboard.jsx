@@ -236,50 +236,145 @@ const AdminDashboard = () => {
 
       {/* Tasker Full Details */}
       {isTaskerProfile && (
-        <div className="text-left text-gray-700 space-y-6">
-          {/* Personal Info */}
-          <div>
-            <h3 className="text-lg font-bold text-indigo-600 mb-2">Personal Information</h3>
-            <p><strong>Full Name:</strong> {selectedProfile.personal?.fullName}</p>
-            <p><strong>Birth Date:</strong> {selectedProfile.personal?.birthDate}</p>
-            <p><strong>Age:</strong> {selectedProfile.personal?.age}</p>
-            <p><strong>Gender:</strong> {selectedProfile.personal?.gender}</p>
-            <p><strong>Contact:</strong> {selectedProfile.personal?.contactNumber}</p>
-            <p><strong>Email:</strong> {selectedProfile.personal?.email}</p>
-            <p><strong>Address:</strong> {selectedProfile.personal?.address}</p>
-          </div>
+  <div className="text-left text-gray-700 flex flex-col md:flex-row gap-6">
+    {/* Left Side - Information */}
+    <div className="flex-1 space-y-6">
+      {/* Personal Info */}
+      <div>
+        <h3 className="text-lg font-bold text-indigo-600 mb-2">Personal Information</h3>
+        <p><strong>Full Name:</strong> {selectedProfile.personal?.fullName}</p>
+        <p><strong>Birth Date:</strong> {selectedProfile.personal?.birthDate}</p>
+        <p><strong>Age:</strong> {selectedProfile.personal?.age}</p>
+        <p><strong>Gender:</strong> {selectedProfile.personal?.gender}</p>
+        <p><strong>Contact:</strong> {selectedProfile.personal?.contactNumber}</p>
+        <p><strong>Email:</strong> {selectedProfile.personal?.email}</p>
+        <p><strong>Address:</strong> {selectedProfile.personal?.address}</p>
+      </div>
 
-          {/* Professional Info */}
-          <div>
-            <h3 className="text-lg font-bold text-indigo-600 mb-2">Professional Information</h3>
-            <p><strong>Job Type:</strong> {selectedProfile.professional?.jobType}</p>
-            <p><strong>Service Category:</strong> {selectedProfile.professional?.serviceCategory}</p>
-            <p><strong>Years of Experience:</strong> {selectedProfile.professional?.experience}</p>
-            <p><strong>Skills:</strong> {selectedProfile.professional?.skills}</p>
-          </div>
+      {/* Professional Info */}
+      <div>
+        <h3 className="text-lg font-bold text-indigo-600 mb-2">Professional Information</h3>
+        <p><strong>Job Type:</strong> {selectedProfile.professional?.jobType}</p>
+        <p><strong>Service Category:</strong> {selectedProfile.professional?.serviceCategory}</p>
+        <p><strong>Years of Experience:</strong> {selectedProfile.professional?.experience}</p>
+        <p><strong>Skills:</strong> {selectedProfile.professional?.skills}</p>
+      </div>
 
-          {/* Government Info */}
-          <div>
-            <h3 className="text-lg font-bold text-indigo-600 mb-2">Government Numbers</h3>
-            <p><strong>TIN Number:</strong> {selectedProfile.government?.tinNumber}</p>
-            <p><strong>SSS Number:</strong> {selectedProfile.government?.sssNumber}</p>
-            <p><strong>PhilHealth Number:</strong> {selectedProfile.government?.philHealthNumber}</p>
-            <p><strong>Pag-IBIG Number:</strong> {selectedProfile.government?.pagIbigNumber}</p>
-          </div>
+      {/* Government Info */}
+      <div>
+        <h3 className="text-lg font-bold text-indigo-600 mb-2">Government Numbers</h3>
+        <p><strong>TIN Number:</strong> {selectedProfile.government?.tinNumber}</p>
+        <p><strong>SSS Number:</strong> {selectedProfile.government?.sssNumber}</p>
+        <p><strong>PhilHealth Number:</strong> {selectedProfile.government?.philHealthNumber}</p>
+        <p><strong>Pag-IBIG Number:</strong> {selectedProfile.government?.pagIbigNumber}</p>
+      </div>
+    </div>
 
-          {/* Documents Info */}
-          <div>
-            <h3 className="text-lg font-bold text-indigo-600 mb-2">Documents</h3>
-            <p><strong>Primary ID Front:</strong> {selectedProfile.documents?.primaryIDFront ? 'Uploaded' : 'N/A'}</p>
-            <p><strong>Primary ID Back:</strong> {selectedProfile.documents?.primaryIDBack ? 'Uploaded' : 'N/A'}</p>
-            <p><strong>Secondary ID:</strong> {selectedProfile.documents?.secondaryID ? 'Uploaded' : 'N/A'}</p>
-            <p><strong>Clearance:</strong> {selectedProfile.documents?.clearance ? 'Uploaded' : 'N/A'}</p>
-            <p><strong>Proof of Address:</strong> {selectedProfile.documents?.proofOfAddress ? 'Uploaded' : 'N/A'}</p>
-            <p><strong>Medical Certificate:</strong> {selectedProfile.documents?.medicalCertificate ? 'Uploaded' : 'N/A'}</p>
-            <p><strong>Certificates:</strong> {selectedProfile.documents?.certificates ? 'Uploaded' : 'N/A'}</p>
-          </div>
-        </div>
-      )}
+    {/* Right Side - Documents */}
+    <div className="flex-1 space-y-4 overflow-y-auto max-h-[80vh]">
+      <h3 className="text-lg font-bold text-indigo-600 mb-2">Uploaded Documents</h3>
+
+      {/* Primary ID Front */}
+      <div>
+        <p className="font-semibold">Primary ID Front:</p>
+        {selectedProfile.documents?.primaryIDFront ? (
+          <img
+            src={`http://localhost:3000${selectedProfile.documents.primaryIDFront}`}
+            alt="Primary ID Front"
+            className="w-full h-40 object-cover rounded-lg border"
+          />
+        ) : (
+          <p className="text-sm text-gray-500">No image uploaded</p>
+        )}
+      </div>
+
+      {/* Primary ID Back */}
+      <div>
+        <p className="font-semibold">Primary ID Back:</p>
+        {selectedProfile.documents?.primaryIDBack ? (
+          <img
+            src={`http://localhost:3000${selectedProfile.documents.primaryIDBack}`}
+            alt="Primary ID Back"
+            className="w-full h-40 object-cover rounded-lg border"
+          />
+        ) : (
+          <p className="text-sm text-gray-500">No image uploaded</p>
+        )}
+      </div>
+
+      {/* Secondary ID */}
+      <div>
+        <p className="font-semibold">Secondary ID:</p>
+        {selectedProfile.documents?.secondaryID ? (
+          <img
+            src={`http://localhost:3000${selectedProfile.documents.secondaryID}`}
+            alt="Secondary ID"
+            className="w-full h-40 object-cover rounded-lg border"
+          />
+        ) : (
+          <p className="text-sm text-gray-500">No image uploaded</p>
+        )}
+      </div>
+
+      {/* Clearance */}
+      <div>
+        <p className="font-semibold">Clearance:</p>
+        {selectedProfile.documents?.clearance ? (
+          <img
+            src={`http://localhost:3000${selectedProfile.documents.clearance}`}
+            alt="Clearance"
+            className="w-full h-40 object-cover rounded-lg border"
+          />
+        ) : (
+          <p className="text-sm text-gray-500">No image uploaded</p>
+        )}
+      </div>
+
+      {/* Proof of Address */}
+      <div>
+        <p className="font-semibold">Proof of Address:</p>
+        {selectedProfile.documents?.proofOfAddress ? (
+          <img
+            src={`http://localhost:3000${selectedProfile.documents.proofOfAddress}`}
+            alt="Proof of Address"
+            className="w-full h-40 object-cover rounded-lg border"
+          />
+        ) : (
+          <p className="text-sm text-gray-500">No image uploaded</p>
+        )}
+      </div>
+
+      {/* Medical Certificate */}
+      <div>
+        <p className="font-semibold">Medical Certificate:</p>
+        {selectedProfile.documents?.medicalCertificate ? (
+          <img
+            src={`http://localhost:3000${selectedProfile.documents.medicalCertificate}`}
+            alt="Medical Certificate"
+            className="w-full h-40 object-cover rounded-lg border"
+          />
+        ) : (
+          <p className="text-sm text-gray-500">No image uploaded</p>
+        )}
+      </div>
+
+      {/* Certificates */}
+      <div>
+        <p className="font-semibold">Certificates:</p>
+        {selectedProfile.documents?.certificates ? (
+          <img
+            src={`http://localhost:3000${selectedProfile.documents.certificates}`}
+            alt="Certificates"
+            className="w-full h-40 object-cover rounded-lg border"
+          />
+        ) : (
+          <p className="text-sm text-gray-500">No image uploaded</p>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   </div>
 )}
