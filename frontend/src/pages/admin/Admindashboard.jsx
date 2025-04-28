@@ -614,16 +614,19 @@ const handleRejectServiceRequest = async (serviceId) => {
           <h3 className="text-lg font-bold text-gray-800 mb-1 text-center break-words">
             {tasker.fullName}
           </h3>
-          <p className="text-gray-600 text-sm text-center">
+          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
+            Age: <span className="font-semibold">{tasker.age || "N/A"}</span>
+          </p>
+          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
             Gender: <span className="font-semibold">{tasker.gender || "N/A"}</span>
           </p>
-          <p className="text-gray-600 text-sm text-center">
+          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
             Job: <span className="font-semibold">{tasker.jobType || "N/A"}</span>
           </p>
-          <p className="text-gray-600 text-sm text-center">
+          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
             Category: <span className="font-semibold">{tasker.serviceCategory || "N/A"}</span>
           </p>
-          <p className="text-gray-600 text-sm text-center">
+          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
             Experience: <span className="font-semibold">{tasker.experience || "N/A"} yrs</span>
           </p>
 
@@ -662,8 +665,8 @@ const handleRejectServiceRequest = async (serviceId) => {
 
 {active === "ServiceRequests" && (
   <div>
-    <p className="mb-6 text-lg font-semibold text-gray-700">
-      All service requests submitted by clients.
+    <p className="mb-6">
+    Manage and review client service submissions. View their profiles, and decide to approve or reject based on qualifications.
     </p>
 
     {/* ✨ Card layout */}
@@ -686,7 +689,7 @@ const handleRejectServiceRequest = async (serviceId) => {
           <h3 className="text-lg font-bold text-gray-800 mb-1 text-center break-words">
             {request.first_name} {request.last_name}
           </h3>
-          <p className="text-gray-600 text-sm text-center">
+          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
             {request.barangay}, {request.street}
           </p>
 
