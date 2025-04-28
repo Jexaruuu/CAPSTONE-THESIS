@@ -1,51 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import axios from "axios";
 
 const UserAvailableWorkers = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [approvedWorkers, setApprovedWorkers] = useState([]); // ✅ For dynamic workers
 
   const categories = ["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"];
 
-  const workers = [
-    {
-      name: "Juan Dela Cruz",
-      category: "Carpenter",
-      description: "Experienced in furniture building and home repairs.",
-      image: "/workers/juan.jpg",
-    },
-    {
-      name: "Maria Santos",
-      category: "Electrician",
-      description: "Licensed electrician with 5 years of experience.",
-      image: "/workers/maria.jpg",
-    },
-    {
-      name: "Pedro Reyes",
-      category: "Plumber",
-      description: "Expert in pipe installation and leakage repair.",
-      image: "/workers/pedro.jpg",
-    },
-    {
-      name: "Ana Lopez",
-      category: "Laundry",
-      description: "Professional laundry services for home and office.",
-      image: "/workers/ana.jpg",
-    },
-    {
-      name: "Rico Cruz",
-      category: "Carwasher",
-      description: "Quick and thorough car cleaning services.",
-      image: "/workers/rico.jpg",
-    },
-  ];
+  const fetchApprovedWorkers = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/taskers/approved');
+      setApprovedWorkers(response.data);
+    } catch (error) {
+      console.error('Error fetching approved workers:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchApprovedWorkers();
+  }, []);
 
   const filteredWorkers =
     selectedCategory === "All"
-      ? workers
-      : workers.filter((worker) => worker.category === selectedCategory);
+      ? approvedWorkers
+      : approvedWorkers.filter((worker) => worker.jobType === selectedCategory);
 
   const openModal = (worker) => {
     setSelectedWorker(worker);
@@ -93,16 +75,19 @@ const UserAvailableWorkers = () => {
         {/* Workers Grid */}
         <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredWorkers.map((worker, index) => (
-            <div key={index} className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between text-center h-[420px]">
+            <div key={index} className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between text-center h-[480px]">
               <div>
                 <img
-                  src={worker.image}
-                  alt={worker.name}
+                  src={`http://localhost:3000${worker.profilePicture}`}
+                  alt={worker.fullName}
                   className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
                 />
-                <h3 className="text-lg font-semibold mb-1">{worker.name}</h3>
-                <p className="text-sm text-yellow-700 font-medium mb-1">{worker.category}</p>
-                <p className="text-gray-600 text-sm">{worker.description}</p>
+                <h3 className="text-lg font-semibold mb-1">{worker.fullName}</h3>
+                <p className="text-yellow-700 font-medium mb-1">{worker.jobType}</p>
+                <p className="text-gray-600 text-sm mb-1">Age: {worker.age}</p>
+                <p className="text-gray-600 text-sm mb-1">Experience: {worker.experience} years</p>
+                <p className="text-gray-600 text-sm mb-2">Skills: {worker.skills}</p>
+                <p className="text-green-700 font-bold">₱{worker.pricePerHour} / hour</p>
               </div>
               <div className="mt-4 flex justify-center gap-3">
                 <button
@@ -133,14 +118,18 @@ const UserAvailableWorkers = () => {
               &times;
             </button>
             <div className="text-center">
-              <img
-                src={selectedWorker.image}
-                alt={selectedWorker.name}
-                className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
-              />
-              <h2 className="text-xl font-semibold mb-1">{selectedWorker.name}</h2>
-              <p className="text-yellow-700 font-medium mb-1">{selectedWorker.category}</p>
-              <p className="text-gray-600 text-sm mb-4">{selectedWorker.description}</p>
+  <img
+    src={`http://localhost:3000${worker.profilePicture}`}
+    alt={worker.fullName}
+    className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
+  />
+  <h3 className="text-lg font-bold mb-1">{worker.fullName}</h3>
+  <p className="text-gray-700 text-sm mb-1">Age: {worker.age}</p>
+  <p className="text-gray-700 text-sm mb-1">Gender: {worker.gender}</p>
+  <p className="text-blue-600 font-semibold mb-1">{worker.jobType}</p>
+  <p className="text-gray-600 text-sm mb-1">Experience: {worker.experience} years</p>
+  <p className="text-gray-600 text-sm mb-2">Skills: {worker.skills}</p>
+  <p className="text-green-600 font-bold text-lg">₱{worker.pricePerHour} / hour</p>
               <button
                 className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
               >

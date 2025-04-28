@@ -1,5 +1,5 @@
 const { createTasker } = require('../models/taskerModel');
-const db = require('../db');  // ✅ Needed to fetch/update taskers
+const db = require('../db');
 const path = require('path');
 const fs = require('fs');
 
@@ -20,13 +20,10 @@ const saveFile = (file, folder) => {
 const submitTaskerForm = async (req, res) => {
   try {
     const data = req.body;
-
-    // ✅ Calculate age automatically based on birthDate
     const birthDate = new Date(data.birthDate);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
 
-    // ✅ Handle file uploads
     const profilePicture = req.files?.profilePicture ? saveFile(req.files.profilePicture, 'profilePictures') : null;
     const primaryIDFront = req.files?.primaryIDFront ? saveFile(req.files.primaryIDFront, 'ids') : null;
     const primaryIDBack = req.files?.primaryIDBack ? saveFile(req.files.primaryIDBack, 'ids') : null;
@@ -38,7 +35,7 @@ const submitTaskerForm = async (req, res) => {
 
     const taskerData = {
       ...data,
-      age,  // ✅ Inject computed age
+      age,
       profilePicture,
       primaryIDFront,
       primaryIDBack,
@@ -49,18 +46,15 @@ const submitTaskerForm = async (req, res) => {
       certificates,
     };
 
-    // ✅ Insert to database
     const result = await createTasker(taskerData);
-
     res.status(201).json({ message: 'Tasker form submitted successfully' });
-
   } catch (error) {
     console.error('Error submitting tasker form:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-// 🔥 Fetch from tasker_personal
+// 🔥 Fetch all taskers
 const getAllTaskers = async (req, res) => {
   try {
     const [taskers] = await db.query('SELECT * FROM tasker_personal');
@@ -71,7 +65,7 @@ const getAllTaskers = async (req, res) => {
   }
 };
 
-// 🔥 Approve Tasker
+// 🔥 Approve tasker
 const approveTasker = async (req, res) => {
   const { id } = req.params;
   try {
@@ -83,11 +77,10 @@ const approveTasker = async (req, res) => {
   }
 };
 
-// 🔥 Reject Tasker
+// 🔥 Reject and delete tasker
 const rejectTasker = async (req, res) => {
   const { id } = req.params;
   try {
-    // Delete the tasker from the database instead of just rejecting
     await db.query('DELETE FROM tasker_personal WHERE id = ?', [id]);
     res.json({ message: 'Tasker application rejected and deleted successfully' });
   } catch (error) {
@@ -96,8 +89,7 @@ const rejectTasker = async (req, res) => {
   }
 };
 
-
-// 🔥 NEW: View full tasker profile from 4 tables
+// 🔥 View full tasker profile (personal, professional, documents, government)
 const getTaskerProfile = async (req, res) => {
   const { id } = req.params;
   try {
@@ -122,10 +114,55 @@ const getTaskerProfile = async (req, res) => {
   }
 };
 
+// 🔥 Fetch ONLY approved taskers with full details
+const getAllApprovedTaskers = async (req, res) => {
+  try {
+    const [taskers] = await db.query(`
+      SELECT 
+        tp.id,
+        tp.fullName,
+        tp.age,
+        tp.gender,
+        tp.profilePicture,
+        tf.jobType,
+        tf.experience,
+        tf.skills
+      FROM tasker_personal tp
+      JOIN tasker_professional tf ON tp.id = tf.id
+      WHERE tp.status = 'approved'
+    `);
+
+    // Add price per hour
+    const taskersWithPrice = taskers.map(tasker => ({
+      ...tasker,
+      pricePerHour: getPricePerHour(tasker.jobType)
+    }));
+
+    res.json(taskersWithPrice);
+  } catch (error) {
+    console.error('Error fetching approved taskers with full info:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// 💰 Reasonable price generator
+const getPricePerHour = (jobType) => {
+  if (!jobType) return 200; // fallback
+  switch (jobType.toLowerCase()) {
+    case 'carpenter': return 250;
+    case 'electrician': return 300;
+    case 'plumber': return 280;
+    case 'carwasher': return 150;
+    case 'laundry': return 180;
+    default: return 200;
+  }
+};
+
 module.exports = {
   submitTaskerForm,
   getAllTaskers,
   approveTasker,
   rejectTasker,
-  getTaskerProfile // ✅ Added here safely
+  getTaskerProfile,
+  getAllApprovedTaskers // ✅ Added without touching existing
 };
