@@ -196,12 +196,8 @@ const handleViewServiceRequest = (request) => {
   const handleApproveTasker = async (id) => {
     if (window.confirm("Approve this tasker?")) {
       try {
-        await axios.put(`http://localhost:3000/api/taskers/approve/${id}`); // ✅ correct
-        setTaskers((prevTaskers) =>
-          prevTaskers.map((tasker) =>
-            tasker.id === id ? { ...tasker, status: "approved" } : tasker
-          )
-        );
+        await axios.put(`http://localhost:3000/api/taskers/approve/${id}`);
+        fetchTaskers(); // 🔥 Re-fetch from server to update status badge immediately
       } catch (error) {
         console.error("Error approving tasker:", error);
       }
@@ -209,15 +205,12 @@ const handleViewServiceRequest = (request) => {
   };
   
   
+  
   const handleRejectTasker = async (id) => {
     if (window.confirm("Reject this tasker?")) {
       try {
-        await axios.put(`http://localhost:3000/api/taskers/reject/${id}`); // ✅ PUT not DELETE
-        setTaskers((prevTaskers) =>
-          prevTaskers.map((tasker) =>
-            tasker.id === id ? { ...tasker, status: "rejected" } : tasker
-          )
-        );
+        await axios.put(`http://localhost:3000/api/taskers/reject/${id}`);
+        fetchTaskers(); // 🔥 Re-fetch from server to update status badge immediately
       } catch (error) {
         console.error("Error rejecting tasker:", error);
       }

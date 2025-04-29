@@ -60,7 +60,8 @@ const fetchTaskersWithFullInfo = async () => {
       tp.profilePicture,
       tf.jobType,
       tf.serviceCategory,
-      tf.experience
+      tf.experience,
+      tp.status -- ✅ ✅ ✅ ADD THIS
     FROM 
       tasker_personal tp
     LEFT JOIN 
