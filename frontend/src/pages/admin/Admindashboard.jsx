@@ -23,11 +23,19 @@ const [serviceRequests, setServiceRequests] = useState([]);
 const [selectedRequest, setSelectedRequest] = useState(null); // For viewing service details
 const [requestModalOpen, setRequestModalOpen] = useState(false);
 
+const [pendingApplications, setPendingApplications] = useState(0);
+const [pendingServiceRequests, setPendingServiceRequests] = useState(0);
+
+
 // ✨ [NEW] fetchServiceRequests
 const fetchServiceRequests = async () => {
   try {
     const response = await axios.get('http://localhost:3000/api/clients/requests');
     setServiceRequests(response.data);
+
+    // ✨ Count how many service requests are pending
+    const pending = response.data.filter(request => !request.status || request.status === "pending").length;
+    setPendingServiceRequests(pending);
   } catch (error) {
     console.error('Error fetching service requests:', error);
   }
@@ -116,10 +124,15 @@ const handleViewServiceRequest = (request) => {
     try {
       const response = await axios.get('http://localhost:3000/api/taskers/fullinfo');
       setTaskers(response.data);
+  
+      // ✨ Count how many taskers are pending
+      const pending = response.data.filter(tasker => tasker.status === null || tasker.status === "pending").length;
+      setPendingApplications(pending);
     } catch (error) {
       console.error('Error fetching taskers:', error);
     }
   };
+  
 
   useEffect(() => {
     fetchCounts();
@@ -265,7 +278,8 @@ const getStatusBadge = (status) => {
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
       <div className="flex">
-        <aside className="w-64 h-screen bg-white text-black flex flex-col justify-between p-4">
+      <aside className="w-72 h-screen bg-white text-black flex flex-col justify-between p-4">
+
           <div>
             <div className="flex items-center mb-10">
               <img src="/logo.png" alt="Logo" className="w-56 h-56 mr-2" />
@@ -299,6 +313,7 @@ const getStatusBadge = (status) => {
   <span className="relative flex items-center text-base font-semibold"><UsersIcon className="mr-3 w-5 h-5" /> Manage Users</span>
 </button>
 
+{/* Applications Button with Pending Badge */}
 <button
   onClick={() => { setActive("Applications"); setSubActive(""); }}
   className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
@@ -308,9 +323,18 @@ const getStatusBadge = (status) => {
   `}
 >
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold"><FileTextIcon className="mr-3 w-5 h-5" /> Applications</span>
+  <span className="relative flex items-center text-base font-semibold">
+    <FileTextIcon className="mr-3 w-5 h-5" />
+    Applications
+    {pendingApplications > 0 && (
+      <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+        {pendingApplications}
+      </span>
+    )}
+  </span>
 </button>
 
+{/* Service Requests Button with Pending Badge */}
 <button
   onClick={() => { setActive("ServiceRequests"); setSubActive(""); }}
   className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
@@ -320,7 +344,15 @@ const getStatusBadge = (status) => {
   `}
 >
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold"><ClipboardListIcon className="mr-3 w-5 h-5" /> Service Requests</span>
+  <span className="relative flex items-center text-base font-semibold">
+    <ClipboardListIcon className="mr-3 w-5 h-5" />
+    Service Requests
+    {pendingServiceRequests > 0 && (
+      <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+        {pendingServiceRequests}
+      </span>
+    )}
+  </span>
 </button>
 
 <button
