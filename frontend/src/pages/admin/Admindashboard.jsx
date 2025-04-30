@@ -403,12 +403,14 @@ const getStatusBadge = (status) => {
         <main className="flex-1 p-6 relative">
           {/* Profile Modal (existing) */}
           {modalOpen && selectedProfile && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-y-auto p-4">
+  <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
+
     <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-4 relative">
       <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
 
             {/* Title */}
-            <h2 className="text-2xl font-bold text-center mb-6 text-indigo-600">
+            <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700 tracking-wide">
+
         {isTaskerProfile ? "Tasker Full Profile" : "Profile Details"}
       </h2>
 
@@ -434,9 +436,14 @@ const getStatusBadge = (status) => {
     <div className="flex-1 space-y-6">
       {/* Personal Info */}
       <div>
-        <h3 className="text-lg font-bold text-indigo-600 mb-2">Personal Information</h3>
+      <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">Personal Information</h3>
+
         <p><strong>Full Name:</strong> {selectedProfile.personal?.fullName}</p>
-        <p><strong>Birth Date:</strong> {selectedProfile.personal?.birthDate}</p>
+        <p><strong>Birth Date:</strong> {selectedProfile.personal?.birthDate ? new Date(selectedProfile.personal.birthDate).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric"
+}) : "N/A"}</p>
         <p><strong>Age:</strong> {selectedProfile.personal?.age}</p>
         <p><strong>Gender:</strong> {selectedProfile.personal?.gender}</p>
         <p><strong>Contact:</strong> {selectedProfile.personal?.contactNumber}</p>
@@ -901,8 +908,10 @@ const getStatusBadge = (status) => {
   
     {/* 🚀 THIS PART IS YOUR SERVICE REQUEST MODAL */}
     {requestModalOpen && selectedRequest && (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-y-auto p-4">
-        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-4 relative">
+      <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
+
+        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-3xl space-y-6 relative border border-gray-200">
+
           <button onClick={() => setRequestModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
 
           <h2 className="text-2xl font-bold text-center mb-6 text-indigo-600">Service Request Details</h2>
@@ -922,8 +931,23 @@ const getStatusBadge = (status) => {
             <p><strong>Address:</strong> {selectedRequest.street}, {selectedRequest.barangay}, {selectedRequest.additional_address}</p>
             <p><strong>Service Type:</strong> {selectedRequest.service_type}</p>
             <p><strong>Service Description:</strong> {selectedRequest.service_description}</p>
-            <p><strong>Preferred Date:</strong> {selectedRequest.preferred_date}</p>
-            <p><strong>Preferred Time:</strong> {selectedRequest.preferred_time}</p>
+            <p>
+  <strong>Preferred Date:</strong>{" "}
+  {new Date(selectedRequest.preferred_date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
+</p>
+
+<p>
+  <strong>Preferred Time:</strong>{" "}
+  {new Date(`1970-01-01T${selectedRequest.preferred_time}`).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  })}
+</p>
             <p><strong>Urgent Request:</strong> {selectedRequest.urgent_request ? "Yes" : "No"}</p>
 
             {/* Service Image */}
