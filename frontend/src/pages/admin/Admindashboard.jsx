@@ -17,6 +17,8 @@ const AdminDashboard = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [isTaskerProfile, setIsTaskerProfile] = useState(false); // ✅ New state to track if tasker
+  const [rateInputs, setRateInputs] = useState({});
+
 
   // ✨ [NEW] After existing states
 const [serviceRequests, setServiceRequests] = useState([]); 
@@ -26,6 +28,21 @@ const [requestModalOpen, setRequestModalOpen] = useState(false);
 const [pendingApplications, setPendingApplications] = useState(0);
 const [pendingServiceRequests, setPendingServiceRequests] = useState(0);
 
+const handleSetRate = async (taskerId) => {
+  const rate = rateInputs[taskerId];
+  if (!rate) return alert("Please enter a rate");
+
+  try {
+    await axios.put(`http://localhost:3000/api/taskers/rate/${taskerId}`, {
+      rate: parseFloat(rate),
+    });
+    alert("Rate updated");
+    fetchTaskers();
+  } catch (error) {
+    console.error("Error setting rate:", error);
+    alert("Failed to update rate");
+  }
+};
 
 // ✨ [NEW] fetchServiceRequests
 const fetchServiceRequests = async () => {
@@ -282,7 +299,7 @@ const getStatusBadge = (status) => {
 
           <div>
             <div className="flex items-center mb-10">
-              <img src="/logo.png" alt="Logo" className="w-56 h-56 mr-2" />
+              <img src="/logo.png" alt="Logo" className="w-65 h-65 mr-2" />
             </div>
             <div className="text-center mb-6">
               <p className="text-lg font-semibold">{`${admin.first_name} ${admin.last_name}`}</p>
@@ -743,37 +760,59 @@ const getStatusBadge = (status) => {
             Experience: <span className="font-semibold">{tasker.experience || "N/A"} yrs</span>
           </p>
 
-          {/* Status Badge */}
-          <div className="mb-3 mt-2">
-            {getStatusBadge(tasker.status)}
-          </div>
+         {/* Status Badge */}
+<div className="mb-3 mt-2">
+  {getStatusBadge(tasker.status)}
+</div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-2 w-full mt-4">
-            <button
-              onClick={() => handleViewTaskerProfile(tasker.id)}
-              className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+{/* 💡 Rate Input Field and Set Button */}
+<div className="w-full mt-2">
+  <div className="flex w-full">
+    <span className="px-3 py-2 bg-gray-100 border border-r-0 rounded-l text-sm">₱</span>
+    <input
+      type="number"
+      className="border border-l-0 p-2 text-center w-full text-sm rounded-r"
+      placeholder="Rate per hour"
+      value={rateInputs[tasker.id] || ""}
+      onChange={(e) =>
+        setRateInputs({ ...rateInputs, [tasker.id]: e.target.value })
+      }
+    />
+  </div>
+  <button
+    onClick={() => handleSetRate(tasker.id)}
+    className="relative w-full mt-2 rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Set Rate</span>
+  </button>
+</div>
 
-            >
-              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-              <span className="relative text-base font-semibold">View</span>
-            </button>
-            <button
-  onClick={() => handleApproveTasker(tasker.id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Approve</span>
-</button>
-<button
-  onClick={() => handleRejectTasker(tasker.id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Reject</span>
-</button>
+{/* Action Buttons */}
+<div className="flex flex-col gap-2 w-full mt-4">
+  <button
+    onClick={() => handleViewTaskerProfile(tasker.id)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">View</span>
+  </button>
+  <button
+    onClick={() => handleApproveTasker(tasker.id)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Approve</span>
+  </button>
+  <button
+    onClick={() => handleRejectTasker(tasker.id)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Reject</span>
+  </button>
+</div>
 
-          </div>
         </div>
       ))}
     </div>

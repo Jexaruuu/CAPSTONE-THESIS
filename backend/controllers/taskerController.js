@@ -67,7 +67,8 @@ const getAllTaskers = async (req, res) => {
         tf.jobType,
         tf.experience,
         tf.skills,
-        tp.status -- ✅ INCLUDE STATUS!!!
+        tf.rate_per_hour,
+        tp.status
       FROM tasker_personal tp
       LEFT JOIN tasker_professional tf ON tp.id = tf.id
     `);
@@ -103,7 +104,7 @@ const rejectTasker = async (req, res) => {
   }
 };
 
-// 🔥 View full tasker profile (personal, professional, documents, government)
+// 🔥 View full tasker profile
 const getTaskerProfile = async (req, res) => {
   const { id } = req.params;
   try {
@@ -137,10 +138,15 @@ const getAllApprovedTaskers = async (req, res) => {
         tp.fullName,
         tp.age,
         tp.gender,
+        tp.contactNumber,
+        tp.email,
+        tp.address,
         tp.profilePicture,
         tf.jobType,
+        tf.serviceCategory,
         tf.experience,
-        tf.skills
+        tf.skills,
+        tf.rate_per_hour
       FROM tasker_personal tp
       JOIN tasker_professional tf ON tp.id = tf.id
       WHERE tp.status = 'approved'
@@ -148,7 +154,7 @@ const getAllApprovedTaskers = async (req, res) => {
 
     const taskersWithPrice = taskers.map(tasker => ({
       ...tasker,
-      pricePerHour: getPricePerHour(tasker.jobType)
+      pricePerHour: tasker.rate_per_hour || getPricePerHour(tasker.jobType) // 👈 Prefer admin-set rate
     }));
 
     res.json(taskersWithPrice);
@@ -157,6 +163,7 @@ const getAllApprovedTaskers = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // ✅ New controller: Get taskers with full info
 const getTaskersWithFullInfo = async (req, res) => {
@@ -169,16 +176,29 @@ const getTaskersWithFullInfo = async (req, res) => {
   }
 };
 
-// 💰 Reasonable price generator
-const getPricePerHour = (jobType) => {
-  if (!jobType) return 200;
-  switch (jobType.toLowerCase()) {
-    case 'carpenter': return 250;
-    case 'electrician': return 300;
-    case 'plumber': return 280;
-    case 'carwasher': return 150;
-    case 'laundry': return 180;
-    default: return 200;
+// ✅ Set rate per hour for tasker (updates tasker_professional)
+const setTaskerRate = async (req, res) => {
+  const { id } = req.params;
+  const { rate } = req.body;
+
+  if (!rate || isNaN(rate)) {
+    return res.status(400).json({ message: 'Invalid rate value' });
+  }
+
+  try {
+    const [result] = await db.query(
+      'UPDATE tasker_professional SET rate_per_hour = ? WHERE id = ?',
+      [rate, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Tasker not found' });
+    }
+
+    res.json({ message: 'Rate updated successfully' });
+  } catch (error) {
+    console.error('Error setting tasker rate:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -189,5 +209,6 @@ module.exports = {
   rejectTasker,
   getTaskerProfile,
   getAllApprovedTaskers,
-  getTaskersWithFullInfo
+  getTaskersWithFullInfo,
+  setTaskerRate
 };

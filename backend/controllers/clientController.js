@@ -117,17 +117,26 @@ const getApprovedServices = async (req, res) => {
         c.first_name, c.last_name, c.contact_number, c.email,
         c.street, c.barangay, c.additional_address, c.profile_picture,
         s.id AS service_id, s.service_type, s.service_description,
-        s.preferred_date, s.preferred_time, s.urgent_request, s.service_image, s.status
+        s.preferred_date, s.preferred_time, 
+        IF(s.urgent_request = 1, 'Yes', 'No') AS urgent_request,
+        s.service_image, s.status
       FROM client_information c
       JOIN service_details s ON c.id = s.client_id
       WHERE s.status = 'approved'
     `);
-    res.json(rows);
+
+    const services = rows.map(service => ({
+      ...service,
+      address: `${service.street}, ${service.barangay}, ${service.additional_address}`.trim()
+    }));
+
+    res.json(services);
   } catch (error) {
     console.error('Error fetching approved services:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 module.exports = { 
   bookService, 

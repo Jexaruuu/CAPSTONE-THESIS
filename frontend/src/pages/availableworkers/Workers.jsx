@@ -11,12 +11,7 @@ const UserAvailableWorkers = () => {
   const [approvedWorkers, setApprovedWorkers] = useState([]);
   const navigate = useNavigate();
 
-  // ✅ For hero section image transition
-  const heroImages = [
-    "/carwash.jpg",
-    "/plumber.jpg",
-    "/electrician.jpg",
-  ];
+  const heroImages = ["/carwash.jpg", "/plumber.jpg", "/electrician.jpg"];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(true);
 
@@ -24,10 +19,10 @@ const UserAvailableWorkers = () => {
 
   const fetchApprovedWorkers = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/taskers/approved');
+      const response = await axios.get("http://localhost:3000/api/taskers/approved");
       setApprovedWorkers(response.data);
     } catch (error) {
-      console.error('Error fetching approved workers:', error);
+      console.error("Error fetching approved workers:", error);
     }
   };
 
@@ -42,14 +37,16 @@ const UserAvailableWorkers = () => {
         setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
         setFade(true);
       }, 500);
-    }, 5000); 
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   const filteredWorkers =
     selectedCategory === "All"
       ? approvedWorkers
-      : approvedWorkers.filter((worker) => worker.jobType?.toLowerCase() === selectedCategory.toLowerCase());
+      : approvedWorkers.filter(
+          (worker) => worker.jobType?.toLowerCase() === selectedCategory.toLowerCase()
+        );
 
   const openModal = (worker) => {
     setSelectedWorker(worker);
@@ -69,14 +66,14 @@ const UserAvailableWorkers = () => {
     <div className="font-sans">
       <Navigation />
 
-      {/* ✅ New Hero Section with Transition */}
+      {/* ✅ Hero Section */}
       <div
         className="relative w-full h-96 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 flex flex-col justify-center items-center"
         style={{
           backgroundImage: `url(${heroImages[currentImageIndex]})`,
           backgroundSize: "cover",
           opacity: fade ? 1 : 0,
-          boxShadow: "inset 0 0 0 2000px rgba(0, 0, 0, 0.6)"
+          boxShadow: "inset 0 0 0 2000px rgba(0, 0, 0, 0.6)",
         }}
       >
         <section className="relative text-center flex flex-col justify-center items-center text-white w-full h-auto py-10 z-10 px-4">
@@ -102,7 +99,9 @@ const UserAvailableWorkers = () => {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={`cursor-pointer px-4 py-2 rounded-md ${
-                  selectedCategory === cat ? "bg-yellow-400 text-black font-bold" : "hover:bg-gray-100"
+                  selectedCategory === cat
+                    ? "bg-yellow-400 text-black font-bold"
+                    : "hover:bg-gray-100"
                 }`}
               >
                 {cat}
@@ -111,72 +110,65 @@ const UserAvailableWorkers = () => {
           </ul>
         </div>
 
-        {/* Workers Grid */}
-        <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* ✅ Workers Grid */}
+        <div className="w-full md:w-3/4 flex flex-col space-y-6">
           {filteredWorkers.map((worker, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl shadow-xl p-6 flex flex-col justify-between text-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl border border-gray-100"
+              className="bg-white shadow-xl rounded-2xl p-6 flex flex-col sm:flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
             >
-              <div>
-                <img
-                  src={`http://localhost:3000${worker.profilePicture}`}
-                  alt={worker.fullName}
-                  className="mx-auto mb-4 h-32 w-32 object-cover rounded-full border-4 border-blue-100 shadow"
-                />
-                <h3 className="text-lg font-bold mb-1 text-gray-800">{worker.fullName}</h3>
-                <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full mb-2">
-                  {worker.jobType}
-                </span>
-
-                {/* Service Categories Badges */}
-                {worker.serviceCategory && (
-                  <div className="flex flex-wrap justify-center gap-1 mb-2">
-                    {Array.isArray(worker.serviceCategory)
-                      ? worker.serviceCategory.map((service, idx) => (
-                          <span
-                            key={idx}
-                            className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
-                          >
-                            {service}
-                          </span>
-                        ))
-                      : worker.serviceCategory.split(',').map((service, idx) => (
-                          <span
-                            key={idx}
-                            className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full"
-                          >
-                            {service.trim()}
-                          </span>
-                        ))}
-                  </div>
-                )}
-
-                <div className="text-gray-600 text-sm space-y-1">
-                  <p>Age: {worker.age}</p>
-                  <p>Gender: {worker.gender}</p>
-                  <p>Experience: {worker.experience} years</p>
-                  <p>Skills: {worker.skills}</p>
+              {/* Profile Picture - Right Side */}
+              <div className="flex-shrink-0 flex flex-col items-center">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-200 shadow">
+                  <img
+                    src={`http://localhost:3000${worker.profilePicture}`}
+                    alt={worker.fullName}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-
-                <p className="text-green-600 font-bold text-lg mt-2">
-                  ₱{worker.pricePerHour} <span className="text-sm">/ hour</span>
-                </p>
+                {/* ✅ Verified by Admin Badge */}
+                <span className="mt-3 inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
+                  ✅ Verified by Admin
+                </span>
               </div>
 
-              <div className="mt-6 flex justify-center gap-4">
-                <button
-                  onClick={() => openModal(worker)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-xl shadow"
-                >
-                  View Profile
-                </button>
-                <button
-                  onClick={() => handleHireNow(worker)}
-                  className="bg-green-600 hover:bg-green-700 text-white text-sm px-5 py-2 rounded-xl shadow"
-                >
-                  Hire Now
-                </button>
+              {/* Worker Info */}
+              <div className="flex-grow text-sm text-gray-700">
+                <h3 className="text-xl font-bold text-gray-800 mb-1">{worker.fullName}</h3>
+                <p className="text-yellow-700 font-medium mb-2">{worker.jobType}</p>
+                <p><strong>Age:</strong> {worker.age}</p>
+                <p><strong>Gender:</strong> {worker.gender}</p>
+                <p><strong>Contact:</strong> {worker.contactNumber || "N/A"}</p>
+                <p><strong>Email:</strong> {worker.email || "N/A"}</p>
+                <p><strong>Address:</strong> {worker.address || "N/A"}</p>
+                <p><strong>Experience:</strong> {worker.experience} years</p>
+                <p><strong>Skills:</strong> {worker.skills}</p>
+                {worker.serviceCategory && (
+                  <p>
+                    <strong>Categories:</strong>{" "}
+                    {Array.isArray(worker.serviceCategory)
+                      ? worker.serviceCategory.join(", ")
+                      : worker.serviceCategory}
+                  </p>
+                )}
+                <p className="text-green-600 font-bold mt-3">
+                  <strong>Price Rate:</strong> ₱{worker.pricePerHour} / hour
+                </p>
+
+                <div className="flex flex-wrap gap-4 mt-4">
+                  <button
+                    onClick={() => openModal(worker)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-xl shadow"
+                  >
+                    View Profile
+                  </button>
+                  <button
+                    onClick={() => handleHireNow(worker)}
+                    className="bg-green-600 hover:bg-green-700 text-white text-sm px-5 py-2 rounded-xl shadow"
+                  >
+                    Hire Now
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -202,11 +194,16 @@ const UserAvailableWorkers = () => {
               <h3 className="text-xl font-bold mb-1">{selectedWorker.fullName}</h3>
               <p className="text-gray-700 text-sm mb-1">Age: {selectedWorker.age}</p>
               <p className="text-gray-700 text-sm mb-1">Gender: {selectedWorker.gender}</p>
+              <p className="text-gray-700 text-sm mb-1">Contact: {selectedWorker.contactNumber || "N/A"}</p>
+              <p className="text-gray-700 text-sm mb-1">Email: {selectedWorker.email || "N/A"}</p>
+              <p className="text-gray-700 text-sm mb-1">Address: {selectedWorker.address || "N/A"}</p>
               <p className="text-blue-600 font-semibold mb-1">{selectedWorker.jobType}</p>
               <p className="text-blue-600 font-medium text-sm mb-1">{selectedWorker.serviceCategory}</p>
               <p className="text-gray-600 text-sm mb-1">Experience: {selectedWorker.experience} years</p>
               <p className="text-gray-600 text-sm mb-2">Skills: {selectedWorker.skills}</p>
-              <p className="text-green-700 font-bold text-lg">₱{selectedWorker.pricePerHour} / hour</p>
+              <p className="text-green-700 font-bold text-lg">
+                <strong>Price Rate:</strong> ₱{selectedWorker.pricePerHour} / hour
+              </p>
               <button
                 onClick={() => handleHireNow(selectedWorker)}
                 className="mt-4 bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 text-sm"
