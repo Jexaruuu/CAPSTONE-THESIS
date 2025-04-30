@@ -151,9 +151,10 @@ const UserAvailableWorkers = () => {
                       : worker.serviceCategory}
                   </p>
                 )}
-                <p className="text-green-600 font-bold mt-3">
-                  <strong>Price Rate:</strong> ₱{worker.pricePerHour} / hour
-                </p>
+<p className="text-green-600 font-bold mt-3">
+  <strong>Price Rate:</strong>{" "}
+  {worker.pricePerHour ? `₱${worker.pricePerHour} / hour` : <span className="text-red-500">Not Set</span>}
+</p>
 
                 <div className="flex flex-wrap gap-4 mt-4">
                   <button

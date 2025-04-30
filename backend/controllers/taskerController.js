@@ -154,15 +154,17 @@ const getAllApprovedTaskers = async (req, res) => {
 
     const taskersWithPrice = taskers.map(tasker => ({
       ...tasker,
-      pricePerHour: tasker.rate_per_hour || getPricePerHour(tasker.jobType) // 👈 Prefer admin-set rate
+      pricePerHour: tasker.rate_per_hour || null // ✅ Properly assign it
     }));
-
+    
     res.json(taskersWithPrice);
+
   } catch (error) {
     console.error('Error fetching approved taskers with full info:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 
 // ✅ New controller: Get taskers with full info
