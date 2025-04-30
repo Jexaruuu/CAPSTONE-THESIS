@@ -118,7 +118,7 @@ const UserNavigation = () => {
                 </li>
                 <li className="relative group w-max">
                   <Link to="/clientform" className="text-gray-700 font-medium hover:text-[#0d05d2]">
-                    Book a Worker
+                    Service Request
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
                   </Link>
                 </li>
@@ -141,7 +141,7 @@ const UserNavigation = () => {
                   </li>
                   <li className="relative group w-max">
                     <Link to="/servicerequest" className="text-gray-700 font-medium hover:text-[#0d05d2]">
-                      Service Request
+                      Available Works
                       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
                     </Link>
                   </li>

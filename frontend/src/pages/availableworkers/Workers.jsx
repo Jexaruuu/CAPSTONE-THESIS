@@ -176,45 +176,115 @@ const UserAvailableWorkers = () => {
         </div>
       </div>
 
-      {/* Modal */}
-      {showModal && selectedWorker && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md p-6 rounded-lg relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
-            >
-              &times;
-            </button>
-            <div className="text-center">
-              <img
-                src={`http://localhost:3000${selectedWorker.profilePicture}`}
-                alt={selectedWorker.fullName}
-                className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
-              />
-              <h3 className="text-xl font-bold mb-1">{selectedWorker.fullName}</h3>
-              <p className="text-gray-700 text-sm mb-1">Age: {selectedWorker.age}</p>
-              <p className="text-gray-700 text-sm mb-1">Gender: {selectedWorker.gender}</p>
-              <p className="text-gray-700 text-sm mb-1">Contact: {selectedWorker.contactNumber || "N/A"}</p>
-              <p className="text-gray-700 text-sm mb-1">Email: {selectedWorker.email || "N/A"}</p>
-              <p className="text-gray-700 text-sm mb-1">Address: {selectedWorker.address || "N/A"}</p>
-              <p className="text-blue-600 font-semibold mb-1">{selectedWorker.jobType}</p>
-              <p className="text-blue-600 font-medium text-sm mb-1">{selectedWorker.serviceCategory}</p>
-              <p className="text-gray-600 text-sm mb-1">Experience: {selectedWorker.experience} years</p>
-              <p className="text-gray-600 text-sm mb-2">Skills: {selectedWorker.skills}</p>
-              <p className="text-green-700 font-bold text-lg">
-                <strong>Price Rate:</strong> ₱{selectedWorker.pricePerHour} / hour
-              </p>
-              <button
-                onClick={() => handleHireNow(selectedWorker)}
-                className="mt-4 bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 text-sm"
-              >
-                Hire Now
-              </button>
-            </div>
-          </div>
+     {/* Modal */}
+     {showModal && selectedWorker && (
+  <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
+    <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-xl relative">
+      <button
+        onClick={closeModal}
+        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+      >
+        &times;
+      </button>
+
+      <div className="flex flex-col md:flex-row gap-6 items-center">
+        {/* Profile Image */}
+        <img
+  src={`http://localhost:3000/api/taskers/${selectedWorker.id}/profile-picture`}
+  alt={selectedWorker.fullName}
+  className="w-36 h-36 object-cover rounded-full border-4 border-blue-200 shadow"
+/>
+
+        {/* Info Section */}
+        <div className="flex-1 space-y-2 text-gray-800">
+          <h2 className="text-2xl font-bold text-blue-600">{selectedWorker.fullName}</h2>
+          <p><strong>Job Type:</strong> {selectedWorker.jobType}</p>
+          <p><strong>Age:</strong> {selectedWorker.age}</p>
+          <p><strong>Gender:</strong> {selectedWorker.gender}</p>
+          <p><strong>Contact:</strong> {selectedWorker.contactNumber || "N/A"}</p>
+          <p><strong>Email:</strong> {selectedWorker.email || "N/A"}</p>
+          <p><strong>Address:</strong> {selectedWorker.address || "N/A"}</p>
+          <p><strong>Experience:</strong> {selectedWorker.experience} years</p>
+          <p><strong>Skills:</strong> {selectedWorker.skills}</p>
+          {selectedWorker.serviceCategory && (
+            <p>
+              <strong>Categories:</strong>{" "}
+              {Array.isArray(selectedWorker.serviceCategory)
+                ? selectedWorker.serviceCategory.join(", ")
+                : selectedWorker.serviceCategory}
+            </p>
+          )}
+          <p className="text-green-700 font-semibold text-lg">
+            <strong>Price Rate:</strong> ₱{selectedWorker.pricePerHour} / hour
+          </p>
         </div>
-      )}
+      </div>
+
+      {/* Document Section */}
+      <div className="mt-6 border-t pt-6 space-y-4 text-sm text-gray-700">
+  <h3 className="text-lg font-semibold text-gray-800 mb-2">📁 Documents</h3>
+
+  <div>
+    <strong>Proof of Address:</strong>{" "}
+    {selectedWorker.proofOfAddress ? (
+      <a
+        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/proof-of-address`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline ml-2"
+      >
+        View Document
+      </a>
+    ) : (
+      <span className="text-red-500 ml-2">Not Provided</span>
+    )}
+  </div>
+
+  <div>
+    <strong>Medical Certificate:</strong>{" "}
+    {selectedWorker.medicalCertificate ? (
+      <a
+        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/medical-certificate`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline ml-2"
+      >
+        View Document
+      </a>
+    ) : (
+      <span className="text-red-500 ml-2">Not Provided</span>
+    )}
+  </div>
+
+  <div>
+    <strong>Certificates (e.g. TESDA):</strong>{" "}
+    {selectedWorker.additionalCertificate ? (
+      <a
+        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/optional-certificate`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline ml-2"
+      >
+        View Document
+      </a>
+    ) : (
+      <span className="text-gray-500 ml-2">Optional - Not Uploaded</span>
+    )}
+  </div>
+</div>
+
+      {/* Hire Button */}
+      <div className="text-center mt-6">
+        <button
+          onClick={() => handleHireNow(selectedWorker)}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-sm shadow-md"
+        >
+          Hire Now
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       <Footer />
     </div>

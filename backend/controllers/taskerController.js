@@ -63,14 +63,22 @@ const getAllTaskers = async (req, res) => {
         tp.fullName,
         tp.age,
         tp.gender,
+        tp.contactNumber,
+        tp.email,
+        tp.address,
         tp.profilePicture,
         tf.jobType,
+        tf.serviceCategory,
         tf.experience,
         tf.skills,
         tf.rate_per_hour,
-        tp.status
+        td.proofOfAddress,
+        td.medicalCertificate,
+        td.certificates AS additionalCertificate
       FROM tasker_personal tp
-      LEFT JOIN tasker_professional tf ON tp.id = tf.id
+      JOIN tasker_professional tf ON tp.id = tf.id
+      LEFT JOIN tasker_documents td ON tp.id = td.id
+      WHERE tp.status = 'approved'
     `);
 
     res.json(taskers);
@@ -133,28 +141,32 @@ const getTaskerProfile = async (req, res) => {
 const getAllApprovedTaskers = async (req, res) => {
   try {
     const [taskers] = await db.query(`
-      SELECT 
-        tp.id,
-        tp.fullName,
-        tp.age,
-        tp.gender,
-        tp.contactNumber,
-        tp.email,
-        tp.address,
-        tp.profilePicture,
-        tf.jobType,
-        tf.serviceCategory,
-        tf.experience,
-        tf.skills,
-        tf.rate_per_hour
-      FROM tasker_personal tp
-      JOIN tasker_professional tf ON tp.id = tf.id
-      WHERE tp.status = 'approved'
+    SELECT 
+  tp.id,
+  tp.fullName,
+  tp.age,
+  tp.gender,
+  tp.contactNumber,
+  tp.email,
+  tp.address,
+  tp.profilePicture,
+  tf.jobType,
+  tf.serviceCategory,
+  tf.experience,
+  tf.skills,
+  tf.rate_per_hour,
+  td.proofOfAddress,
+  td.medicalCertificate,
+  td.certificates AS additionalCertificate
+FROM tasker_personal tp
+JOIN tasker_professional tf ON tp.id = tf.id
+LEFT JOIN tasker_documents td ON tp.id = td.id
+WHERE tp.status = 'approved'
     `);
 
     const taskersWithPrice = taskers.map(tasker => ({
       ...tasker,
-      pricePerHour: tasker.rate_per_hour || null // ✅ Properly assign it
+      pricePerHour: tasker.rate_per_hour || null
     }));
     
     res.json(taskersWithPrice);
@@ -215,6 +227,66 @@ const setTaskerPending = async (req, res) => {
   }
 };
 
+// ✅ Serve Profile Picture from DB
+const getProfilePicture = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query('SELECT profilePicture FROM tasker_personal WHERE id = ?', [id]);
+    if (rows.length === 0 || !rows[0].profilePicture) return res.sendStatus(404);
+    const filePath = path.join(__dirname, '../', rows[0].profilePicture);
+    if (!fs.existsSync(filePath)) return res.sendStatus(404);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error serving profile picture:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ✅ Serve Proof of Address
+const getProofOfAddress = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query('SELECT proofOfAddress FROM tasker_documents WHERE id = ?', [id]);
+    if (rows.length === 0 || !rows[0].proofOfAddress) return res.sendStatus(404);
+    const filePath = path.join(__dirname, '../', rows[0].proofOfAddress);
+    if (!fs.existsSync(filePath)) return res.sendStatus(404);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error serving proof of address:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ✅ Serve Medical Certificate
+const getMedicalCertificate = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query('SELECT medicalCertificate FROM tasker_documents WHERE id = ?', [id]);
+    if (rows.length === 0 || !rows[0].medicalCertificate) return res.sendStatus(404);
+    const filePath = path.join(__dirname, '../', rows[0].medicalCertificate);
+    if (!fs.existsSync(filePath)) return res.sendStatus(404);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error serving medical certificate:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ✅ Serve Optional Certificate
+const getOptionalCertificate = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query('SELECT certificates FROM tasker_documents WHERE id = ?', [id]);
+    if (rows.length === 0 || !rows[0].certificates) return res.sendStatus(404);
+    const filePath = path.join(__dirname, '../', rows[0].certificates);
+    if (!fs.existsSync(filePath)) return res.sendStatus(404);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error serving optional certificate:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   submitTaskerForm,
   getAllTaskers,
@@ -224,5 +296,9 @@ module.exports = {
   getAllApprovedTaskers,
   getTaskersWithFullInfo,
   setTaskerRate,
-  setTaskerPending
+  setTaskerPending,
+  getProfilePicture,          // ✅ Export added functions
+  getProofOfAddress,
+  getMedicalCertificate,
+  getOptionalCertificate
 };
