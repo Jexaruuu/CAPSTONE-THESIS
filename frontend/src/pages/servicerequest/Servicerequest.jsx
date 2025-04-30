@@ -73,6 +73,30 @@ const UserAvailableServices = () => {
           service.service_type?.toLowerCase().includes(selectedCategory.toLowerCase())
         );
 
+        const formatPhone = (number) => {
+          if (!number) return "N/A";
+          const cleaned = number.replace(/\D/g, "");
+          return cleaned.startsWith("63") ? `+${cleaned}` : `+63${cleaned}`;
+        };
+
+        const handleApply = async (service) => {
+          try {
+            // Replace with actual user ID from session/auth context
+            const userId = localStorage.getItem("userId");
+        
+            const response = await axios.post("http://localhost:3000/api/applications", {
+              userId,
+              serviceId: service.id
+            });
+        
+            alert("Application submitted successfully!");
+          } catch (error) {
+            console.error("Error applying for service:", error);
+            alert("Failed to apply for this job.");
+          }
+        };
+        
+
   return (
     <div className="font-sans">
       <Navigation />
@@ -145,7 +169,7 @@ const UserAvailableServices = () => {
         </span>
 
         {/* Service Need Badge */}
-        <span className="text-[13px] text-gray-700 font-semibold mb-1">Service Need:</span>
+        <span className="text-[13px] text-gray-700 font-semibold mb-1 mt-2">Service Need:</span>
         <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
           {service.service_type ? service.service_type.charAt(0).toUpperCase() + service.service_type.slice(1).toLowerCase() : "N/A"}
         </span>
@@ -157,7 +181,8 @@ const UserAvailableServices = () => {
           {`${service.first_name || ""} ${service.last_name || ""}`.trim() || "Client"}
         </h3>
 
-        <p><span className="text-blue-800 font-semibold">Contact:</span> {service.contact_number || "N/A"}</p>
+        <p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(service.contact_number)}</p>
+
         <p><span className="text-blue-800 font-semibold">Address:</span> {service.address || "N/A"}</p>
         <p><span className="text-blue-800 font-semibold">Date:</span> {formatDate(service.preferred_date)}</p>
         <p><span className="text-blue-800 font-semibold">Time:</span> {formatTime(service.preferred_time)}</p>
@@ -168,11 +193,13 @@ const UserAvailableServices = () => {
           </span>
         </p>
 
-        <p className="text-gray-600 text-sm mt-3">
-          {service.service_description?.length > 60
-            ? service.service_description.substring(0, 60) + "..."
-            : service.service_description || "No description available."}
-        </p>
+        <p className="text-[15px] md:text-base text-gray-700">
+  <span className="text-blue-800 font-semibold">Service Description:</span>{" "}
+  {service.service_description?.length > 60
+    ? service.service_description.substring(0, 60) + "..."
+    : service.service_description || "No description available."}
+</p>
+
 
         <div className="flex flex-wrap gap-4 mt-4">
           <button
@@ -182,6 +209,13 @@ const UserAvailableServices = () => {
             <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
             <span className="relative text-base font-semibold">View Details</span>
           </button>
+          <button
+  onClick={() => handleApply(service)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Apply for this service request</span>
+</button>
         </div>
       </div>
     </div>

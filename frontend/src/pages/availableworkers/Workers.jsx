@@ -193,7 +193,7 @@ const itemsPerPage = 5;
     className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
   >
     <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Hire Now</span>
+    <span className="relative text-base font-semibold">Hire Worker</span>
   </button>
 </div>
 </div>
