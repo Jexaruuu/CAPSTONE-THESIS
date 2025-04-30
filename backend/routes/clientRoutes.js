@@ -4,7 +4,8 @@ const {
   bookService, 
   getServiceRequests, 
   deleteClientRequest,
-  getApprovedServices
+  getApprovedServices,
+  setPendingServiceRequest
 } = require('../controllers/clientController');
 const db = require('../db'); // ✅ Keep db at top
 
@@ -50,10 +51,24 @@ router.put('/reject/:serviceId', async (req, res) => {
   }
 });
 
+router.put('/pending/:serviceId', async (req, res) => {
+  const { serviceId } = req.params;
+  try {
+    await db.query('UPDATE service_details SET status = "pending" WHERE id = ?', [serviceId]);
+    res.json({ message: 'Service request set to pending' });
+  } catch (error) {
+    console.error('Error setting pending:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // ============================
 // 📌 Fetch Approved Services Only
 // ============================
 
 router.get('/approved', getApprovedServices);
+
+router.put('/pending/:serviceId', setPendingServiceRequest);
+
 
 module.exports = router;

@@ -7,7 +7,8 @@ const {
   getTaskerProfile,
   getAllApprovedTaskers,
   getTaskersWithFullInfo,
-  setTaskerRate // ✅ Import new controller
+  setTaskerRate,
+  setTaskerPending // ✅ Import new controller
 } = require('../controllers/taskerController');
 
 const router = express.Router();
@@ -20,5 +21,7 @@ router.put('/approve/:id', approveTasker);
 router.put('/reject/:id', rejectTasker); // 🔥 Important: now it's PUT, not DELETE
 router.get('/:id', getTaskerProfile);
 router.put('/rate/:id', setTaskerRate); // ✅ New route for setting hourly rate
+router.put('/pending/:id', setTaskerPending);
+
 
 module.exports = router;

@@ -21,7 +21,7 @@ const AdminDashboard = () => {
 
 
   // ✨ [NEW] After existing states
-const [serviceRequests, setServiceRequests] = useState([]); 
+const [serviceRequests, setServiceRequests] = useState([]);
 const [selectedRequest, setSelectedRequest] = useState(null); // For viewing service details
 const [requestModalOpen, setRequestModalOpen] = useState(false);
 
@@ -50,13 +50,14 @@ const fetchServiceRequests = async () => {
     const response = await axios.get('http://localhost:3000/api/clients/requests');
     setServiceRequests(response.data);
 
-    // ✨ Count how many service requests are pending
-    const pending = response.data.filter(request => !request.status || request.status === "pending").length;
+    // ✅ Always recalculate the actual number of pending requests
+    const pending = response.data.filter(req => !req.status || req.status === "pending").length;
     setPendingServiceRequests(pending);
   } catch (error) {
     console.error('Error fetching service requests:', error);
   }
 };
+
 
 // ✨ [Update] Inside your useEffect where you call fetchCounts(), fetchUsers(), fetchAdmins(), fetchTaskers()
 useEffect(() => {
@@ -254,9 +255,15 @@ const handleApproveServiceRequest = async (serviceId) => {
     try {
       await axios.put(`http://localhost:3000/api/clients/approve/${serviceId}`);
       setServiceRequests((prevRequests) =>
-        prevRequests.map((req) =>
-          req.service_id === serviceId ? { ...req, status: "approved" } : req
-        )
+        prevRequests.map((req) => {
+          if (req.service_id === serviceId) {
+            if (req.status === "pending") {
+              setPendingServiceRequests(prev => Math.max(prev - 1, 0));
+            }
+            return { ...req, status: "approved" };
+          }
+          return req;
+        })
       );
     } catch (error) {
       console.error('Error approving service request:', error);
@@ -264,22 +271,53 @@ const handleApproveServiceRequest = async (serviceId) => {
   }
 };
 
+
+const handleSetPendingTasker = async (id) => {
+  if (window.confirm("Set this tasker to pending?")) {
+    try {
+      await axios.put(`http://localhost:3000/api/taskers/pending/${id}`);
+      fetchTaskers();
+    } catch (error) {
+      console.error("Error setting tasker to pending:", error);
+    }
+  }
+}
+
 // Reject Service Request
 const handleRejectServiceRequest = async (serviceId) => {
   if (window.confirm("Reject this service request?")) {
     try {
       await axios.put(`http://localhost:3000/api/clients/reject/${serviceId}`);
       setServiceRequests((prevRequests) =>
-        prevRequests.map((req) =>
-          req.service_id === serviceId ? { ...req, status: "rejected" } : req
-        )
+        prevRequests.map((req) => {
+          if (req.service_id === serviceId) {
+            if (req.status === "pending") {
+              setPendingServiceRequests(prev => Math.max(prev - 1, 0));
+            }
+            return { ...req, status: "rejected" };
+          }
+          return req;
+        })
       );
     } catch (error) {
       console.error('Error rejecting service request:', error);
     }
   }
 };
-  
+
+
+const handleSetPendingServiceRequest = async (serviceId) => {
+  if (window.confirm("Set this service request to pending?")) {
+    try {
+      await axios.put(`http://localhost:3000/api/clients/pending/${serviceId}`);
+      await fetchServiceRequests(); // ✅ Recalculate pending count correctly
+    } catch (error) {
+      console.error("Error setting service request to pending:", error);
+    }
+  }
+};
+
+
 
 const getStatusBadge = (status) => {
   if (status === "approved") {
@@ -365,10 +403,10 @@ const getStatusBadge = (status) => {
     <ClipboardListIcon className="mr-3 w-5 h-5" />
     Service Requests
     {pendingServiceRequests > 0 && (
-      <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-        {pendingServiceRequests}
-      </span>
-    )}
+  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+    {pendingServiceRequests}
+  </span>
+)}
   </span>
 </button>
 
@@ -804,6 +842,7 @@ const getStatusBadge = (status) => {
     <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
     <span className="relative text-base font-semibold">View</span>
   </button>
+
   <button
     onClick={() => handleApproveTasker(tasker.id)}
     className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"
@@ -811,6 +850,7 @@ const getStatusBadge = (status) => {
     <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
     <span className="relative text-base font-semibold">Approve</span>
   </button>
+
   <button
     onClick={() => handleRejectTasker(tasker.id)}
     className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
@@ -818,8 +858,15 @@ const getStatusBadge = (status) => {
     <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
     <span className="relative text-base font-semibold">Reject</span>
   </button>
-</div>
 
+  <button
+    onClick={() => handleSetPendingTasker(tasker.id)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Pending</span>
+  </button>
+</div>
         </div>
       ))}
     </div>
@@ -864,15 +911,16 @@ const getStatusBadge = (status) => {
 
           {/* Status Badge */}
           <div className="mb-3 mt-2">
-            {request.status === "approved" && (
-              <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>
-            )}
-            {request.status === "rejected" && (
-              <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>
-            )}
-            {!request.status && (
-              <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>
-            )}
+          {request.status === "approved" && (
+  <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>
+)}
+{request.status === "rejected" && (
+  <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>
+)}
+{(!request.status || request.status === "pending") && (
+  <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>
+)}
+
           </div>
 
           {/* Action Buttons */}
@@ -898,6 +946,13 @@ const getStatusBadge = (status) => {
   className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
 >
   <span className="relative text-base font-semibold">Reject</span>
+</button>
+<button
+  onClick={() => handleSetPendingServiceRequest(request.service_id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Pending</span>
 </button>
 
 

@@ -137,10 +137,23 @@ const getApprovedServices = async (req, res) => {
   }
 };
 
+// ✅ Set service request status to pending
+const setPendingServiceRequest = async (req, res) => {
+  const { serviceId } = req.params;
+  try {
+    await db.query('UPDATE service_details SET status = "pending" WHERE id = ?', [serviceId]);
+    res.json({ message: 'Service request marked as pending' });
+  } catch (error) {
+    console.error('Error setting pending status:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 module.exports = { 
   bookService, 
   getServiceRequests, 
   deleteClientRequest,
-  getApprovedServices
+  getApprovedServices,
+  setPendingServiceRequest // ✅ ADD THIS
 };

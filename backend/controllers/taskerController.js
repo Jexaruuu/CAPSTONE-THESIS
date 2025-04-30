@@ -202,6 +202,17 @@ const setTaskerRate = async (req, res) => {
   }
 };
 
+const setTaskerPending = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('UPDATE tasker_personal SET status = "pending" WHERE id = ?', [id]);
+    res.json({ message: 'Tasker marked as pending' });
+  } catch (error) {
+    console.error('Error setting tasker to pending:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   submitTaskerForm,
   getAllTaskers,
@@ -210,5 +221,6 @@ module.exports = {
   getTaskerProfile,
   getAllApprovedTaskers,
   getTaskersWithFullInfo,
-  setTaskerRate
+  setTaskerRate,
+  setTaskerPending
 };
