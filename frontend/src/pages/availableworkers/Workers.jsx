@@ -318,6 +318,22 @@ const itemsPerPage = 5;
           <span className="text-gray-500 ml-1">Optional - Not Uploaded</span>
         )}
       </div>
+
+      <div>
+  <span className="text-black font-semibold">Clearance:</span>{" "}
+  {selectedWorker.clearance ? (
+    <a
+      href={`http://localhost:3000/api/taskers/${selectedWorker.id}/clearance`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline ml-1"
+    >
+      View Document
+    </a>
+  ) : (
+    <span className="text-red-500 ml-1">Not Provided</span>
+  )}
+</div>
     </div>
   </div>
 </div>

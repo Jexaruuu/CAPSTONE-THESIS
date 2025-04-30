@@ -12,7 +12,8 @@ const {
   getProfilePicture,           // ✅ New file-serving endpoints
   getProofOfAddress,
   getMedicalCertificate,
-  getOptionalCertificate
+  getOptionalCertificate,
+  getClearance
 } = require('../controllers/taskerController');
 
 const router = express.Router();
@@ -33,5 +34,7 @@ router.get('/:id/profile-picture', getProfilePicture);
 router.get('/:id/proof-of-address', getProofOfAddress);
 router.get('/:id/medical-certificate', getMedicalCertificate);
 router.get('/:id/optional-certificate', getOptionalCertificate);
+router.get('/:id/clearance', getClearance);
+
 
 module.exports = router;

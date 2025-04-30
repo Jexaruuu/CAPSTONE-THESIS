@@ -141,27 +141,28 @@ const getTaskerProfile = async (req, res) => {
 const getAllApprovedTaskers = async (req, res) => {
   try {
     const [taskers] = await db.query(`
-    SELECT 
-  tp.id,
-  tp.fullName,
-  tp.age,
-  tp.gender,
-  tp.contactNumber,
-  tp.email,
-  tp.address,
-  tp.profilePicture,
-  tf.jobType,
-  tf.serviceCategory,
-  tf.experience,
-  tf.skills,
-  tf.rate_per_hour,
-  td.proofOfAddress,
-  td.medicalCertificate,
-  td.certificates AS additionalCertificate
-FROM tasker_personal tp
-JOIN tasker_professional tf ON tp.id = tf.id
-LEFT JOIN tasker_documents td ON tp.id = td.id
-WHERE tp.status = 'approved'
+      SELECT 
+        tp.id,
+        tp.fullName,
+        tp.age,
+        tp.gender,
+        tp.contactNumber,
+        tp.email,
+        tp.address,
+        tp.profilePicture,
+        tf.jobType,
+        tf.serviceCategory,
+        tf.experience,
+        tf.skills,
+        tf.rate_per_hour,
+        td.proofOfAddress,
+        td.medicalCertificate,
+        td.certificates AS additionalCertificate,
+        td.clearance                          -- ✅ make sure this is present
+      FROM tasker_personal tp
+      JOIN tasker_professional tf ON tp.id = tf.id
+      LEFT JOIN tasker_documents td ON tp.id = td.id
+      WHERE tp.status = 'approved'
     `);
 
     const taskersWithPrice = taskers.map(tasker => ({
@@ -287,6 +288,21 @@ const getOptionalCertificate = async (req, res) => {
   }
 };
 
+const getClearance = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query('SELECT clearance FROM tasker_documents WHERE id = ?', [id]);
+    if (rows.length === 0 || !rows[0].clearance) return res.sendStatus(404);
+    const filePath = path.join(__dirname, '../', rows[0].clearance);
+    if (!fs.existsSync(filePath)) return res.sendStatus(404);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error serving clearance:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 module.exports = {
   submitTaskerForm,
   getAllTaskers,
@@ -300,5 +316,6 @@ module.exports = {
   getProfilePicture,          // ✅ Export added functions
   getProofOfAddress,
   getMedicalCertificate,
-  getOptionalCertificate
+  getOptionalCertificate,
+  getClearance
 };
