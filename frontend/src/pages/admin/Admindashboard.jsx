@@ -337,7 +337,7 @@ const getStatusBadge = (status) => {
 
           <div>
             <div className="flex items-center mb-10">
-              <img src="/logo.png" alt="Logo" className="w-65 h-65 mr-2" />
+              <img src="/logo.png" alt="Logo" className="w-66 h-66 mr-2" />
             </div>
             <div className="text-center mb-6">
               <p className="text-lg font-semibold">{`${admin.first_name} ${admin.last_name}`}</p>
