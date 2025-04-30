@@ -24,7 +24,6 @@ const UserAvailableServices = () => {
         console.error("Error fetching approved services:", error);
       }
     };
-
     fetchApprovedServices();
   }, []);
 
@@ -110,97 +109,107 @@ const UserAvailableServices = () => {
               <li
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`cursor-pointer px-4 py-2 rounded-md ${
-                  selectedCategory === cat ? "bg-yellow-400 text-black font-bold" : "hover:bg-gray-100"
+                className={`group relative cursor-pointer overflow-hidden rounded px-5 py-2.5 transition-all duration-300 font-semibold text-sm ${
+                  selectedCategory === cat
+                    ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+                    : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
                 }`}
               >
-                {cat}
+                <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                <span className="relative block text-base">{cat}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* ✅ Services Grid with Uniform Cards */}
-        <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredServices.map((service, index) => (
-            <div
-              key={index}
-              className="bg-white shadow-xl rounded-2xl p-6 flex flex-col min-h-[500px] justify-between text-left transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
-            >
-              <div>
-                <div className="flex flex-col items-center text-center mb-4">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-3">
-                    <img
-                      src={`http://localhost:3000${service.profile_picture}`}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+        {/* Cards */}
+        <div className="w-full md:w-3/4 flex flex-col space-y-6">
+  {filteredServices.map((service, index) => (
+    <div
+      key={index}
+      className="bg-white shadow-xl rounded-2xl p-6 flex flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
+    >
+      {/* Right: Profile Picture & Badges */}
+      <div className="flex-shrink-0 flex flex-col items-center">
+        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-2">
+          <img
+            src={`http://localhost:3000${service.profile_picture}`}
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {`${service.first_name || ""} ${service.last_name || ""}`.trim() || "Client"}
-                  </h3>
-                </div>
+        {/* Admin Badge */}
+        <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mb-1">
+          ✅ Verified by Admin
+        </span>
 
-                <div className="text-sm text-gray-700 space-y-1">
-                  <p><strong>Contact:</strong> {service.contact_number || "N/A"}</p>
-                  <p><strong>Address:</strong> {service.address || "N/A"}</p>
-                  <p><strong>Service Need:</strong> {service.service_type || "N/A"}</p>
-                  <p><strong>Date:</strong> {service.preferred_date ? formatDate(service.preferred_date) : "N/A"}</p>
-                  <p><strong>Time:</strong> {service.preferred_time ? formatTime(service.preferred_time) : "N/A"}</p>
-                  <p>
-                    <strong>Urgent:</strong>{" "}
-                    <span className={service.urgent_request === "Yes" ? "text-red-600 font-bold" : "text-green-600"}>
-                      {service.urgent_request === "Yes" ? "Yes" : "No"}
-                    </span>
-                  </p>
-                </div>
+        {/* Service Need Badge */}
+        <span className="text-[13px] text-gray-700 font-semibold mb-1">Service Need:</span>
+        <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
+          {service.service_type ? service.service_type.charAt(0).toUpperCase() + service.service_type.slice(1).toLowerCase() : "N/A"}
+        </span>
+      </div>
 
-                <p className="text-gray-600 text-sm mt-3">
-                  {service.service_description
-                    ? service.service_description.length > 60
-                      ? service.service_description.substring(0, 60) + "..."
-                      : service.service_description
-                    : "No description available."}
-                </p>
-              </div>
+      {/* Left: Service Details */}
+      <div className="flex-grow text-[15px] md:text-base text-gray-700">
+        <h3 className="text-xl font-bold text-[#000081] mb-2">
+          {`${service.first_name || ""} ${service.last_name || ""}`.trim() || "Client"}
+        </h3>
 
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={() => openModal(service)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-xl shadow"
-                >
-                  View Details
-                </button>
-              </div>
-            </div>
+        <p><span className="text-blue-800 font-semibold">Contact:</span> {service.contact_number || "N/A"}</p>
+        <p><span className="text-blue-800 font-semibold">Address:</span> {service.address || "N/A"}</p>
+        <p><span className="text-blue-800 font-semibold">Date:</span> {formatDate(service.preferred_date)}</p>
+        <p><span className="text-blue-800 font-semibold">Time:</span> {formatTime(service.preferred_time)}</p>
+        <p>
+          <span className="text-blue-800 font-semibold">Urgent:</span>{" "}
+          <span className={service.urgent_request === "Yes" ? "text-red-600 font-bold" : "text-green-600"}>
+            {service.urgent_request === "Yes" ? "Yes" : "No"}
+          </span>
+        </p>
+
+        <p className="text-gray-600 text-sm mt-3">
+          {service.service_description?.length > 60
+            ? service.service_description.substring(0, 60) + "..."
+            : service.service_description || "No description available."}
+        </p>
+
+        <div className="flex flex-wrap gap-4 mt-4">
+          <button
+            onClick={() => openModal(service)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">View Details</span>
+          </button>
+        </div>
+      </div>
+    </div>
           ))}
         </div>
       </div>
 
       {/* Modal */}
       {showModal && selectedService && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md p-6 rounded-lg relative">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-xl p-8 rounded-2xl shadow-xl relative">
             <button
               onClick={closeModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+              aria-label="Close modal"
             >
               &times;
             </button>
-            <div className="text-center">
+
+            <div className="flex flex-col items-center text-center gap-4">
               <img
                 src={`http://localhost:3000${selectedService.service_image}`}
                 alt={selectedService.service_type}
-                className="mx-auto mb-4 h-32 w-32 object-cover rounded-full"
+                className="w-32 h-32 object-cover rounded-full border-4 border-blue-200 shadow"
               />
-              <h2 className="text-xl font-semibold mb-1">
-                {selectedService.service_type || "Service"}
-              </h2>
-              <p className="text-yellow-700 font-medium mb-1">
-                {selectedService.barangay || "Location"}
-              </p>
-              <p className="text-gray-600 text-sm mb-4">
+              <h2 className="text-2xl font-bold text-[#000081]">{selectedService.service_type}</h2>
+              <p className="text-yellow-700 font-medium">{selectedService.barangay || "Location"}</p>
+              <p className="text-gray-600">
                 {selectedService.service_description || "No description available."}
               </p>
             </div>
