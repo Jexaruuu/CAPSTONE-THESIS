@@ -177,27 +177,30 @@ const UserAvailableWorkers = () => {
       </div>
 
      {/* Modal */}
-     {showModal && selectedWorker && (
+{showModal && selectedWorker && (
   <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
     <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-xl relative">
       <button
         onClick={closeModal}
-        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+        aria-label="Close modal"
       >
         &times;
       </button>
 
-      <div className="flex flex-col md:flex-row gap-6 items-center">
+      <div className="flex flex-col md:flex-row items-start gap-8">
         {/* Profile Image */}
-        <img
-  src={`http://localhost:3000/api/taskers/${selectedWorker.id}/profile-picture`}
-  alt={selectedWorker.fullName}
-  className="w-36 h-36 object-cover rounded-full border-4 border-blue-200 shadow"
-/>
+        <div className="flex-shrink-0 mx-auto md:mx-0">
+          <img
+            src={`http://localhost:3000/api/taskers/${selectedWorker.id}/profile-picture`}
+            alt={selectedWorker.fullName}
+            className="w-36 h-36 object-cover rounded-full border-4 border-blue-300 shadow"
+          />
+        </div>
 
         {/* Info Section */}
-        <div className="flex-1 space-y-2 text-gray-800">
-          <h2 className="text-2xl font-bold text-blue-600">{selectedWorker.fullName}</h2>
+        <div className="flex-1 text-gray-800 space-y-1">
+          <h2 className="text-2xl font-bold text-blue-700 mb-2">{selectedWorker.fullName}</h2>
           <p><strong>Job Type:</strong> {selectedWorker.jobType}</p>
           <p><strong>Age:</strong> {selectedWorker.age}</p>
           <p><strong>Gender:</strong> {selectedWorker.gender}</p>
@@ -214,70 +217,72 @@ const UserAvailableWorkers = () => {
                 : selectedWorker.serviceCategory}
             </p>
           )}
-          <p className="text-green-700 font-semibold text-lg">
+          <p className="text-green-700 font-semibold text-lg mt-2">
             <strong>Price Rate:</strong> ₱{selectedWorker.pricePerHour} / hour
           </p>
         </div>
       </div>
 
       {/* Document Section */}
-      <div className="mt-6 border-t pt-6 space-y-4 text-sm text-gray-700">
-  <h3 className="text-lg font-semibold text-gray-800 mb-2">📁 Documents</h3>
+      <div className="mt-8 border-t pt-6 space-y-3 text-sm text-gray-700">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+          📁 Documents
+        </h3>
 
-  <div>
-    <strong>Proof of Address:</strong>{" "}
-    {selectedWorker.proofOfAddress ? (
-      <a
-        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/proof-of-address`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline ml-2"
-      >
-        View Document
-      </a>
-    ) : (
-      <span className="text-red-500 ml-2">Not Provided</span>
-    )}
-  </div>
+        <div>
+          <strong>Proof of Address:</strong>{" "}
+          {selectedWorker.proofOfAddress ? (
+            <a
+              href={`http://localhost:3000/api/taskers/${selectedWorker.id}/proof-of-address`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline ml-1"
+            >
+              View Document
+            </a>
+          ) : (
+            <span className="text-red-500 ml-1">Not Provided</span>
+          )}
+        </div>
 
-  <div>
-    <strong>Medical Certificate:</strong>{" "}
-    {selectedWorker.medicalCertificate ? (
-      <a
-        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/medical-certificate`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline ml-2"
-      >
-        View Document
-      </a>
-    ) : (
-      <span className="text-red-500 ml-2">Not Provided</span>
-    )}
-  </div>
+        <div>
+          <strong>Medical Certificate:</strong>{" "}
+          {selectedWorker.medicalCertificate ? (
+            <a
+              href={`http://localhost:3000/api/taskers/${selectedWorker.id}/medical-certificate`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline ml-1"
+            >
+              View Document
+            </a>
+          ) : (
+            <span className="text-red-500 ml-1">Not Provided</span>
+          )}
+        </div>
 
-  <div>
-    <strong>Certificates (e.g. TESDA):</strong>{" "}
-    {selectedWorker.additionalCertificate ? (
-      <a
-        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/optional-certificate`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline ml-2"
-      >
-        View Document
-      </a>
-    ) : (
-      <span className="text-gray-500 ml-2">Optional - Not Uploaded</span>
-    )}
-  </div>
-</div>
+        <div>
+          <strong>Certificates (e.g. TESDA):</strong>{" "}
+          {selectedWorker.additionalCertificate ? (
+            <a
+              href={`http://localhost:3000/api/taskers/${selectedWorker.id}/optional-certificate`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline ml-1"
+            >
+              View Document
+            </a>
+          ) : (
+            <span className="text-gray-500 ml-1">Optional - Not Uploaded</span>
+          )}
+        </div>
+      </div>
 
-      {/* Hire Button */}
-      <div className="text-center mt-6">
+      {/* Action Button */}
+      <div className="text-center mt-8">
         <button
           onClick={() => handleHireNow(selectedWorker)}
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-sm shadow-md"
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-sm shadow-md transition duration-200"
         >
           Hire Now
         </button>
@@ -285,6 +290,7 @@ const UserAvailableWorkers = () => {
     </div>
   </div>
 )}
+
 
       <Footer />
     </div>
