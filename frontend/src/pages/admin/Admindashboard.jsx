@@ -317,8 +317,6 @@ const handleSetPendingServiceRequest = async (serviceId) => {
   }
 };
 
-
-
 const getStatusBadge = (status) => {
   if (status === "approved") {
     return <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>;
