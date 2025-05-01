@@ -3,6 +3,8 @@ import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
 import axios from "axios";
 
+const currentUser = JSON.parse(localStorage.getItem("user"));
+
 const UserAvailableServices = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedService, setSelectedService] = useState(null);
@@ -209,13 +211,15 @@ const UserAvailableServices = () => {
             <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
             <span className="relative text-base font-semibold">Service Request Details</span>
           </button>
-          <button
-  onClick={() => handleApply(service)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Apply for this Service Request</span>
-</button>
+          {currentUser?.email !== service.email && (
+  <button
+    onClick={() => handleApply(service)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Apply for this Service Request</span>
+  </button>
+)}
         </div>
       </div>
     </div>
@@ -248,13 +252,16 @@ const UserAvailableServices = () => {
             />
           </div>
       {/* Apply Button */}
-<button
-  onClick={() => handleApply(selectedService)}
-  className="mt-3 relative rounded px-6 py-3 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Apply</span>
-</button>
+      {currentUser?.email !== selectedService.email && (
+  <button
+    onClick={() => handleApply(selectedService)}
+    className="mt-3 relative rounded px-6 py-3 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Apply</span>
+  </button>
+)}
+
         </div>
 
         {/* Right - Service Info */}
