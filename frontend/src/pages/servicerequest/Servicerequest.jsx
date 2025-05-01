@@ -204,17 +204,17 @@ const UserAvailableServices = () => {
         <div className="flex flex-wrap gap-4 mt-4">
           <button
             onClick={() => openModal(service)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
           >
             <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">View Details</span>
+            <span className="relative text-base font-semibold">Service Request Details</span>
           </button>
           <button
   onClick={() => handleApply(service)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
 >
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Apply for this service request</span>
+  <span className="relative text-base font-semibold">Apply for this Service Request</span>
 </button>
         </div>
       </div>
@@ -225,31 +225,75 @@ const UserAvailableServices = () => {
 
       {/* Modal */}
       {showModal && selectedService && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-xl p-8 rounded-2xl shadow-xl relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
+  <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
+    <div className="bg-white w-full max-w-3xl p-6 rounded-2xl shadow-xl relative">
+      {/* Close Button */}
+      <button
+        onClick={closeModal}
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+        aria-label="Close modal"
+      >
+        &times;
+      </button>
 
-            <div className="flex flex-col items-center text-center gap-4">
+      {/* Main Flex Layout */}
+      <div className="flex md:flex-row flex-col gap-2 items-start">
+        {/* Left - Profile Picture and Apply Button */}
+        <div className="flex flex-col items-center w-[120px] shrink-0">
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-400 shadow">
+            <img
+              src={`http://localhost:3000${selectedService.profile_picture}`}
+              alt={`${selectedService.first_name} ${selectedService.last_name}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+      {/* Apply Button */}
+<button
+  onClick={() => handleApply(selectedService)}
+  className="mt-3 relative rounded px-6 py-3 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Apply</span>
+</button>
+        </div>
+
+        {/* Right - Service Info */}
+        <div className="flex-1 text-base text-gray-800 pl-4 space-y-2 leading-tight">
+          <h2 className="text-xl font-bold text-[#000081]">
+            {selectedService.first_name} {selectedService.last_name}
+          </h2>
+
+          <p><span className="font-semibold text-blue-800">Service Type:</span> {selectedService.service_type}</p>
+          <p><span className="font-semibold text-blue-800">Preferred Date:</span> {formatDate(selectedService.preferred_date)}</p>
+          <p><span className="font-semibold text-blue-800">Preferred Time:</span> {formatTime(selectedService.preferred_time)}</p>
+          <p><span className="font-semibold text-blue-800">Contact:</span> {formatPhone(selectedService.contact_number)}</p>
+          <p><span className="font-semibold text-blue-800">Email:</span> {selectedService.email}</p>
+          <p><span className="font-semibold text-blue-800">Address:</span> {selectedService.address}</p>
+          <p>
+            <span className="font-semibold text-blue-800">Urgent:</span>{" "}
+            <span className={`font-bold ${selectedService.urgent_request === "Yes" ? "text-red-600" : "text-green-600"}`}>
+              {selectedService.urgent_request}
+            </span>
+          </p>
+          <p><span className="font-semibold text-blue-800">Description:</span> {selectedService.service_description}</p>
+
+          {/* Service Image */}
+          <div className="mt-2">
+            <p className="font-semibold text-blue-800 mb-1">Service Image:</p>
+            <div className="w-full max-h-64 rounded-lg overflow-hidden border">
               <img
                 src={`http://localhost:3000${selectedService.service_image}`}
-                alt={selectedService.service_type}
-                className="w-32 h-32 object-cover rounded-full border-4 border-blue-200 shadow"
+                alt="Service"
+                className="w-full h-auto object-cover"
               />
-              <h2 className="text-2xl font-bold text-[#000081]">{selectedService.service_type}</h2>
-              <p className="text-yellow-700 font-medium">{selectedService.barangay || "Location"}</p>
-              <p className="text-gray-600">
-                {selectedService.service_description || "No description available."}
-              </p>
             </div>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  </div>
+)}
+
 
       <Footer />
     </div>
