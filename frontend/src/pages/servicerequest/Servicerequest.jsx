@@ -127,7 +127,7 @@ const UserAvailableServices = () => {
       <div className="flex max-w-7xl mx-auto px-6 py-12 gap-8">
         {/* Sidebar */}
         <div className="w-full md:w-1/4">
-          <h2 className="text-xl font-semibold mb-4">Categories</h2>
+          <h2 className="text-xl font-semibold mb-4">Service Request Categories</h2>
           <ul className="space-y-2">
             {categories.map((cat) => (
               <li
