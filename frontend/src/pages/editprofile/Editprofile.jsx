@@ -25,8 +25,8 @@ const EditProfile = () => {
             try {
                 const response = await axios.get(`http://localhost:3000/api/user/${userId}`, {
                     withCredentials: true
-                  });
-                
+                });
+    
                 const userData = response.data;
                 setFirstName(userData.first_name || "");
                 setLastName(userData.last_name || "");
@@ -35,7 +35,6 @@ const EditProfile = () => {
             } catch (err) {
                 console.error(err);
                 if (err.response && err.response.status === 404) {
-                    // User not found - logout the user
                     localStorage.removeItem("userId");
                     localStorage.removeItem("user");
                     navigate("/login");
@@ -43,37 +42,43 @@ const EditProfile = () => {
                     setError("Failed to fetch user data");
                 }
             }
-
+        };
+    
         if (userId) {
             fetchUser();
         } else {
             setError("User not logged in");
         }
-    };
     }, [userId]);
+    
 
     // Handle account deletion
     const handleDeleteAccount = async () => {
-        const confirmDelete = window.confirm("Are you sure you want to delete your account? This cannot be undone.");
+        const confirmDelete = window.confirm(
+          "Are you sure you want to permanently delete your account? This cannot be undone."
+        );
+      
         if (!confirmDelete) return;
-
+      
         try {
-            // Send DELETE request with credentials (cookies/session)
-            await axios.delete(`http://localhost:3000/api/user/${userId}`, {
-                withCredentials: true, // Ensure credentials are sent with the request
-            });
-
-            alert("Account deleted successfully!");
-
-            localStorage.removeItem("userId");
-            localStorage.removeItem("user");
-            
-            navigate("/");
+          const response = await axios.delete(`http://localhost:3000/api/user/${userId}`, {
+            withCredentials: true,
+          });
+      
+          alert("Account deleted successfully!");
+      
+          // Clear local storage/session
+          localStorage.removeItem("userId");
+          localStorage.removeItem("user");
+      
+          // Redirect
+          navigate("/");
         } catch (error) {
-            console.error(error);
-            setError(error.response?.data?.message || "Error deleting account");
+          console.error("Error deleting account:", error);
+          setError(error.response?.data?.message || "Error deleting account. Please try again.");
         }
-    };
+      };
+      
 
     const handleDeleteAccountWithScroll = async () => {
         // Smooth scroll to the top
