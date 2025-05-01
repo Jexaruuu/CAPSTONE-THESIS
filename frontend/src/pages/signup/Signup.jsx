@@ -4,8 +4,8 @@ import axios from "axios";
 
 const Signup = () => {
     const [formData, setFormData] = useState({
-        first_name: "",
-        last_name: "",
+        firstName: "",
+        lastName: "",
         mobile: "",
         email: "",
         password: "",
@@ -17,7 +17,6 @@ const Signup = () => {
     const [formErrors, setFormErrors] = useState({});
     const navigate = useNavigate(); 
 
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -25,7 +24,6 @@ const Signup = () => {
             [name]: value
         }));
 
-    
         if (formErrors[name]) {
             setFormErrors(prev => ({
                 ...prev,
@@ -34,16 +32,17 @@ const Signup = () => {
         }
     };
 
-  
     const evaluatePasswordStrength = (password) => {
-        if (!password) return "";
-        if (password.length < 6) return "Weak";
-        if (/^[a-zA-Z]+$/.test(password) || /^[0-9]+$/.test(password)) return "Weak";
-        if (password.length >= 6 && /[a-zA-Z]/.test(password) && /[0-9]/.test(password)) return "Normal";
-        if (password.length >= 8 && /[a-zA-Z]/.test(password) && /[0-9]/.test(password) && /[^a-zA-Z0-9]/.test(password)) return "Strong";
+        if (!password || password.length < 6) return "Weak";
+
+        const hasLetters = /[a-zA-Z]/.test(password);
+        const hasNumbers = /[0-9]/.test(password);
+        const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+
+        if (password.length >= 8 && hasLetters && hasNumbers && hasSpecial) return "Strong";
+        if (password.length >= 6 && hasLetters && hasNumbers) return "Normal";
         return "Weak";
     };
-
 
     const validateForm = () => {
         const errors = {};
@@ -62,8 +61,8 @@ const Signup = () => {
         if (!formData.mobile.trim()) {
             errors.mobile = "Mobile number is required";
             isValid = false;
-        } else if (!/^[0-9]{11}$/.test(formData.mobile)) {
-            errors.mobile = "Mobile must be 11 digits";
+        } else if (!/^[0-9]{10}$/.test(formData.mobile)) {
+            errors.mobile = "Mobile must be exactly 10 digits";
             isValid = false;
         }
 
@@ -85,6 +84,11 @@ const Signup = () => {
 
         if (formData.password !== formData.confirmPassword) {
             errors.confirmPassword = "Passwords don't match";
+            isValid = false;
+        }
+
+        if (passwordStrength === "Weak") {
+            errors.password = "Password strength is too weak";
             isValid = false;
         }
 
@@ -115,7 +119,6 @@ const Signup = () => {
                 withCredentials: true
             });
 
-            console.log(response.data);  
             alert('Signup successful!');
             navigate('/login'); 
         } catch (error) {
@@ -205,7 +208,7 @@ const Signup = () => {
                                     placeholder="9123456789" 
                                     value={formData.mobile}
                                     onChange={handleChange}
-                                    maxLength="11"
+                                    maxLength="10"
                                 />
                             </div>
                             {formErrors.mobile && (
@@ -247,10 +250,10 @@ const Signup = () => {
                                     <p className={`text-xs ${getStrengthColor()}`}>
                                         Password Strength: {passwordStrength}
                                     </p>
-                                    {formErrors.password && (
-                                        <p className="text-red-500 text-xs ml-2">{formErrors.password}</p>
-                                    )}
                                 </div>
+                            )}
+                            {formErrors.password && (
+                                <p className="text-red-500 text-xs mt-1">{formErrors.password}</p>
                             )}
                         </div>
                     
