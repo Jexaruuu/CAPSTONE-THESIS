@@ -15,7 +15,14 @@ const login = async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        const validPassword = await bcrypt.compare(password, user[0].password);
+        const userData = user[0];
+
+        // ✅ Check if email is verified
+        if (!userData.is_verified) {
+            return res.status(403).json({ message: "Please verify your email before logging in." });
+        }
+
+        const validPassword = await bcrypt.compare(password, userData.password);
 
         if (!validPassword) {
             return res.status(401).json({ message: "Invalid email or password" });
@@ -23,19 +30,19 @@ const login = async (req, res) => {
 
         // ✅ Save the logged-in user info inside session
         req.session.user = {
-            id: user[0].id,
-            email: user[0].email,
-            firstName: user[0].first_name,
-            lastName: user[0].last_name
+            id: userData.id,
+            email: userData.email,
+            firstName: userData.first_name,
+            lastName: userData.last_name
         };
 
         res.status(200).json({
             message: "Login successful",
             user: {
-                id: user[0].id,
-                email: user[0].email,
-                firstName: user[0].first_name,
-                lastName: user[0].last_name
+                id: userData.id,
+                email: userData.email,
+                first_name: userData.first_name,
+                last_name: userData.last_name
             }
         });
 
