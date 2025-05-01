@@ -3,14 +3,14 @@ import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
 import axios from "axios";
 
-const currentUser = JSON.parse(localStorage.getItem("user"));
-
 
 const UserAvailableServices = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedService, setSelectedService] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [approvedServices, setApprovedServices] = useState([]);
+  const currentUser = JSON.parse(localStorage.getItem("user")) || {};
+const userId = localStorage.getItem("userId");
 
   const heroImages = ["/plumber.jpg", "/electrician.jpg", "/carpenter.jpg"];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -83,21 +83,23 @@ const UserAvailableServices = () => {
         };
 
         const handleApply = async (service) => {
-          try {
-            // Replace with actual user ID from session/auth context
-            const userId = localStorage.getItem("userId");
+          if (currentUser?.email?.toLowerCase().trim() === service.email?.toLowerCase().trim()) {
+            alert("You cannot apply to your own service request.");
+            return;
+          }
         
+          try {
+            const userId = localStorage.getItem("userId");
             const response = await axios.post("http://localhost:3000/api/applications", {
               userId,
               serviceId: service.id
             });
-        
             alert("Application submitted successfully!");
           } catch (error) {
             console.error("Error applying for service:", error);
             alert("Failed to apply for this job.");
           }
-        };
+        };        
         
 
   return (

@@ -4,8 +4,8 @@ import Footer from "../../components/footer/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const currentUser = JSON.parse(localStorage.getItem("user"));
-
+const currentUser = JSON.parse(localStorage.getItem("user")) || {};
+const userId = localStorage.getItem("userId");
 
 const UserAvailableWorkers = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -15,6 +15,7 @@ const UserAvailableWorkers = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 const itemsPerPage = 5;
+
 
   const heroImages = ["/carwash.jpg", "/plumber.jpg", "/electrician.jpg"];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -64,6 +65,10 @@ const itemsPerPage = 5;
   };
 
   const handleHireNow = (worker) => {
+    if (currentUser?.email?.toLowerCase().trim() === worker.email?.toLowerCase().trim()) {
+      alert("You cannot hire yourself.");
+      return;
+    }
     navigate(`/hire/${worker.id}`, { state: { worker } });
   };
 
