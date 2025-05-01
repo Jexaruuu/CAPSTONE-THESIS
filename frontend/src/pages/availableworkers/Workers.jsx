@@ -4,6 +4,9 @@ import Footer from "../../components/footer/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const currentUser = JSON.parse(localStorage.getItem("user"));
+
+
 const UserAvailableWorkers = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedWorker, setSelectedWorker] = useState(null);
@@ -105,7 +108,7 @@ const itemsPerPage = 5;
       <div className="flex max-w-7xl mx-auto px-6 py-12 gap-8">
         {/* Sidebar */}
         <div className="w-full md:w-1/4">
-          <h2 className="text-xl font-semibold mb-4">Worker Categories</h2>
+          <h2 className="text-xl font-semibold mb-4">Categories</h2>
           <ul className="space-y-2">
   {categories.map((cat) => (
     <li
@@ -188,7 +191,9 @@ const itemsPerPage = 5;
     <span className="relative text-base font-semibold">View Documents</span>
   </button>
 
-  {/* Hire Now Button (Indigo Style) */}
+{/* Hire Now Button (Indigo Style) */}
+{/* Show "Hire Worker" button only if user is not the owner */}
+{currentUser?.email?.toLowerCase().trim() !== worker.email?.toLowerCase().trim() && (
   <button
     onClick={() => handleHireNow(worker)}
     className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
@@ -196,6 +201,8 @@ const itemsPerPage = 5;
     <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
     <span className="relative text-base font-semibold">Hire Worker</span>
   </button>
+)}
+
 </div>
 </div>
 
@@ -225,7 +232,8 @@ const itemsPerPage = 5;
     className="w-36 h-36 object-cover rounded-full border-4 border-blue-300 shadow"
   />
 
-  {/* Hire Now Button */}
+{/* Show "Hire Now" button in modal only if user is not the owner */}
+{currentUser?.email?.toLowerCase().trim() !== selectedWorker.email?.toLowerCase().trim() && (
   <button
     onClick={() => handleHireNow(selectedWorker)}
     className="relative rounded px-6 py-3 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
@@ -233,6 +241,8 @@ const itemsPerPage = 5;
     <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
     <span className="relative text-base font-semibold">Hire Now</span>
   </button>
+)}
+
 </div>
         
         {/* Info Section */}

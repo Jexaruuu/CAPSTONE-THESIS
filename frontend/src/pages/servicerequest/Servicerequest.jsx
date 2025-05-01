@@ -5,6 +5,7 @@ import axios from "axios";
 
 const currentUser = JSON.parse(localStorage.getItem("user"));
 
+
 const UserAvailableServices = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedService, setSelectedService] = useState(null);
