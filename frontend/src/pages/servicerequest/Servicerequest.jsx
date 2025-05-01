@@ -163,15 +163,15 @@ const UserAvailableServices = () => {
           />
         </div>
 
-        {/* Admin Badge */}
-        <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mb-1">
-          ✅ Verified by Admin
-        </span>
-
         {/* Service Need Badge */}
-        <span className="text-[13px] text-gray-700 font-semibold mb-1 mt-2">Service Need:</span>
+        <span className="text-[13px] text-gray-700 font-semibold mb-1">Service Need:</span>
         <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
           {service.service_type ? service.service_type.charAt(0).toUpperCase() + service.service_type.slice(1).toLowerCase() : "N/A"}
+        </span>
+
+          {/* Admin Badge */}
+          <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mt-4">
+          ✅ Verified by Admin
         </span>
       </div>
 

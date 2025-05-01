@@ -143,12 +143,13 @@ const itemsPerPage = 5;
                     className="w-full h-full object-cover"
                   />
                 </div>
-                {/* ✅ Verified by Admin Badge */}
-                <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mt-2">
-    ✅ Verified by Admin
-  </span>
-  <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm mt-2">
+                <span className="text-[13px] text-gray-700 font-semibold mt-2">Job type:</span>
+  <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
     {capitalizeFirst(worker.jobType)}
+  </span>
+                  {/* ✅ Verified by Admin Badge */}
+                  <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mt-4">
+    ✅ Verified by Admin
   </span>
               </div>
 
