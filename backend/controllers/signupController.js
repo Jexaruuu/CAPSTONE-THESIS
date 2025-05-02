@@ -34,15 +34,15 @@ const signup = async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: "barsanajexter@gmail.com", // ✅ YOUR GMAIL
-                pass: "ansrpqxbqeugheok"         // ✅ YOUR GMAIL APP PASSWORD
+                user: "jdhomeservicesandmaintenance@gmail.com", // ✅ YOUR GMAIL
+                pass: "fejq madt vgfz ggik"         // ✅ YOUR GMAIL APP PASSWORD
             }
         });
 
         const verificationLink = `http://localhost:3000/api/verify-email?token=${verificationToken}`;
 
         await transporter.sendMail({
-            from: '"JD HOMECARE" <barsanajexter@gmail.com>',
+            from: '"JD HOMECARE" <jdhomeservicesandmaintenance@gmail.com>',
             to: email,
             subject: "Verify your JD HOMECARE account",
             html: `
