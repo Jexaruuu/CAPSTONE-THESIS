@@ -2,8 +2,8 @@ const db = require('../db');
 
 const createTasker = async (taskerData) => {
   await db.execute(`
-    INSERT INTO tasker_personal (fullName, birthDate, age, gender, contactNumber, email, address, profilePicture)
-    VALUES (?,?,?,?,?,?,?,?)
+    INSERT INTO tasker_personal (fullName, birthDate, age, gender, contactNumber, email, address, profilePicture, social_media)
+    VALUES (?,?,?,?,?,?,?,?,?)
   `, [
     taskerData.fullName,
     taskerData.birthDate,
@@ -13,6 +13,7 @@ const createTasker = async (taskerData) => {
     taskerData.email,
     taskerData.address,
     taskerData.profilePicture,
+    taskerData.social_media,  // 👈 Add this
   ]);
 
   await db.execute(`

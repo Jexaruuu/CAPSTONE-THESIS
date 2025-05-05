@@ -269,111 +269,142 @@ const TaskerForm = () => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Personal Information Section */}
-          <section id="personal" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <SectionHeader icon="user" title="Personal Information" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField label="Full Name" name="fullName" register={register} errors={errors} required placeholder="Juan Dela Cruz" />
-              <FormField label="Birth Date" name="birthDate" register={register} errors={errors} type="date" required />
-              <FormField 
-  label="Sex" 
-  name="gender" 
+{/* Personal Information Section */}
+<section id="personal" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+  <SectionHeader icon="user" title="Personal Information" />
+
+  {/* 👇 Main grid: Left form + Right profile picture */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {/* 👈 Form fields in 2/3 width */}
+    <div className="md:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField label="Full Name" name="fullName" register={register} errors={errors} required placeholder="Juan Dela Cruz" />
+        <FormField label="Birth Date" name="birthDate" register={register} errors={errors} type="date" required />
+        <FormField 
+          label="Sex" 
+          name="gender" 
+          register={register} 
+          errors={errors} 
+          type="select" 
+          required 
+          options={[
+            {value: "Male", label: "Male"},
+            {value: "Female", label: "Female"}
+          ]}
+          placeholder="Select sex"
+        />
+        <div>
+          <label className="block font-medium text-gray-700 mb-1">Contact Number <span className="text-red-500">*</span></label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <span className="text-gray-500">+63</span>
+            </div>
+            <input 
+              {...register("contactNumber", { 
+                required: "Contact number is required",
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: "Please enter a valid 10-digit phone number (after +63)"
+                }
+              })} 
+              className={`pl-12 w-full border ${errors.contactNumber ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
+              placeholder="9123456789"
+            />
+          </div>
+          {errors.contactNumber && (
+            <p className="text-red-500 text-sm mt-1 flex items-center">
+              <i className="fas fa-exclamation-circle mr-1"></i> {errors.contactNumber.message}
+            </p>
+          )}
+        </div>
+        <FormField 
+          label="Email Address" 
+          name="email" 
+          register={register} 
+          errors={errors} 
+          type="email" 
+          required 
+          placeholder="your.email@example.com" 
+        />
+    <FormField 
+  label="Social Media Account" 
+  name="social_media" 
   register={register} 
   errors={errors} 
-  type="select" 
   required 
-  options={[
-    {value: "Male", label: "Male"},
-    {value: "Female", label: "Female"}
-  ]}
-  placeholder="Select sex"
+  placeholder="Facebook, Instagram, etc." 
 />
-              
-              <div>
-                <label className="block font-medium text-gray-700 mb-1">Contact Number <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <span className="text-gray-500">+63</span>
-                  </div>
-                  <input 
-                    {...register("contactNumber", { 
-                      required: "Contact number is required",
-                      pattern: {
-                        value: /^[0-9]{10}$/,
-                        message: "Please enter a valid 10-digit phone number (after +63)"
-                      }
-                    })} 
-                    className={`pl-12 w-full border ${errors.contactNumber ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
-                    placeholder="9123456789"
-                  />
-                </div>
-                {errors.contactNumber && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <i className="fas fa-exclamation-circle mr-1"></i> {errors.contactNumber.message}
-                  </p>
-                )}
-              </div>
-              
-              <FormField 
-                label="Email Address" 
-                name="email" 
-                register={register} 
-                errors={errors} 
-                type="email" 
-                required 
-                placeholder="your.email@example.com" 
-              />
-            </div>
 
-            <div className="mt-6">
-              <label className="block font-medium text-gray-700 mb-1">Home Address <span className="text-red-500">*</span></label>
-              <textarea 
-                {...register("address", { required: "Address is required" })} 
-                className={`w-full border ${errors.address ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
-                rows={3}
-                placeholder="House No., Street, Barangay, City, Province"
-              />
-              {errors.address && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <i className="fas fa-exclamation-circle mr-1"></i> {errors.address.message}
-                </p>
-              )}
-            </div>
+      </div>
 
-            {/* Profile Picture Upload */}
-            <div className="mt-6">
-              <label className="block font-medium text-gray-700 mb-1">Profile Picture <span className="text-red-500">*</span></label>
-              <div className="flex items-center space-x-6">
-                <div className="shrink-0">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
-                    {watch("profilePicture")?.length > 0 ? (
-                      <img className="h-full w-full object-cover" src={URL.createObjectURL(watch("profilePicture")[0])} alt="Profile preview" />
-                    ) : (
-                      <div className="bg-gray-100 h-full w-full flex items-center justify-center">
-                        <i className="fas fa-user text-3xl text-gray-400"></i>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <label className="block">
-                  <span className="sr-only">Choose profile photo</span>
-                  <input 
-                    type="file" 
-                    {...register("profilePicture", { required: "Profile picture is required" })}
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    accept="image/*"
-                  />
-                  {errors.profilePicture && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
-                      <i className="fas fa-exclamation-circle mr-1"></i> {errors.profilePicture.message}
-                    </p>
-                  )}
-                </label>
-              </div>
-              <p className="text-sm text-gray-500 mt-2">This will be visible to clients - please upload a clear headshot.</p>
-            </div>
-          </section>
+      {/* 👇 Address field */}
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">Home Address <span className="text-red-500">*</span></label>
+        <textarea 
+          {...register("address", { required: "Address is required" })} 
+          className={`w-full border ${errors.address ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
+          rows={3}
+          placeholder="House No., Street, Barangay, City, Province"
+        />
+        {errors.address && (
+          <p className="text-red-500 text-sm mt-1 flex items-center">
+            <i className="fas fa-exclamation-circle mr-1"></i> {errors.address.message}
+          </p>
+        )}
+      </div>
+    </div>
+
+{/* 👉 Profile picture on right */}
+<div className="flex flex-col items-center justify-start">
+  <label className="block font-medium text-gray-700 mb-2">
+    Profile Picture <span className="text-red-500">*</span>
+  </label>
+
+  {/* Preview Image */}
+  <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 mb-2">
+    {watch("profilePicture")?.length > 0 ? (
+      <img
+        className="h-full w-full object-cover"
+        src={URL.createObjectURL(watch("profilePicture")[0])}
+        alt="Profile preview"
+      />
+    ) : (
+      <div className="bg-gray-100 h-full w-full flex items-center justify-center">
+        <i className="fas fa-user text-3xl text-gray-400"></i>
+      </div>
+    )}
+  </div>
+
+  {/* File Name (if exists) */}
+  {watch("profilePicture")?.length > 0 && (
+    <p className="text-sm text-gray-700 font-medium mb-1 text-center">
+      {watch("profilePicture")[0].name}
+    </p>
+  )}
+
+  {/* File Input Button */}
+  <input
+    type="file"
+    {...register("profilePicture", { required: "Profile picture is required" })}
+    className="block w-full text-sm text-gray-500 file:mx-auto file:py-2 file:px-4 file:rounded-md file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+    accept="image/*"
+  />
+
+  {/* Error Message */}
+  {errors.profilePicture && (
+    <p className="text-red-500 text-sm mt-1 flex items-center">
+      <i className="fas fa-exclamation-circle mr-1"></i> {errors.profilePicture.message}
+    </p>
+  )}
+
+  {/* Caption */}
+  <p className="text-sm text-gray-500 mt-2 text-center">
+    This will be visible to clients. Please upload a clear headshot.
+  </p>
+</div>
+  </div>
+</section>
+
 
 {/* Professional Information Section */}
 <section id="professional" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">

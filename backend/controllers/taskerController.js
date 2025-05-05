@@ -39,8 +39,8 @@ const submitTaskerForm = async (req, res) => {
 
     const taskerData = {
       ...data,
-      jobType: JSON.stringify(jobTypeArray),            // ✅ Store as JSON string
-      serviceCategory: JSON.stringify(serviceCategoryArray), // ✅ Store as JSON string
+      jobType: JSON.stringify(jobTypeArray),
+      serviceCategory: JSON.stringify(serviceCategoryArray),
       age,
       profilePicture,
       primaryIDFront,
@@ -50,7 +50,9 @@ const submitTaskerForm = async (req, res) => {
       proofOfAddress,
       medicalCertificate,
       certificates,
+      social_media: data.social_media  // 👈 Add this
     };
+    
     
     // ✅ Clean undefined (which causes MySQL binding error)
     Object.keys(taskerData).forEach(key => {
