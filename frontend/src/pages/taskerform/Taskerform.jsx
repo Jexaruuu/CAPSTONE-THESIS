@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
 import axios from "axios"; 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Reusable components...
 const SectionHeader = ({ icon, title }) => (
@@ -184,34 +186,32 @@ const TaskerForm = () => {
   // ✅ UPDATED SUBMIT HANDLER
   const onSubmit = async (data) => {
     try {
-      // add jobType & serviceCategory as JSON string
       data.jobType = JSON.stringify(selectedJobTypes);
       data.serviceCategory = JSON.stringify(selectedCategories);
-
+  
       const formData = new FormData();
       for (const key in data) {
-        if (data[key] instanceof FileList) {
-          if (data[key].length > 0) {
-            formData.append(key, data[key][0]);
-          }
+        if (data[key] instanceof FileList && data[key].length > 0) {
+          formData.append(key, data[key][0]);
         } else {
           formData.append(key, data[key]);
         }
       }
-
+  
       const response = await axios.post("http://localhost:3000/api/taskers/submit", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
-
-      console.log("Tasker form submitted:", response.data);
+  
       setSubmitStatus("success");
+      toast.success("Application submitted successfully!");
       reset();
-      setSelectedJobTypes([]); // clear job selection
-      setSelectedCategories({}); // clear category selection
+      setSelectedJobTypes([]);
+      setSelectedCategories({});
     } catch (error) {
       console.error("Error submitting tasker form:", error);
       setSubmitStatus("error");
+      toast.error("Please complete all required fields correctly.");
     }
   };
 
@@ -233,18 +233,6 @@ const TaskerForm = () => {
 
       {/* Application Form Container */}
       <div className="max-w-6xl mx-auto px-4 py-8">
-
-  {/* Notifications */}
-  {submitStatus === "success" && (
-    <div className="mb-6 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300 flex items-center">
-      <i className="fas fa-check-circle mr-2"></i> Application submitted successfully!
-    </div>
-  )}
-  {submitStatus === "error" && (
-    <div className="mb-6 p-4 rounded-lg bg-red-100 text-red-700 border border-red-300 flex items-center">
-      <i className="fas fa-exclamation-circle mr-2"></i> Please complete all required fields correctly.
-    </div>
-  )}
 
         {/* Form Navigation */}
         <div className="bg-white rounded-lg shadow-sm mb-8 sticky top-4 z-10 flex justify-center">
@@ -646,8 +634,9 @@ const TaskerForm = () => {
           </div>
         </form>
       </div>
-      
-      <Footer />
+      <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
+      <ToastContainer />
+<Footer />
     </div>
   );
 };

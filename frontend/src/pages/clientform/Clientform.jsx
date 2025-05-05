@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const SectionHeader = ({ icon, title }) => (
   <div className="flex items-center mb-6">
@@ -98,41 +101,41 @@ const ClientForm = () => {
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
-
+  
       if (data.profilePicture?.length > 0) {
-        formData.append('profilePicture', data.profilePicture[0]);
+        formData.append("profilePicture", data.profilePicture[0]);
       } else {
-        alert("Please upload a profile picture before submitting.");
+        toast.error("Please upload a profile picture before submitting.");
         return;
       }
-
+  
       if (data.serviceImage?.length > 0) {
-        formData.append('serviceImage', data.serviceImage[0]);
+        formData.append("serviceImage", data.serviceImage[0]);
       }
-
-      formData.append('firstName', data.firstName);
-      formData.append('lastName', data.lastName);
-      formData.append('contactNumber', data.contactNumber);
-      formData.append('email', data.email);
-      formData.append('street', data.street);
-      formData.append('barangay', data.barangay);
-      formData.append('additionalAddress', data.additionalAddress);
-      formData.append('serviceType', data.serviceType);
-      formData.append('serviceDescription', data.serviceDescription);
-      formData.append('preferredDate', data.preferredDate);
-      formData.append('preferredTime', data.preferredTime);
-      formData.append('urgentRequest', data.urgentRequest ? 'on' : '');
-
-      const response = await axios.post('http://localhost:3000/api/clients/bookservice', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+  
+      formData.append("firstName", data.firstName);
+      formData.append("lastName", data.lastName);
+      formData.append("contactNumber", data.contactNumber);
+      formData.append("email", data.email);
+      formData.append("street", data.street);
+      formData.append("barangay", data.barangay);
+      formData.append("additionalAddress", data.additionalAddress);
+      formData.append("serviceType", data.serviceType);
+      formData.append("serviceDescription", data.serviceDescription);
+      formData.append("preferredDate", data.preferredDate);
+      formData.append("preferredTime", data.preferredTime);
+      formData.append("urgentRequest", data.urgentRequest ? "on" : "");
+  
+      const response = await axios.post("http://localhost:3000/api/clients/bookservice", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
-
-      alert(response.data.message);
+  
+      toast.success(response.data.message || "Service booked successfully!");
       reset();
     } catch (error) {
       console.error(error.response?.data || error.message);
-      alert('Failed to book service.');
+      toast.error("Failed to book service. Please try again.");
     }
   };
 
@@ -177,135 +180,124 @@ const ClientForm = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
           {/* Personal Information Section */}
-          <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <SectionHeader icon="user" title="Personal Information" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField 
-                label="First Name" 
-                name="firstName" 
-                register={register} 
-                errors={errors} 
-                required 
-                placeholder="Juan" 
-              />
-              
-              <FormField 
-                label="Last Name" 
-                name="lastName" 
-                register={register} 
-                errors={errors} 
-                required 
-                placeholder="Dela Cruz" 
-              />
-              
-              <div>
-                <label className="block font-medium text-gray-700 mb-1">Contact Number <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <span className="text-gray-500">+63</span>
-                  </div>
-                  <input 
-                    {...register("contactNumber", { 
-                      required: "Contact number is required",
-                      pattern: {
-                        value: /^[0-9]{10}$/,
-                        message: "Please enter a valid 10-digit phone number (after +63)"
-                      }
-                    })} 
-                    className={`pl-12 w-full border ${errors.contactNumber ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
-                    placeholder="9123456789"
-                  />
-                </div>
-                {errors.contactNumber && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <i className="fas fa-exclamation-circle mr-1"></i> {errors.contactNumber.message}
-                  </p>
-                )}
-              </div>
-              
-              <FormField 
-                label="Email Address" 
-                name="email" 
-                register={register} 
-                errors={errors} 
-                type="email" 
-                placeholder="your.email@example.com" 
-              />
-            </div>
+<section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+  <SectionHeader icon="user" title="Personal Information" />
 
-            <div className="mt-6">
-              <label className="block font-medium text-gray-700 mb-1">Complete Address in Bacolod City <span className="text-red-500">*</span></label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <FormField 
-                  label="Street" 
-                  name="street" 
-                  register={register} 
-                  errors={errors} 
-                  required 
-                  placeholder="House No. and Street" 
-                />
-                
-                <FormField 
-                  label="Barangay" 
-                  name="barangay" 
-                  register={register} 
-                  errors={errors} 
-                  type="select" 
-                  required 
-                  options={barangays}
-                  placeholder="Select Barangay"
-                />
-              </div>
-              
-              <textarea 
-                {...register("additionalAddress", { required: "Additional address details are required" })} 
-                className={`w-full border ${errors.additionalAddress ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
-                rows={2}
-                placeholder="Additional address details (landmarks, building name, etc.)"
-              />
-              {errors.additionalAddress && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <i className="fas fa-exclamation-circle mr-1"></i> {errors.additionalAddress.message}
-                </p>
-              )}
-            </div>
+  {/* Use flex to align form left and image right */}
+  <div className="flex flex-col md:flex-row md:justify-between gap-10">
+    {/* Left side: Form fields */}
+    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <FormField 
+        label="First Name" 
+        name="firstName" 
+        register={register} 
+        errors={errors} 
+        required 
+        placeholder="Juan" 
+      />
+      <FormField 
+        label="Last Name" 
+        name="lastName" 
+        register={register} 
+        errors={errors} 
+        required 
+        placeholder="Dela Cruz" 
+      />
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">Contact Number <span className="text-red-500">*</span></label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <span className="text-gray-500">+63</span>
+          </div>
+          <input 
+            {...register("contactNumber", { 
+              required: "Contact number is required",
+              pattern: {
+                value: /^[0-9]{10}$/,
+                message: "Enter valid 10-digit number"
+              }
+            })} 
+            className={`pl-12 w-full border ${errors.contactNumber ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent`} 
+            placeholder="9123456789"
+          />
+        </div>
+        {errors.contactNumber && (
+          <p className="text-red-500 text-sm mt-1 flex items-center">
+            <i className="fas fa-exclamation-circle mr-1"></i> {errors.contactNumber.message}
+          </p>
+        )}
+      </div>
+      <FormField 
+        label="Email Address" 
+        name="email" 
+        register={register} 
+        errors={errors} 
+        type="email" 
+        placeholder="your.email@example.com" 
+      />
+      <FormField 
+        label="Street" 
+        name="street" 
+        register={register} 
+        errors={errors} 
+        required 
+        placeholder="House No. and Street" 
+      />
+      <FormField 
+        label="Barangay" 
+        name="barangay" 
+        register={register} 
+        errors={errors} 
+        type="select" 
+        required 
+        options={barangays}
+        placeholder="Select Barangay"
+      />
+      <div className="col-span-2">
+        <textarea 
+          {...register("additionalAddress", { required: "Additional address is required" })} 
+          className={`w-full border ${errors.additionalAddress ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent`} 
+          rows={2}
+          placeholder="Additional address details (landmarks, building name, etc.)"
+        />
+        {errors.additionalAddress && (
+          <p className="text-red-500 text-sm mt-1 flex items-center">
+            <i className="fas fa-exclamation-circle mr-1"></i> {errors.additionalAddress.message}
+          </p>
+        )}
+      </div>
+    </div>
 
-            {/* Profile Picture Upload */}
-            <div className="mt-6">
-              <label className="block font-medium text-gray-700 mb-1">Profile Picture <span className="text-red-500">*</span></label>
-              <div className="flex items-center space-x-6">
-                <div className="shrink-0">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
-                    {watch("profilePicture")?.length > 0 ? (
-                      <img className="h-full w-full object-cover" src={URL.createObjectURL(watch("profilePicture")[0])} alt="Profile preview" />
-                    ) : (
-                      <div className="bg-gray-100 h-full w-full flex items-center justify-center">
-                        <i className="fas fa-user text-3xl text-gray-400"></i>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <label className="block">
-                  <span className="sr-only">Choose profile photo</span>
-                  <input 
-                    type="file" 
-                    {...register("profilePicture", { required: "Profile picture is required" })}
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    accept="image/*"
-                  />
-                  {errors.profilePicture && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
-                      <i className="fas fa-exclamation-circle mr-1"></i> {errors.profilePicture.message}
-                    </p>
-                  )}
-                </label>
-              </div>
-              <p className="text-sm text-gray-500 mt-2">This will be visible to workers - please upload a clear headshot.</p>
-            </div>
-          </section>
-
-          
+    {/* Right side: Profile Picture */}
+    <div className="w-full md:w-1/3 flex flex-col items-center justify-start mt-6 md:mt-0">
+      <label className="block font-medium text-gray-700 mb-2">Profile Picture <span className="text-red-500">*</span></label>
+      <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 mb-3">
+        {watch("profilePicture")?.length > 0 ? (
+          <img className="h-full w-full object-cover" src={URL.createObjectURL(watch("profilePicture")[0])} alt="Preview" />
+        ) : (
+          <div className="bg-gray-100 h-full w-full flex items-center justify-center">
+            <i className="fas fa-user text-3xl text-gray-400"></i>
+          </div>
+        )}
+      </div>
+      {watch("profilePicture")?.length > 0 && (
+        <p className="text-sm text-gray-600 mb-1 text-center truncate w-full">{watch("profilePicture")[0].name}</p>
+      )}
+      <input 
+        type="file" 
+        {...register("profilePicture", { required: "Profile picture is required" })}
+        className="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        accept="image/*"
+      />
+      {errors.profilePicture && (
+        <p className="text-red-500 text-sm mt-1 flex items-center">
+          <i className="fas fa-exclamation-circle mr-1"></i> {errors.profilePicture.message}
+        </p>
+      )}
+      <p className="text-sm text-gray-500 mt-2 text-center">This will be visible to workers - please upload a clear headshot.</p>
+    </div>
+  </div>
+</section>
 
           {/* Service Information Section */}
           <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
@@ -370,35 +362,41 @@ const ClientForm = () => {
               />
             </div>
 
-            {/* Service Image Upload */}
-<div>
-  <label className="block font-medium text-gray-700 mt-10">Upload Service Image (optional)</label>
-  <div className="flex items-center space-x-6">
-    <div className="shrink-0">
-      <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-300">
-        {watch("serviceImage")?.length > 0 ? (
-          <img
-            className="h-full w-full object-cover"
-            src={URL.createObjectURL(watch("serviceImage")[0])}
-            alt="Service preview"
-          />
-        ) : (
-          <div className="bg-gray-100 h-full w-full flex items-center justify-center">
-            <i className="fas fa-wrench text-3xl text-gray-400"></i>
-          </div>
-        )}
-      </div>
-    </div>
-    <label className="block">
-      <span className="sr-only">Choose service photo</span>
-      <input
-        type="file"
-        {...register("serviceImage")}
-        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        accept="image/*"
-      />
-    </label>
+{/* 📷 Styled Upload Service Image (Like Certificates) */}
+<div className="mt-6">
+  <label className="block font-medium text-gray-700 mb-1">Upload Service Image (optional)</label>
+
+  <div
+    className={`border-2 border-dashed ${
+      watch("serviceImage")?.length > 0 ? "border-transparent" : "border-gray-400"
+    } rounded-lg p-4`}
+  >
+{watch("serviceImage")?.length > 0 ? (
+  <div className="w-full h-60 overflow-hidden rounded-md border-2 border-dashed border-black">
+    <img
+      src={URL.createObjectURL(watch("serviceImage")[0])}
+      alt="Service Preview"
+      className="w-full h-full object-cover"
+    />
   </div>
+    ) : (
+      <label
+        htmlFor="serviceImage"
+        className="flex flex-col items-center justify-center h-40 w-full cursor-pointer text-gray-500"
+      >
+        <span className="font-semibold text-gray-700">Click to upload</span> or drag and drop  
+        <p className="text-sm text-gray-400">PDF, JPG, or PNG (max. 5MB)</p>
+        <input
+          id="serviceImage"
+          type="file"
+          {...register("serviceImage")}
+          accept="image/*"
+          className="hidden"
+        />
+      </label>
+    )}
+  </div>
+
   <p className="text-sm text-gray-500 mt-2">Upload a photo of the item or area you need fixed (optional).</p>
 </div>
           </section>
@@ -443,6 +441,18 @@ const ClientForm = () => {
       </div>
       
       <Footer />
+      <ToastContainer
+  position="top-right"
+  autoClose={3000}
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss
+  draggable
+  pauseOnHover
+  theme="light"
+/>
     </div>
   );
 };
