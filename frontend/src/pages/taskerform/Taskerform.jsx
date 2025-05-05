@@ -547,7 +547,7 @@ const TaskerForm = () => {
               </div>
 
               <FileUpload 
-                label="Certificates (Optional)" 
+                label="Certificates" 
                 name="certificates" 
                 register={register} 
                 errors={errors} 
