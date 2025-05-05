@@ -33,8 +33,14 @@ const submitTaskerForm = async (req, res) => {
     const medicalCertificate = req.files?.medicalCertificate ? saveFile(req.files.medicalCertificate, 'medical') : null;
     const certificates = req.files?.certificates ? saveFile(req.files.certificates, 'certificates') : null;
 
+    // ✅ Transform jobType and serviceCategory to JSON strings if they’re arrays (for checkbox input)
+    const jobTypeArray = Array.isArray(data.jobType) ? data.jobType : [data.jobType];
+    const serviceCategoryArray = Array.isArray(data.serviceCategory) ? data.serviceCategory : [data.serviceCategory];
+
     const taskerData = {
       ...data,
+      jobType: JSON.stringify(jobTypeArray),            // ✅ Store as JSON string
+      serviceCategory: JSON.stringify(serviceCategoryArray), // ✅ Store as JSON string
       age,
       profilePicture,
       primaryIDFront,

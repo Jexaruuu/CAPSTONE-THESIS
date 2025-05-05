@@ -138,19 +138,23 @@ const TaskerForm = () => {
   const { register, handleSubmit, formState: { errors }, watch, reset } = useForm();
   const [submitStatus, setSubmitStatus] = useState("");
 
-  const heroImages = ["/carpenter1.jpg","/electrician1.jpg","/plumber1.jpg","/carwash2.jpg","/laundry2.jpg"];
+  const heroImages = ["/carpenter1.jpg", "/electrician1.jpg", "/plumber1.jpg", "/carwash2.jpg", "/laundry2.jpg"];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(true);
   const [activeSection, setActiveSection] = useState("personal");
 
-  const selectedJobType = watch("jobType");
+  // ✅ Added for multi-job logic
+  const [selectedJobTypes, setSelectedJobTypes] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState({});
+
+  const selectedJobType = watch("jobType"); // still used in some legacy parts if needed
 
   const serviceCategories = {
-    carpenter: ["Furniture Repair", "Furniture Assembly", "Cabinet Installation", "Wood Polishing", "Shelving Installation", "Door Repair/Installation","Wooden Floor Installation/Repair"],
-    electrician: ["Wiring Repair", "Lighting Fixtures", "Electrical Panel Service", "Ceiling Fan Installation", "Outlet/Switch Installation", "Home Automation Setup","Electric Appliance Repair"],
-    plumber: ["Leak Fixing", "Pipe Installation", "Toilet Repair/Installation", "Faucet Repair/Installation", "Water Heater Services", "Drain Cleaning","Shower/Bathtub Installation"],
-    carwasher: ["Exterior Wash", "Interior Detailing", "Full Detailing", "Polish & Wax", "Scratch Removal", "Headlight Restoration","Engine Bay Cleaning"],
-    laundry: ["Dry Cleaning", "Wash & Fold", "Ironing Service", "Stain Removal", "Delicates Cleaning", "Comforter/Bedding Cleaning","Business Uniform Service"]
+    carpenter: ["Furniture Repair", "Furniture Assembly", "Cabinet Installation", "Wood Polishing", "Shelving Installation", "Door Repair/Installation", "Wooden Floor Installation/Repair"],
+    electrician: ["Wiring Repair", "Lighting Fixtures", "Electrical Panel Service", "Ceiling Fan Installation", "Outlet/Switch Installation", "Home Automation Setup", "Electric Appliance Repair"],
+    plumber: ["Leak Fixing", "Pipe Installation", "Toilet Repair/Installation", "Faucet Repair/Installation", "Water Heater Services", "Drain Cleaning", "Shower/Bathtub Installation"],
+    carwasher: ["Exterior Wash", "Interior Detailing", "Full Detailing", "Polish & Wax", "Scratch Removal", "Headlight Restoration", "Engine Bay Cleaning"],
+    laundry: ["Dry Cleaning", "Wash & Fold", "Ironing Service", "Stain Removal", "Delicates Cleaning", "Comforter/Bedding Cleaning", "Business Uniform Service"]
   };
 
   useEffect(() => {
@@ -177,9 +181,13 @@ const TaskerForm = () => {
     { id: "agreements", icon: "file-signature", text: "Agreements" }
   ];
 
-  // 🧩 THE FINAL onSubmit
+  // ✅ UPDATED SUBMIT HANDLER
   const onSubmit = async (data) => {
     try {
+      // add jobType & serviceCategory as JSON string
+      data.jobType = JSON.stringify(selectedJobTypes);
+      data.serviceCategory = JSON.stringify(selectedCategories);
+
       const formData = new FormData();
       for (const key in data) {
         if (data[key] instanceof FileList) {
@@ -199,6 +207,8 @@ const TaskerForm = () => {
       console.log("Tasker form submitted:", response.data);
       setSubmitStatus("success");
       reset();
+      setSelectedJobTypes([]); // clear job selection
+      setSelectedCategories({}); // clear category selection
     } catch (error) {
       console.error("Error submitting tasker form:", error);
       setSubmitStatus("error");
@@ -365,82 +375,109 @@ const TaskerForm = () => {
             </div>
           </section>
 
-          {/* Professional Information Section */}
-          <section id="professional" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <SectionHeader icon="briefcase" title="Professional Information" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField 
-                label="Job Type" 
-                name="jobType" 
-                register={register} 
-                errors={errors} 
-                type="select" 
-                required 
-                options={[
-                  {value: "carpenter", label: "Carpenter"},
-                  {value: "electrician", label: "Electrician"},
-                  {value: "plumber", label: "Plumber"},
-                  {value: "carwasher", label: "Car Washer"},
-                  {value: "laundry", label: "Laundry Service"}
-                ]}
-                placeholder="Select your job type..."
-              />
+{/* Professional Information Section */}
+<section id="professional" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+  <SectionHeader icon="briefcase" title="Work Information" />
 
-              <div>
-                <label className="block font-medium text-gray-700 mb-1">Service Category <span className="text-red-500">*</span></label>
-                <select 
-                  {...register("serviceCategory", { required: "Please select a service category" })} 
-                  className={`w-full border ${errors.serviceCategory ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
-                  disabled={!selectedJobType}
-                >
-                  <option value="">Select your service...</option>
-                  {selectedJobType && serviceCategories[selectedJobType]?.map((category, index) => (
-                    <option key={index} value={category}>{category}</option>
-                  ))}
-                </select>
-                {errors.serviceCategory && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <i className="fas fa-exclamation-circle mr-1"></i> {errors.serviceCategory.message}
-                  </p>
-                )}
-              </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    {/* 🔁 NEW: Job Type Checkboxes */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Job Type <span className="text-red-500">*</span></label>
+      <div className="grid grid-cols-2 gap-2">
+        {Object.keys(serviceCategories).map((job) => (
+          <label key={job} className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              value={job}
+              checked={selectedJobTypes.includes(job)}
+              onChange={(e) => {
+                const updated = [...selectedJobTypes];
+                if (e.target.checked) {
+                  updated.push(job);
+                } else {
+                  const index = updated.indexOf(job);
+                  if (index > -1) updated.splice(index, 1);
+                  const updatedCategories = { ...selectedCategories };
+                  delete updatedCategories[job];
+                  setSelectedCategories(updatedCategories);
+                }
+                setSelectedJobTypes(updated);
+              }}
+              className="accent-blue-600"
+            />
+            <span className="capitalize">{job}</span>
+          </label>
+        ))}
+      </div>
+    </div>
 
-              <div>
-                <label className="block font-medium text-gray-700 mb-1">Years of Experience <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <input 
-                    type="number" 
-                    {...register("experience", { 
-                      required: "Years of experience is required",
-                      min: { value: 0, message: "Must be 0 or more" }
-                    })} 
-                    className={`w-full border ${errors.experience ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
-                    placeholder="3"
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <span className="text-gray-500">years</span>
-                  </div>
-                </div>
-                {errors.experience && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <i className="fas fa-exclamation-circle mr-1"></i> {errors.experience.message}
-                  </p>
-                )}
-              </div>
-            </div>
+    {/* 🔁 NEW: Dynamic Service Category dropdowns */}
+    <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+      {selectedJobTypes.map((job) => (
+        <div key={job}>
+          <label className="block font-medium text-gray-700 mb-1">
+            Service Category for {job.charAt(0).toUpperCase() + job.slice(1)}
+          </label>
+          <select
+            value={selectedCategories[job] || ""}
+            onChange={(e) =>
+              setSelectedCategories((prev) => ({
+                ...prev,
+                [job]: e.target.value,
+              }))
+            }
+            className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          >
+            <option value="">Select your service...</option>
+            {serviceCategories[job].map((cat, idx) => (
+              <option key={idx} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+      ))}
+    </div>
 
-            <div className="mt-6">
-              <label className="block font-medium text-gray-700 mb-1">Skills & Certifications</label>
-              <textarea 
-                {...register("skills")} 
-                className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-                rows={4}
-                placeholder="List your skills and any certifications (TESDA, etc.)"
-              />
-              <p className="text-sm text-gray-500 mt-1">Separate skills with commas (e.g., Electrical Wiring, Plumbing, Carpentry)</p>
-            </div>
-          </section>
+    {/* ✅ EXISTING: Years of Experience */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Years of Experience <span className="text-red-500">*</span></label>
+      <div className="relative">
+        <input 
+          type="number" 
+          {...register("experience", { 
+            required: "Years of experience is required",
+            min: { value: 0, message: "Must be 0 or more" }
+          })} 
+          className={`w-full border ${errors.experience ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
+          placeholder="3"
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <span className="text-gray-500">years</span>
+        </div>
+      </div>
+      {errors.experience && (
+        <p className="text-red-500 text-sm mt-1 flex items-center">
+          <i className="fas fa-exclamation-circle mr-1"></i> {errors.experience.message}
+        </p>
+      )}
+    </div>
+  </div>
+
+  {/* ✅ EXISTING: Skills Textarea */}
+  <div className="mt-6">
+    <label className="block font-medium text-gray-700 mb-1">Skills & Certifications</label>
+    <textarea 
+      {...register("skills")} 
+      className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+      rows={4}
+      placeholder="List your skills and any certifications (TESDA, etc.)"
+    />
+    <p className="text-sm text-gray-500 mt-1">Separate skills with commas (e.g., Electrical Wiring, Plumbing, Carpentry)</p>
+  </div>
+</section>
+
 
           {/* Documents Section */}
           <section id="documents" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
