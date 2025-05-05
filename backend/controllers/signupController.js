@@ -2,6 +2,20 @@ const bcrypt = require('bcrypt');
 const db = require('../db');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const path = require('path');
+const fs = require('fs');
+
+const saveFile = (file, folder) => {
+    if (!file) return null;
+    const uploadPath = path.join(__dirname, '../uploads', folder);
+    if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    const filename = `${Date.now()}_${file.name}`;
+    const filePath = path.join(uploadPath, filename);
+    file.mv(filePath);
+    return `/uploads/${folder}/${filename}`;
+};
 
 const signup = async (req, res) => {
     const { firstName, lastName, mobile, email, password } = req.body;
@@ -21,21 +35,23 @@ const signup = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // 🔐 Generate verification token
         const verificationToken = crypto.randomBytes(32).toString("hex");
 
+        // ✅ Save uploaded image
+        const profilePicture = req.files?.profilePicture 
+            ? saveFile(req.files.profilePicture, 'profile_pictures')
+            : null;
+
         const [result] = await db.execute(
-            'INSERT INTO users (first_name, last_name, mobile, email, password, verification_token) VALUES (?, ?, ?, ?, ?, ?)', 
-            [firstName, lastName, mobile, email, hashedPassword, verificationToken]
+            'INSERT INTO users (first_name, last_name, mobile, email, password, profile_picture, verification_token) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+            [firstName, lastName, mobile, email, hashedPassword, profilePicture, verificationToken]
         );
 
-        // 📧 Setup email sender
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: "jdhomeservicesandmaintenance@gmail.com", // ✅ YOUR GMAIL
-                pass: "fejq madt vgfz ggik"         // ✅ YOUR GMAIL APP PASSWORD
+                user: "jdhomeservicesandmaintenance@gmail.com",
+                pass: "fejq madt vgfz ggik"
             }
         });
 

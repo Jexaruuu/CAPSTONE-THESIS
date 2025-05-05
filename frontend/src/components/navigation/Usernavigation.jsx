@@ -80,11 +80,11 @@ const UserNavigation = () => {
               )}
             </div>
             <div className="flex items-center space-x-2">
-              <img
-                src="/profile.png"
-                alt="User Profile"
-                className="h-14 w-14 rounded-full border border-gray-400 object-cover"
-              />
+            <img
+  src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
+  alt="User Profile"
+  className="h-14 w-14 rounded-full border border-gray-400 object-cover"
+/>
             </div>
           </div>
         </div>

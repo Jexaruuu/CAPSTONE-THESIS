@@ -17,18 +17,15 @@ const login = async (req, res) => {
 
         const userData = user[0];
 
-        // ✅ Check if email is verified
         if (!userData.is_verified) {
             return res.status(403).json({ message: "Please verify your email before logging in." });
         }
 
         const validPassword = await bcrypt.compare(password, userData.password);
-
         if (!validPassword) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        // ✅ Save the logged-in user info inside session
         req.session.user = {
             id: userData.id,
             email: userData.email,
@@ -42,7 +39,8 @@ const login = async (req, res) => {
                 id: userData.id,
                 email: userData.email,
                 first_name: userData.first_name,
-                last_name: userData.last_name
+                last_name: userData.last_name,
+                profile_picture: userData.profile_picture // ✅ NEW
             }
         });
 

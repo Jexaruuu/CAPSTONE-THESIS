@@ -33,14 +33,15 @@ const Login = () => {
                 ...userData,
                 first_name: userData.first_name || userData.firstName,
                 last_name: userData.last_name || userData.lastName,
+                profile_picture: userData.profile_picture || null // ✅ Include picture
             };
-
+            
             delete cleanedUser.firstName;
             delete cleanedUser.lastName;
-
+            
             localStorage.setItem("user", JSON.stringify(cleanedUser));
             localStorage.setItem("userId", response.data.user.id);
-
+            
             navigate("/userhome", { replace: true });
         } catch (err) {
             if (err.response?.status === 403) {
