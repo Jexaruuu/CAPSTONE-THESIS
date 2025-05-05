@@ -45,7 +45,12 @@ const submitTaskerForm = async (req, res) => {
       medicalCertificate,
       certificates,
     };
-
+    
+    // ✅ Clean undefined (which causes MySQL binding error)
+    Object.keys(taskerData).forEach(key => {
+      if (taskerData[key] === undefined) taskerData[key] = null;
+    });
+    
     const result = await createTasker(taskerData);
     res.status(201).json({ message: 'Tasker form submitted successfully' });
   } catch (error) {

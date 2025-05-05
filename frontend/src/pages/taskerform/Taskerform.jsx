@@ -267,15 +267,18 @@ const TaskerForm = () => {
               <FormField label="Full Name" name="fullName" register={register} errors={errors} required placeholder="Juan Dela Cruz" />
               <FormField label="Birth Date" name="birthDate" register={register} errors={errors} type="date" required />
               <FormField 
-                label="Gender" 
-                name="gender" 
-                register={register} 
-                errors={errors} 
-                type="select" 
-                required 
-                options={[{value: "Male", label: "Male"}, {value: "Female", label: "Female"}, {value: "Other", label: "Other"}]}
-                placeholder="Select Gender"
-              />
+  label="Sex" 
+  name="gender" 
+  register={register} 
+  errors={errors} 
+  type="select" 
+  required 
+  options={[
+    {value: "Male", label: "Male"},
+    {value: "Female", label: "Female"}
+  ]}
+  placeholder="Select sex"
+/>
               
               <div>
                 <label className="block font-medium text-gray-700 mb-1">Contact Number <span className="text-red-500">*</span></label>
