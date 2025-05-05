@@ -125,6 +125,7 @@ const ClientForm = () => {
       formData.append("preferredDate", data.preferredDate);
       formData.append("preferredTime", data.preferredTime);
       formData.append("urgentRequest", data.urgentRequest ? "on" : "");
+      formData.append("socialMedia", data.socialMedia || "N/A");
   
       const response = await axios.post("http://localhost:3000/api/clients/bookservice", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -260,6 +261,14 @@ const ClientForm = () => {
           rows={2}
           placeholder="Additional address details (landmarks, building name, etc.)"
         />
+              <FormField 
+  label="Social Media Account" 
+  name="socialMedia" 
+  register={register} 
+  errors={errors} 
+  required 
+  placeholder="Facebook, Instagram, etc." 
+/>
         {errors.additionalAddress && (
           <p className="text-red-500 text-sm mt-1 flex items-center">
             <i className="fas fa-exclamation-circle mr-1"></i> {errors.additionalAddress.message}

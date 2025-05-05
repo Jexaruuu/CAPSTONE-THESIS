@@ -5,16 +5,17 @@ const fs = require('fs');
 // ✅ Book a new service request
 const bookService = async (req, res) => {
   try {
-    if (!req.body.firstName || !req.body.lastName || !req.body.contactNumber) {
-      return res.status(400).json({ message: "Missing required fields." });
-    }
-
     const {
       firstName, lastName, contactNumber, email,
       street, barangay, additionalAddress,
       serviceType, serviceDescription,
-      preferredDate, preferredTime, urgentRequest
+      preferredDate, preferredTime, urgentRequest,
+      socialMedia = "N/A" // ✅ ensure it's never undefined
     } = req.body;
+
+    if (!firstName || !lastName || !contactNumber) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
 
     let profilePicturePath = null;
     let serviceImagePath = null;
@@ -24,41 +25,37 @@ const bookService = async (req, res) => {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
 
-    if (req.files) {
-      if (req.files.profilePicture) {
-        const profilePicture = req.files.profilePicture;
-        const filename = `${Date.now()}_${profilePicture.name}`;
-        const uploadPath = path.join(uploadsDir, filename);
-        await profilePicture.mv(uploadPath);
-        profilePicturePath = `/uploads/${filename}`;
-      } else {
-        return res.status(400).json({ message: "Profile picture is required." });
-      }
-
-      if (req.files.serviceImage) {
-        const serviceImage = req.files.serviceImage;
-        const serviceFilename = `${Date.now()}_${serviceImage.name}`;
-        const serviceUploadPath = path.join(uploadsDir, serviceFilename);
-        await serviceImage.mv(serviceUploadPath);
-        serviceImagePath = `/uploads/${serviceFilename}`;
-      }
+    if (req.files?.profilePicture) {
+      const profilePicture = req.files.profilePicture;
+      const filename = `${Date.now()}_${profilePicture.name}`;
+      const uploadPath = path.join(uploadsDir, filename);
+      await profilePicture.mv(uploadPath);
+      profilePicturePath = `/uploads/${filename}`;
     } else {
-      return res.status(400).json({ message: "No files uploaded." });
+      return res.status(400).json({ message: "Profile picture is required." });
+    }
+
+    if (req.files?.serviceImage) {
+      const serviceImage = req.files.serviceImage;
+      const filename = `${Date.now()}_${serviceImage.name}`;
+      const uploadPath = path.join(uploadsDir, filename);
+      await serviceImage.mv(uploadPath);
+      serviceImagePath = `/uploads/${filename}`;
     }
 
     const [client] = await db.execute(
       `INSERT INTO client_information 
-      (first_name, last_name, contact_number, email, street, barangay, additional_address, profile_picture) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [firstName, lastName, contactNumber, email, street, barangay, additionalAddress, profilePicturePath]
+       (first_name, last_name, contact_number, email, street, barangay, additional_address, profile_picture, social_media) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [firstName, lastName, contactNumber, email, street, barangay, additionalAddress, profilePicturePath, socialMedia]
     );
 
     const clientId = client.insertId;
 
     await db.execute(
       `INSERT INTO service_details 
-      (client_id, service_type, service_description, preferred_date, preferred_time, urgent_request, service_image) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+       (client_id, service_type, service_description, preferred_date, preferred_time, urgent_request, service_image) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         clientId,
         serviceType,
@@ -71,9 +68,8 @@ const bookService = async (req, res) => {
     );
 
     res.status(200).json({ message: "Service booked successfully!" });
-
   } catch (error) {
-    console.error(error);
+    console.error("Booking error:", error);
     res.status(500).json({ message: "Something went wrong." });
   }
 };
