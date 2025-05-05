@@ -406,13 +406,13 @@ const TaskerForm = () => {
 </section>
 
 
-{/* Professional Information Section */}
+{/* Work Information Section */}
 <section id="professional" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
   <SectionHeader icon="briefcase" title="Work Information" />
 
+  {/* 🔁 Job Type + Years of Experience SIDE BY SIDE */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    
-    {/* 🔁 NEW: Job Type Checkboxes */}
+    {/* ✅ Job Type */}
     <div>
       <label className="block font-medium text-gray-700 mb-1">Job Type <span className="text-red-500">*</span></label>
       <div className="grid grid-cols-2 gap-2">
@@ -443,35 +443,7 @@ const TaskerForm = () => {
       </div>
     </div>
 
-    {/* 🔁 NEW: Dynamic Service Category dropdowns */}
-    <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-      {selectedJobTypes.map((job) => (
-        <div key={job}>
-          <label className="block font-medium text-gray-700 mb-1">
-            Service Category for {job.charAt(0).toUpperCase() + job.slice(1)}
-          </label>
-          <select
-            value={selectedCategories[job] || ""}
-            onChange={(e) =>
-              setSelectedCategories((prev) => ({
-                ...prev,
-                [job]: e.target.value,
-              }))
-            }
-            className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          >
-            <option value="">Select your service...</option>
-            {serviceCategories[job].map((cat, idx) => (
-              <option key={idx} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-      ))}
-    </div>
-
-    {/* ✅ EXISTING: Years of Experience */}
+    {/* ✅ Years of Experience aligned to the right */}
     <div>
       <label className="block font-medium text-gray-700 mb-1">Years of Experience <span className="text-red-500">*</span></label>
       <div className="relative">
@@ -496,7 +468,35 @@ const TaskerForm = () => {
     </div>
   </div>
 
-  {/* ✅ EXISTING: Skills Textarea */}
+  {/* 🔁 Dynamic Service Category dropdowns */}
+  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    {selectedJobTypes.map((job) => (
+      <div key={job}>
+        <label className="block font-medium text-gray-700 mb-1">
+          Service Category for {job.charAt(0).toUpperCase() + job.slice(1)}
+        </label>
+        <select
+          value={selectedCategories[job] || ""}
+          onChange={(e) =>
+            setSelectedCategories((prev) => ({
+              ...prev,
+              [job]: e.target.value,
+            }))
+          }
+          className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        >
+          <option value="">Select your service...</option>
+          {serviceCategories[job].map((cat, idx) => (
+            <option key={idx} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
+    ))}
+  </div>
+
+  {/* ✅ Skills Textarea */}
   <div className="mt-6">
     <label className="block font-medium text-gray-700 mb-1">Skills & Certifications</label>
     <textarea 
@@ -508,7 +508,6 @@ const TaskerForm = () => {
     <p className="text-sm text-gray-500 mt-1">Separate skills with commas (e.g., Electrical Wiring, Plumbing, Carpentry)</p>
   </div>
 </section>
-
 
           {/* Documents Section */}
           <section id="documents" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
