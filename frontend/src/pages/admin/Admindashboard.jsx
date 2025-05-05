@@ -338,9 +338,20 @@ const getStatusBadge = (status) => {
               <img src="/logo.png" alt="Logo" className="w-66 h-66 mr-2" />
             </div>
             <div className="text-center mb-6">
-              <p className="text-lg font-semibold">{`${admin.first_name} ${admin.last_name}`}</p>
-              <p className="text-md text-gray-500">Admin</p>
-            </div>
+  {admin.profile_picture ? (
+    <img
+      src={`http://localhost:3000${admin.profile_picture}`}
+      alt="Admin Profile"
+      className="w-24 h-24 mx-auto rounded-full object-cover border-4 border-blue-200 mb-2"
+    />
+  ) : (
+    <div className="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-2 flex items-center justify-center text-gray-500">
+      No Image
+    </div>
+  )}
+  <p className="text-lg font-semibold">{`${admin.first_name} ${admin.last_name}`}</p>
+  <p className="text-md text-gray-500">Admin</p>
+</div>
             <nav className="space-y-2">
             <button
   onClick={() => { setActive("Dashboard"); setSubActive(""); }}

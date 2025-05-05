@@ -1,12 +1,14 @@
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
-const db = require('./db'); 
-const signupRoutes = require('./routes/signupRoutes'); 
-const loginRoutes = require('./routes/loginRoutes'); 
-const logoutRoutes = require('./routes/logoutRoutes'); 
+const db = require('./db');
+const signupRoutes = require('./routes/signupRoutes');
+const loginRoutes = require('./routes/loginRoutes');
+const logoutRoutes = require('./routes/logoutRoutes');
 const userRoutes = require('./routes/userRoutes');
 const clientRoutes = require('./routes/clientRoutes');
+
+// ✅ Updated file upload setup
 const fileUpload = require('express-fileupload');
 
 const app = express(); // Correct initialization before using any middleware
@@ -17,29 +19,30 @@ const adminlogoutRoutes = require("./routes/adminlogoutRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const taskerRoutes = require('./routes/taskerRoutes');
 
-// ✅ Correct middleware order:
-
-// CORS
+// ✅ CORS Configuration
 app.use(cors({
     origin: "http://localhost:5173",
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));
 
-// File Upload Middleware FIRST!
+// ✅ File Upload Middleware FIRST
 app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/',
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+    abortOnLimit: true,
+    createParentPath: true
 }));
 
-// Then Body Parsers
+// ✅ Body Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploads folder
+// ✅ Serve static files for uploads
 app.use('/uploads', express.static('uploads'));
 
-// Session configuration
+// ✅ Session Configuration
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
@@ -51,24 +54,24 @@ app.use(session({
     }
 }));
 
-// Routes
+// ✅ All Routes
 app.use('/api', signupRoutes);
 app.use('/api', loginRoutes);
-app.use('/api', logoutRoutes); 
-app.use('/api', userRoutes);  // ✅ This now includes /users (fetch all) too!
-app.use('/api', adminsignupRoutes); 
+app.use('/api', logoutRoutes);
+app.use('/api', userRoutes);
+app.use('/api', adminsignupRoutes);
 app.use('/api', adminloginRoutes);
 app.use('/api', adminlogoutRoutes);
-app.use('/api', adminRoutes);  // ✅ This now includes /admins and delete /admin/:id
+app.use('/api', adminRoutes);
 app.use('/api/taskers', taskerRoutes);
 app.use('/api/clients', clientRoutes);
 
-// Default Route
+// ✅ Default Route
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');
 });
 
-// Start Server
+// ✅ Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
