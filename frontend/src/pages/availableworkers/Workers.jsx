@@ -136,84 +136,135 @@ const itemsPerPage = 5;
         </div>
 
         {/* ✅ Workers Grid */}
-        <div className="w-full md:w-3/4 flex flex-col space-y-6">
-          {filteredWorkers.map((worker, index) => (
-            <div
-              key={index}
-              className="bg-white shadow-xl rounded-2xl p-6 flex flex-col sm:flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
-            >
-              {/* Profile Picture - Right Side */}
-              <div className="flex-shrink-0 flex flex-col items-center">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-200 shadow">
-                  <img
-                    src={`http://localhost:3000${worker.profilePicture}`}
-                    alt={worker.fullName}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className="text-[13px] text-gray-700 font-semibold mt-2">Job type:</span>
-  <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
-    {capitalizeFirst(worker.jobType)}
-  </span>
-                  {/* ✅ Verified by Admin Badge */}
-                  <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mt-4">
-    ✅ Verified by Admin
-  </span>
-              </div>
-
-              {/* Worker Info */}
-              <div className="flex-grow text-[15px] md:text-base text-gray-700">
-              <div className="flex justify-between items-center mb-3">
-  <h3 className="text-xl font-bold text-[#000081]">{worker.fullName}</h3>
-</div>
-<p><span className="text-blue-800 font-semibold">Age:</span> {worker.age}</p>
-<p><span className="text-blue-800 font-semibold">Gender:</span> {worker.gender}</p>
-<p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(worker.contactNumber)}</p>
-<p><span className="text-blue-800 font-semibold">Email:</span> {worker.email || "N/A"}</p>
-<p><span className="text-blue-800 font-semibold">Address:</span> {worker.address || "N/A"}</p>
-<p><span className="text-blue-800 font-semibold">Experience:</span> {worker.experience} years</p>
-<p><span className="text-blue-800 font-semibold">Skills:</span> {worker.skills}</p>
-{worker.serviceCategory && (
-  <p>
-    <span className="text-blue-800 font-semibold">Categories:</span>{" "}
-    {Array.isArray(worker.serviceCategory)
-      ? worker.serviceCategory.join(", ")
-      : worker.serviceCategory}
-  </p>
-)}
-  <p className="text-green-600 font-bold mt-3">
-    <strong>Price Rate:</strong>{" "}
-    {worker.pricePerHour ? `₱${worker.pricePerHour} / hour` : <span className="text-red-500">Not Set</span>}
-  </p>
-
-  <div className="flex flex-wrap gap-4 mt-4">
-  {/* View Profile Button (Green Style) */}
-  <button
-    onClick={() => openModal(worker)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">View Documents</span>
-  </button>
-
-{/* Hire Now Button (Indigo Style) */}
-{/* Show "Hire Worker" button only if user is not the owner */}
-{currentUser?.email?.toLowerCase().trim() !== worker.email?.toLowerCase().trim() && (
-  <button
-    onClick={() => handleHireNow(worker)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Hire Worker</span>
-  </button>
-)}
-
-</div>
-</div>
-
-            </div>
-          ))}
+<div className="w-full md:w-3/4 flex flex-col space-y-6">
+  {filteredWorkers.map((worker, index) => (
+    <div
+      key={index}
+      className="bg-white shadow-xl rounded-2xl p-6 flex flex-col sm:flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
+    >
+      {/* Profile Picture - Right Side */}
+      <div className="flex-shrink-0 flex flex-col items-center">
+        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-200 shadow">
+          <img
+            src={`http://localhost:3000${worker.profilePicture}`}
+            alt={worker.fullName}
+            className="w-full h-full object-cover"
+          />
         </div>
+        <span className="text-[13px] text-gray-700 font-semibold mt-2">Job type:</span>
+<div className="mt-1">
+  {(() => {
+    try {
+      const parsed = JSON.parse(worker.jobType);
+      const cleaned = Array.isArray(parsed)
+        ? parsed.map(j => j.replace(/(^"|"$)/g, '').replace(/\\"/g, ''))
+        : [parsed];
+
+      const topRow = cleaned.slice(0, 3);
+      const bottomRow = cleaned.slice(3);
+
+      return (
+        <>
+          <div className="flex flex-wrap justify-center gap-2">
+            {topRow.map((job, index) => (
+              <span
+                key={`top-${index}`}
+                className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm"
+              >
+                {capitalizeFirst(job)}
+              </span>
+            ))}
+          </div>
+          {bottomRow.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 mt-1">
+              {bottomRow.map((job, index) => (
+                <span
+                  key={`bottom-${index}`}
+                  className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm"
+                >
+                  {capitalizeFirst(job)}
+                </span>
+              ))}
+            </div>
+          )}
+        </>
+      );
+    } catch {
+      return (
+        <div className="flex justify-center mt-1">
+          <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
+            {capitalizeFirst(worker.jobType)}
+          </span>
+        </div>
+      );
+    }
+  })()}
+</div>
+        {/* ✅ Verified by Admin Badge */}
+        <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mt-4">
+          ✅ Verified by Admin
+        </span>
+      </div>
+
+      {/* Worker Info */}
+      <div className="flex-grow text-[15px] md:text-base text-gray-700">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-xl font-bold text-[#000081]">{worker.fullName}</h3>
+        </div>
+        <p><span className="text-blue-800 font-semibold">Age:</span> {worker.age}</p>
+        <p><span className="text-blue-800 font-semibold">Gender:</span> {worker.gender}</p>
+        <p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(worker.contactNumber)}</p>
+        <p><span className="text-blue-800 font-semibold">Email:</span> {worker.email || "N/A"}</p>
+        <p><span className="text-blue-800 font-semibold">Address:</span> {worker.address || "N/A"}</p>
+        <p><span className="text-blue-800 font-semibold">Experience:</span> {worker.experience} years</p>
+        <p><span className="text-blue-800 font-semibold">Skills:</span> {worker.skills}</p>
+
+        {worker.serviceCategory && (
+          <p>
+            <span className="text-blue-800 font-semibold">Categories:</span>{" "}
+            {(() => {
+              try {
+                const categories = JSON.parse(worker.serviceCategory);
+                return Object.entries(categories)
+                  .map(([key, value]) => `${capitalizeFirst(key)}: ${value}`)
+                  .join(", ");
+              } catch {
+                return worker.serviceCategory;
+              }
+            })()}
+          </p>
+        )}
+
+        <p className="text-green-600 font-bold mt-3">
+          <strong>Price Rate:</strong>{" "}
+          {worker.pricePerHour ? `₱${worker.pricePerHour} / hour` : <span className="text-red-500">Not Set</span>}
+        </p>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-4 mt-4">
+          <button
+            onClick={() => openModal(worker)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">View Documents</span>
+          </button>
+
+          {currentUser?.email?.toLowerCase().trim() !== worker.email?.toLowerCase().trim() && (
+            <button
+              onClick={() => handleHireNow(worker)}
+              className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-base font-semibold">Hire Worker</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
       </div>
 
      {/* Modal */}
@@ -253,7 +304,29 @@ const itemsPerPage = 5;
         {/* Info Section */}
         <div className="flex-1 text-gray-800 space-y-1">
   <h2 className="text-2xl font-bold text-[#000081] mb-2">{selectedWorker.fullName}</h2>
-  <p><span className="text-blue-800 font-semibold">Job Type:</span> {selectedWorker.jobType}</p>
+  <p><span className="text-blue-800 font-semibold">Job Type:</span></p>
+<div className="flex flex-wrap gap-2 mb-2">
+  {(() => {
+    try {
+      const parsed = JSON.parse(selectedWorker.jobType);
+      const jobTypes = Array.isArray(parsed) ? parsed : [parsed];
+      return jobTypes.map((job, index) => (
+        <span
+          key={index}
+          className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm"
+        >
+          {job.charAt(0).toUpperCase() + job.slice(1)}
+        </span>
+      ));
+    } catch {
+      return (
+        <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
+          {selectedWorker.jobType}
+        </span>
+      );
+    }
+  })()}
+</div>
   <p><span className="text-blue-800 font-semibold">Age:</span> {selectedWorker.age}</p>
   <p><span className="text-blue-800 font-semibold">Gender:</span> {selectedWorker.gender}</p>
   <p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(selectedWorker.contactNumber)}</p>
@@ -262,11 +335,18 @@ const itemsPerPage = 5;
   <p><span className="text-blue-800 font-semibold">Experience:</span> {selectedWorker.experience} years</p>
   <p><span className="text-blue-800 font-semibold">Skills:</span> {selectedWorker.skills}</p>
   {selectedWorker.serviceCategory && (
-  <p>
+  <p className="mt-2">
     <span className="text-blue-800 font-semibold">Categories:</span>{" "}
-    {Array.isArray(selectedWorker.serviceCategory)
-      ? selectedWorker.serviceCategory.join(", ")
-      : selectedWorker.serviceCategory}
+    {(() => {
+      try {
+        const categories = JSON.parse(selectedWorker.serviceCategory);
+        return Object.entries(categories)
+          .map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`)
+          .join(", ");
+      } catch {
+        return selectedWorker.serviceCategory;
+      }
+    })()}
   </p>
 )}
           <p className="text-green-700 font-semibold text-lg mt-2">

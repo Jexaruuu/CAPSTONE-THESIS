@@ -17,6 +17,7 @@ const saveFile = (file, folder) => {
 };
 
 // ✅ Main form submission controller
+// ✅ Main form submission controller
 const submitTaskerForm = async (req, res) => {
   try {
     const data = req.body;
@@ -33,14 +34,36 @@ const submitTaskerForm = async (req, res) => {
     const medicalCertificate = req.files?.medicalCertificate ? saveFile(req.files.medicalCertificate, 'medical') : null;
     const certificates = req.files?.certificates ? saveFile(req.files.certificates, 'certificates') : null;
 
-    // ✅ Transform jobType and serviceCategory to JSON strings if they’re arrays (for checkbox input)
-    const jobTypeArray = Array.isArray(data.jobType) ? data.jobType : [data.jobType];
-    const serviceCategoryArray = Array.isArray(data.serviceCategory) ? data.serviceCategory : [data.serviceCategory];
+    // ✅ Fix jobType: parse cleanly even if it's a JSON string
+    let jobTypeArray;
+    try {
+      jobTypeArray = typeof data.jobType === 'string'
+        ? JSON.parse(data.jobType)
+        : data.jobType;
+
+      if (!Array.isArray(jobTypeArray)) {
+        jobTypeArray = [jobTypeArray];
+      }
+    } catch (err) {
+      console.warn("Failed to parse jobType, using fallback.");
+      jobTypeArray = [data.jobType];
+    }
+
+    // ✅ Fix serviceCategory parsing
+    let serviceCategoryObject;
+    try {
+      serviceCategoryObject = typeof data.serviceCategory === 'string'
+        ? JSON.parse(data.serviceCategory)
+        : data.serviceCategory;
+    } catch (err) {
+      console.warn("Failed to parse serviceCategory, using fallback.");
+      serviceCategoryObject = data.serviceCategory || {};
+    }
 
     const taskerData = {
       ...data,
       jobType: JSON.stringify(jobTypeArray),
-      serviceCategory: JSON.stringify(serviceCategoryArray),
+      serviceCategory: JSON.stringify(serviceCategoryObject),
       age,
       profilePicture,
       primaryIDFront,
@@ -50,15 +73,14 @@ const submitTaskerForm = async (req, res) => {
       proofOfAddress,
       medicalCertificate,
       certificates,
-      social_media: data.social_media  // 👈 Add this
+      social_media: data.social_media
     };
-    
-    
-    // ✅ Clean undefined (which causes MySQL binding error)
+
+    // ✅ Clean undefined values
     Object.keys(taskerData).forEach(key => {
       if (taskerData[key] === undefined) taskerData[key] = null;
     });
-    
+
     const result = await createTasker(taskerData);
     res.status(201).json({ message: 'Tasker form submitted successfully' });
   } catch (error) {
@@ -66,6 +88,7 @@ const submitTaskerForm = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // 🔥 Fetch all taskers
 const getAllTaskers = async (req, res) => {
