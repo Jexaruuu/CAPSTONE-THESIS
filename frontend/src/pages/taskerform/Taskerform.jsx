@@ -16,7 +16,7 @@ const SectionHeader = ({ icon, title }) => (
   </div>
 );
 
-const FormField = ({ label, name, register, errors, type = "text", required = false, placeholder = "", options, children }) => (
+const FormField = ({ label, name, register, errors, type = "text", required = false, placeholder = "", options, children, validationRules, min, max }) => (
   <div>
     <label className="block font-medium text-gray-700 mb-1">
       {label} {required && <span className="text-red-500">*</span>}
@@ -24,7 +24,10 @@ const FormField = ({ label, name, register, errors, type = "text", required = fa
     {children || (
       type === "select" ? (
         <select 
-          {...register(name, required && { required: `${label} is required` })}
+          {...register(name, {
+            ...(required && { required: `${label} is required` }),
+            ...(validationRules || {})
+          })}
           className={`w-full border ${errors[name] ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
         >
           <option value="">{placeholder || `Select ${label.toLowerCase()}...`}</option>
@@ -37,7 +40,12 @@ const FormField = ({ label, name, register, errors, type = "text", required = fa
       ) : (
         <input 
           type={type}
-          {...register(name, required && { required: `${label} is required` })}
+          {...register(name, {
+            ...(required && { required: `${label} is required` }),
+            ...(validationRules || {})
+          })}
+          min={min}
+          max={max}
           className={`w-full border ${errors[name] ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
           placeholder={placeholder}
         />
@@ -267,7 +275,42 @@ const TaskerForm = () => {
     <div className="md:col-span-2 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField label="Full Name" name="fullName" register={register} errors={errors} required placeholder="Juan Dela Cruz" />
-        <FormField label="Birth Date" name="birthDate" register={register} errors={errors} type="date" required />
+
+        {/* ✅ Birth Date with Age Limit 20 to 45 */}
+        <FormField 
+          label="Birth Date" 
+          name="birthDate" 
+          register={register} 
+          errors={errors} 
+          type="date" 
+          required 
+          min={(() => {
+            const today = new Date();
+            today.setFullYear(today.getFullYear() - 45);
+            return today.toISOString().split("T")[0];
+          })()}
+          max={(() => {
+            const today = new Date();
+            today.setFullYear(today.getFullYear() - 20);
+            return today.toISOString().split("T")[0];
+          })()}
+          validationRules={{
+            validate: (value) => {
+              const birth = new Date(value);
+              const today = new Date();
+              let age = today.getFullYear() - birth.getFullYear();
+              const m = today.getMonth() - birth.getMonth();
+              if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                age--;
+              }
+              if (age < 20 || age > 45) {
+                return "Age must be between 20 and 45 years old";
+              }
+              return true;
+            }
+          }}
+        />
+
         <FormField 
           label="Sex" 
           name="gender" 
@@ -314,15 +357,14 @@ const TaskerForm = () => {
           required 
           placeholder="your.email@example.com" 
         />
-    <FormField 
-  label="Social Media Account" 
-  name="social_media" 
-  register={register} 
-  errors={errors} 
-  required 
-  placeholder="Facebook, Instagram, etc." 
-/>
-
+        <FormField 
+          label="Social Media Account" 
+          name="social_media" 
+          register={register} 
+          errors={errors} 
+          required 
+          placeholder="Facebook, Instagram, etc." 
+        />
       </div>
 
       {/* 👇 Address field */}
@@ -342,57 +384,56 @@ const TaskerForm = () => {
       </div>
     </div>
 
-{/* 👉 Profile picture on right */}
-<div className="flex flex-col items-center justify-start">
-  <label className="block font-medium text-gray-700 mb-2">
-    Profile Picture <span className="text-red-500">*</span>
-  </label>
+    {/* 👉 Profile picture on right */}
+    <div className="flex flex-col items-center justify-start">
+      <label className="block font-medium text-gray-700 mb-2">
+        Profile Picture <span className="text-red-500">*</span>
+      </label>
 
-  {/* Preview Image */}
-  <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 mb-2">
-    {watch("profilePicture")?.length > 0 ? (
-      <img
-        className="h-full w-full object-cover"
-        src={URL.createObjectURL(watch("profilePicture")[0])}
-        alt="Profile preview"
-      />
-    ) : (
-      <div className="bg-gray-100 h-full w-full flex items-center justify-center">
-        <i className="fas fa-user text-3xl text-gray-400"></i>
+      {/* Preview Image */}
+      <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 mb-2">
+        {watch("profilePicture")?.length > 0 ? (
+          <img
+            className="h-full w-full object-cover"
+            src={URL.createObjectURL(watch("profilePicture")[0])}
+            alt="Profile preview"
+          />
+        ) : (
+          <div className="bg-gray-100 h-full w-full flex items-center justify-center">
+            <i className="fas fa-user text-3xl text-gray-400"></i>
+          </div>
+        )}
       </div>
-    )}
-  </div>
 
-  {/* File Name (if exists) */}
-  {watch("profilePicture")?.length > 0 && (
-    <p className="text-sm text-gray-700 font-medium mb-1 text-center">
-      {watch("profilePicture")[0].name}
-    </p>
-  )}
+      {/* File Name (if exists) */}
+      {watch("profilePicture")?.length > 0 && (
+        <p className="text-sm text-gray-700 font-medium mb-1 text-center">
+          {watch("profilePicture")[0].name}
+        </p>
+      )}
 
-  {/* File Input Button */}
-  <input
-    type="file"
-    {...register("profilePicture", { required: "Profile picture is required" })}
-    className="block w-full text-sm text-gray-500 file:mx-auto file:py-2 file:px-4 file:rounded-md file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-    accept="image/*"
-  />
+      {/* File Input Button */}
+      <input
+        type="file"
+        {...register("profilePicture", { required: "Profile picture is required" })}
+        className="block w-full text-sm text-gray-500 file:mx-auto file:py-2 file:px-4 file:rounded-md file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        accept="image/*"
+      />
 
-  {/* Error Message */}
-  {errors.profilePicture && (
-    <p className="text-red-500 text-sm mt-1 flex items-center">
-      <i className="fas fa-exclamation-circle mr-1"></i> {errors.profilePicture.message}
-    </p>
-  )}
+      {/* Error Message */}
+      {errors.profilePicture && (
+        <p className="text-red-500 text-sm mt-1 flex items-center">
+          <i className="fas fa-exclamation-circle mr-1"></i> {errors.profilePicture.message}
+        </p>
+      )}
 
-  {/* Caption */}
-  <p className="text-sm text-gray-500 mt-2 text-center">
-    This will be visible to clients. Please upload a clear headshot.
-  </p>
-</div>
+      {/* Caption */}
+      <p className="text-sm text-gray-500 mt-2 text-center">
+        This will be visible to clients. Please upload a clear headshot.
+      </p>
+    </div>
   </div>
 </section>
-
 
 {/* Work Information Section */}
 <section id="professional" className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
