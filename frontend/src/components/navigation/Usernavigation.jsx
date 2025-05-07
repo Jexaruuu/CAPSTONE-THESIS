@@ -135,13 +135,13 @@ const UserNavigation = () => {
                 <ul className="flex space-x-6 text-[16px]">
                   <li className="relative group w-max">
                     <Link to="/availableworkers" className="text-gray-700 font-medium hover:text-[#0d05d2]">
-                      Available Workers
+                      Hire Worker
                       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
                     </Link>
                   </li>
                   <li className="relative group w-max">
                     <Link to="/servicerequest" className="text-gray-700 font-medium hover:text-[#0d05d2]">
-                      Available Works
+                      Find Work
                       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
                     </Link>
                   </li>
