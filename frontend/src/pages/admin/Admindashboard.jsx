@@ -28,6 +28,9 @@ const [requestModalOpen, setRequestModalOpen] = useState(false);
 const [pendingApplications, setPendingApplications] = useState(0);
 const [pendingServiceRequests, setPendingServiceRequests] = useState(0);
 
+const [selectedJobTypeFilter, setSelectedJobTypeFilter] = useState("All");
+
+
 const handleSetRate = async (taskerId) => {
   const rate = rateInputs[taskerId];
   if (!rate) return alert("Please enter a rate");
@@ -409,6 +412,7 @@ const getStatusBadge = (status) => {
       ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
       : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
   `}
+  
 >
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
   <span className="relative flex items-center text-base font-semibold">
@@ -593,7 +597,7 @@ const getStatusBadge = (status) => {
   <h2 className="text-2xl font-semibold">
     {active === "Dashboard" && "Dashboard Overview"}
     {active === "Users" && "Manage Users"}
-    {active === "Applications" && "Service Applications"}
+    {active === "Applications" && "Applications"}
     {active === "ServiceRequests" && "Service Requests"}
     {active === "Settings" && "Admin Settings"}
   </h2>
@@ -743,74 +747,91 @@ const getStatusBadge = (status) => {
       Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.
     </p>
 
+    {/* 🔍 Job Type Filter */}
+<div className="flex gap-3 mb-4 flex-wrap">
+  {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((job) => (
+    <button
+      key={job}
+      onClick={() => setSelectedJobTypeFilter(job)}
+      className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+        selectedJobTypeFilter === job
+          ? "bg-blue-600 text-white"
+          : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+      }`}
+    >
+      {job}
+    </button>
+  ))}
+</div>
+
     {/* ✨ Scrollable tasker cards */}  
-    <div className="flex flex-col gap-5 overflow-y-auto pr-2">
-      {taskers.map((tasker) => (
-        <div
-          key={tasker.id}
-          className="bg-white rounded-2xl shadow-md p-4 flex items-center justify-between hover:shadow-xl transition-all"
-        >
-          {/* Left Info */}
-          <div className="flex items-center gap-4">
-            <img
-              src={`http://localhost:3000${tasker.profilePicture}`}
-              alt="Profile"
-              className="w-20 h-20 rounded-full object-cover border-4 border-blue-200"
-            />
-            <div className="space-y-1">
-              <h3 className="text-lg font-bold text-gray-800">{tasker.fullName}</h3>
-              <p className="text-sm text-gray-600">Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}</p>
-<p className="text-sm text-gray-600">
-  Job: {Array.isArray(tasker.jobType) && tasker.jobType.length > 0 ? tasker.jobType.join(", ") : "N/A"}
-</p>
+ <div className="flex flex-col gap-5 overflow-y-auto pr-2">
+  {taskers
+    .filter(tasker =>
+      selectedJobTypeFilter === "All" ||
+      (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))
+    )
+        .map((tasker) => (
+          <div
+            key={tasker.id}
+            className="bg-white rounded-2xl shadow-md p-4 flex items-center justify-between hover:shadow-xl transition-all"
+          >
+            {/* Left Info */}
+            <div className="flex items-center gap-4">
+              <img
+                src={`http://localhost:3000${tasker.profilePicture}`}
+                alt="Profile"
+                className="w-20 h-20 rounded-full object-cover border-4 border-blue-200"
+              />
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-gray-800">{tasker.fullName}</h3>
+                <p className="text-sm text-gray-600">Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}</p>
+                <p className="text-sm text-gray-600">
+                  Job: {Array.isArray(tasker.jobType) && tasker.jobType.length > 0 ? tasker.jobType.join(", ") : "N/A"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Category: {tasker.serviceCategory && typeof tasker.serviceCategory === "object" && Object.keys(tasker.serviceCategory).length > 0
+                    ? Object.values(tasker.serviceCategory).join(", ")
+                    : "N/A"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Experience: {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Rate: {tasker.rate_per_hour ? `₱${tasker.rate_per_hour}/hr` : "N/A"}
+                </p>
+                <div>{getStatusBadge(tasker.status)}</div>
+              </div>
+            </div>
 
-<p className="text-sm text-gray-600">
-  Category: {tasker.serviceCategory && typeof tasker.serviceCategory === "object" && Object.keys(tasker.serviceCategory).length > 0
-    ? Object.values(tasker.serviceCategory).join(", ")
-    : "N/A"}
-</p>
-
-<p className="text-sm text-gray-600">
-  Experience: {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
-</p>
-
-<p className="text-sm text-gray-600">
-  Rate: {tasker.rate_per_hour ? `₱${tasker.rate_per_hour}/hr` : "N/A"}
-</p>
-
-
-              <div>{getStatusBadge(tasker.status)}</div>
+            {/* Right Actions */}
+            <div className="flex flex-col gap-2 w-64">
+              <button
+                onClick={() => handleViewTaskerProfile(tasker.id)}
+                className="bg-gray-800 text-white px-3 py-1.5 text-sm rounded hover:bg-gray-700"
+              >
+                View
+              </button>
+              <button
+                onClick={() => handleApproveTasker(tasker.id)}
+                className="bg-green-600 text-white px-3 py-1.5 text-sm rounded hover:bg-green-500"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => handleRejectTasker(tasker.id)}
+                className="bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-400"
+              >
+                Reject
+              </button>
+              <button
+                onClick={() => handleSetPendingTasker(tasker.id)}
+                className="bg-yellow-500 text-white px-3 py-1.5 text-sm rounded hover:bg-yellow-400"
+              >
+                Pending
+              </button>
             </div>
           </div>
-
-          {/* Right Actions */}
-          <div className="flex flex-col gap-2 w-64">
-            <button
-              onClick={() => handleViewTaskerProfile(tasker.id)}
-              className="bg-gray-800 text-white px-3 py-1.5 text-sm rounded hover:bg-gray-700"
-            >
-              View
-            </button>
-            <button
-              onClick={() => handleApproveTasker(tasker.id)}
-              className="bg-green-600 text-white px-3 py-1.5 text-sm rounded hover:bg-green-500"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handleRejectTasker(tasker.id)}
-              className="bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-400"
-            >
-              Reject
-            </button>
-            <button
-              onClick={() => handleSetPendingTasker(tasker.id)}
-              className="bg-yellow-500 text-white px-3 py-1.5 text-sm rounded hover:bg-yellow-400"
-            >
-              Pending
-            </button>
-          </div>
-        </div>
       ))}
     </div>
   </div>
