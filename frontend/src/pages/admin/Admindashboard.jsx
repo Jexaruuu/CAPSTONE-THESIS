@@ -775,12 +775,13 @@ const getStatusBadge = (status) => {
 
              {/* ✨ New Applications View ✨ */}
 {active === "Applications" && (
-  <div>
-    <p className="mb-6">
+  <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
+    <p className="mb-4">
       Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.
     </p>
 
-    <div className="flex flex-col gap-5">
+    {/* ✨ Scrollable tasker cards */}  
+    <div className="flex flex-col gap-5 overflow-y-auto pr-2">
       {taskers.map((tasker) => (
         <div
           key={tasker.id}
@@ -805,49 +806,30 @@ const getStatusBadge = (status) => {
 
           {/* Right Actions */}
           <div className="flex flex-col gap-2 w-64">
-            <div className="flex w-full">
-              <span className="px-3 py-2 bg-gray-100 border border-r-0 rounded-l text-sm">₱</span>
-              <input
-                type="number"
-                className="border border-l-0 p-2 text-center w-full text-sm rounded-r"
-                placeholder="Rate per hour"
-                value={rateInputs[tasker.id] || ""}
-                onChange={(e) =>
-                  setRateInputs({ ...rateInputs, [tasker.id]: e.target.value })
-                }
-              />
-            </div>
-           <button
-  onClick={() => handleSetRate(tasker.id)}
-  className="bg-[#000081] text-white px-3 py-1.5 text-sm rounded hover:bg-blue-700"
->
-  Set Rate
-</button>
-<button
-  onClick={() => handleViewTaskerProfile(tasker.id)}
-  className="bg-gray-800 text-white px-3 py-1.5 text-sm rounded hover:bg-gray-700"
->
-  View
-</button>
-<button
-  onClick={() => handleApproveTasker(tasker.id)}
-  className="bg-green-600 text-white px-3 py-1.5 text-sm rounded hover:bg-green-500"
->
-  Approve
-</button>
-<button
-  onClick={() => handleRejectTasker(tasker.id)}
-  className="bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-400"
->
-  Reject
-</button>
-<button
-  onClick={() => handleSetPendingTasker(tasker.id)}
-  className="bg-yellow-500 text-white px-3 py-1.5 text-sm rounded hover:bg-yellow-400"
->
-  Pending
-</button>
-
+            <button
+              onClick={() => handleViewTaskerProfile(tasker.id)}
+              className="bg-gray-800 text-white px-3 py-1.5 text-sm rounded hover:bg-gray-700"
+            >
+              View
+            </button>
+            <button
+              onClick={() => handleApproveTasker(tasker.id)}
+              className="bg-green-600 text-white px-3 py-1.5 text-sm rounded hover:bg-green-500"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleRejectTasker(tasker.id)}
+              className="bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-400"
+            >
+              Reject
+            </button>
+            <button
+              onClick={() => handleSetPendingTasker(tasker.id)}
+              className="bg-yellow-500 text-white px-3 py-1.5 text-sm rounded hover:bg-yellow-400"
+            >
+              Pending
+            </button>
           </div>
         </div>
       ))}

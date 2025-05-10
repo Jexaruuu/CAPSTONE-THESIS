@@ -542,6 +542,30 @@ const TaskerForm = () => {
 />
 </div>
 
+{/* ✅ Rate Per Hour Field */}
+<div className="mt-6">
+  <FormField
+    label="Rate per Hour (₱)"
+    name="rate_per_hour"
+    type="number"
+    register={register}
+    errors={errors}
+    required
+    min={100}
+    max={800}
+    placeholder="Enter your hourly rate"
+    validationRules={{
+      min: {
+        value: 100,
+        message: "Minimum rate is ₱100"
+      },
+      max: {
+        value: 800,
+        message: "Maximum rate is ₱800"
+      }
+    }}
+  />
+</div>
 
   {/* ✅ Skills Textarea */}
   <div className="mt-6">

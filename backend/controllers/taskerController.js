@@ -167,29 +167,29 @@ const getTaskerProfile = async (req, res) => {
 const getAllApprovedTaskers = async (req, res) => {
   try {
     const [taskers] = await db.query(`
-      SELECT 
-        tp.id,
-        tp.fullName,
-        tp.age,
-        tp.gender,
-        tp.contactNumber,
-        tp.email,
-        tp.address,
-        tp.profilePicture,
-        tf.jobType,
-        tf.serviceCategory,
-        tf.experience,
-        tf.skills,
-        tf.rate_per_hour,
-        tf.has_tools,
-        td.proofOfAddress,
-        td.medicalCertificate,
-        td.certificates AS additionalCertificate,
-        td.clearance
-      FROM tasker_personal tp
-      JOIN tasker_professional tf ON tp.id = tf.id
-      LEFT JOIN tasker_documents td ON tp.id = td.id
-      WHERE tp.status = 'approved'
+   SELECT 
+  tp.id,
+  tp.fullName,
+  tp.age,
+  tp.gender,
+  tp.contactNumber,
+  tp.email,
+  tp.address,
+  tp.profilePicture,
+  tf.jobType,
+  tf.serviceCategory,
+  tf.experience,
+  tf.skills,
+  tf.rate_per_hour,
+ tf.tools_equipment,
+  td.proofOfAddress,
+  td.medicalCertificate,
+  td.certificates AS additionalCertificate,
+  td.clearance
+FROM tasker_personal tp
+JOIN tasker_professional tf ON tp.id = tf.id
+LEFT JOIN tasker_documents td ON tp.id = td.id
+WHERE tp.status = 'approved'
     `);
 
     const taskersWithPrice = taskers.map(tasker => ({

@@ -16,16 +16,17 @@ const createTasker = async (taskerData) => {
     taskerData.social_media,
   ]);
 
-  await db.execute(`
-    INSERT INTO tasker_professional (jobType, serviceCategory, experience, skills, tools_equipment)
-    VALUES (?,?,?,?,?)
-  `, [
-    taskerData.jobType,
-    taskerData.serviceCategory,
-    taskerData.experience,
-    taskerData.skills,
-    taskerData.tools_equipment, // ✅ added here
-  ]);
+await db.execute(`
+  INSERT INTO tasker_professional (jobType, serviceCategory, experience, skills, tools_equipment, rate_per_hour)
+  VALUES (?,?,?,?,?,?)
+`, [
+  taskerData.jobType,
+  taskerData.serviceCategory,
+  taskerData.experience,
+  taskerData.skills,
+  taskerData.tools_equipment,
+  taskerData.rate_per_hour, // ✅ now included
+]);
 
   await db.execute(`
     INSERT INTO tasker_documents (primaryIDFront, primaryIDBack, secondaryID, clearance, proofOfAddress, medicalCertificate, certificates)
