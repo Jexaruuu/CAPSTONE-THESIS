@@ -85,13 +85,17 @@ const fetchTaskersWithFullInfo = async () => {
     let parsedServiceCategory = {};
 
     try {
-      parsedJobType = tasker.jobType ? JSON.parse(tasker.jobType) : [];
+      parsedJobType = Array.isArray(tasker.jobType)
+        ? tasker.jobType
+        : JSON.parse(tasker.jobType || "[]");
     } catch {
       parsedJobType = [];
     }
 
     try {
-      parsedServiceCategory = tasker.serviceCategory ? JSON.parse(tasker.serviceCategory) : {};
+      parsedServiceCategory = typeof tasker.serviceCategory === "object"
+        ? tasker.serviceCategory
+        : JSON.parse(tasker.serviceCategory || "{}");
     } catch {
       parsedServiceCategory = {};
     }

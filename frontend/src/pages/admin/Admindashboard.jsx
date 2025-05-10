@@ -214,15 +214,40 @@ const handleViewServiceRequest = (request) => {
 
   // ✅ New: handleViewTaskerProfile
   const handleViewTaskerProfile = async (taskerId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/taskers/${taskerId}`);
+    const data = response.data;
+
+    // ✅ Safely parse jobType and serviceCategory if needed
+    let jobType = [];
+    let serviceCategory = {};
+
     try {
-      const response = await axios.get(`http://localhost:3000/api/taskers/${taskerId}`);
-      setSelectedProfile(response.data);
-      setIsTaskerProfile(true); // ✅ It is a tasker
-      setModalOpen(true);
-    } catch (error) {
-      console.error("Failed to fetch tasker profile:", error);
+      jobType = Array.isArray(data.professional.jobType)
+        ? data.professional.jobType
+        : JSON.parse(data.professional.jobType || "[]");
+    } catch {
+      jobType = [];
     }
-  };
+
+    try {
+      serviceCategory = typeof data.professional.serviceCategory === "object"
+        ? data.professional.serviceCategory
+        : JSON.parse(data.professional.serviceCategory || "{}");
+    } catch {
+      serviceCategory = {};
+    }
+
+    data.professional.jobType = jobType;
+    data.professional.serviceCategory = serviceCategory;
+
+    setSelectedProfile(data);
+    setIsTaskerProfile(true);
+    setModalOpen(true);
+  } catch (error) {
+    console.error("Failed to fetch tasker profile:", error);
+  }
+};
 
   const handleApproveTasker = async (id) => {
     if (window.confirm("Approve this tasker?")) {
@@ -475,35 +500,46 @@ const getStatusBadge = (status) => {
       )}
 
       
-      {/* Tasker Full Details */}
-      {isTaskerProfile && (
+{/* Tasker Full Details */}
+{isTaskerProfile && (
   <div className="text-left text-gray-700 flex flex-col md:flex-row gap-6">
     {/* Left Side - Information */}
     <div className="flex-1 space-y-6">
       {/* Personal Info */}
       <div>
-      <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">Personal Information</h3>
-
+        <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">Personal Information</h3>
         <p><strong>Full Name:</strong> {selectedProfile.personal?.fullName}</p>
         <p><strong>Birth Date:</strong> {selectedProfile.personal?.birthDate ? new Date(selectedProfile.personal.birthDate).toLocaleDateString("en-US", {
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-}) : "N/A"}</p>
+          year: "numeric", month: "long", day: "numeric"
+        }) : "N/A"}</p>
         <p><strong>Age:</strong> {selectedProfile.personal?.age}</p>
         <p><strong>Gender:</strong> {selectedProfile.personal?.gender}</p>
         <p><strong>Contact:</strong> {selectedProfile.personal?.contactNumber}</p>
         <p><strong>Email:</strong> {selectedProfile.personal?.email}</p>
+        <p><strong>Social Media:</strong> {selectedProfile.personal?.social_media || "N/A"}</p>
         <p><strong>Address:</strong> {selectedProfile.personal?.address}</p>
       </div>
 
       {/* Professional Info */}
       <div>
-        <h3 className="text-lg font-bold text-indigo-600 mb-2">Professional Information</h3>
-        <p><strong>Job Type:</strong> {selectedProfile.professional?.jobType}</p>
-        <p><strong>Service Category:</strong> {selectedProfile.professional?.serviceCategory}</p>
+        <h3 className="text-lg font-bold text-indigo-600 mb-2">Work Information</h3>
+        <p><strong>Job Type:</strong>{" "}
+          {Array.isArray(selectedProfile.professional?.jobType)
+            ? selectedProfile.professional.jobType.map(type => type.charAt(0).toUpperCase() + type.slice(1)).join(", ")
+            : "N/A"}
+        </p>
+        <p><strong>Service Category:</strong></p>
+        <ul className="list-disc ml-5 text-sm text-gray-700">
+          {selectedProfile.professional?.serviceCategory && typeof selectedProfile.professional.serviceCategory === "object"
+            ? Object.entries(selectedProfile.professional.serviceCategory).map(([job, category], index) => (
+              <li key={index}><strong>{job.charAt(0).toUpperCase() + job.slice(1)}:</strong> {category}</li>
+            ))
+            : <li>N/A</li>}
+        </ul>
         <p><strong>Years of Experience:</strong> {selectedProfile.professional?.experience}</p>
         <p><strong>Skills:</strong> {selectedProfile.professional?.skills}</p>
+        <p><strong>Tools & Equipment:</strong> {selectedProfile.professional?.tools_equipment || "N/A"}</p>
+        <p><strong>Rate Per Hour:</strong> {selectedProfile.professional?.rate_per_hour ? `₱${selectedProfile.professional.rate_per_hour}/hr` : "N/A"}</p>
       </div>
 
       {/* Government Info */}
@@ -520,103 +556,30 @@ const getStatusBadge = (status) => {
     <div className="flex-1 space-y-4 overflow-y-auto max-h-[80vh]">
       <h3 className="text-lg font-bold text-indigo-600 mb-2">Uploaded Documents</h3>
 
-      {/* Primary ID Front */}
-      <div>
-        <p className="font-semibold">Primary ID Front:</p>
-        {selectedProfile.documents?.primaryIDFront ? (
-          <img
-            src={`http://localhost:3000${selectedProfile.documents.primaryIDFront}`}
-            alt="Primary ID Front"
-            className="w-full h-40 object-cover rounded-lg border"
-          />
-        ) : (
-          <p className="text-sm text-gray-500">No image uploaded</p>
-        )}
-      </div>
-
-      {/* Primary ID Back */}
-      <div>
-        <p className="font-semibold">Primary ID Back:</p>
-        {selectedProfile.documents?.primaryIDBack ? (
-          <img
-            src={`http://localhost:3000${selectedProfile.documents.primaryIDBack}`}
-            alt="Primary ID Back"
-            className="w-full h-40 object-cover rounded-lg border"
-          />
-        ) : (
-          <p className="text-sm text-gray-500">No image uploaded</p>
-        )}
-      </div>
-
-      {/* Secondary ID */}
-      <div>
-        <p className="font-semibold">Secondary ID:</p>
-        {selectedProfile.documents?.secondaryID ? (
-          <img
-            src={`http://localhost:3000${selectedProfile.documents.secondaryID}`}
-            alt="Secondary ID"
-            className="w-full h-40 object-cover rounded-lg border"
-          />
-        ) : (
-          <p className="text-sm text-gray-500">No image uploaded</p>
-        )}
-      </div>
-
-      {/* Clearance */}
-      <div>
-        <p className="font-semibold">Clearance:</p>
-        {selectedProfile.documents?.clearance ? (
-          <img
-            src={`http://localhost:3000${selectedProfile.documents.clearance}`}
-            alt="Clearance"
-            className="w-full h-40 object-cover rounded-lg border"
-          />
-        ) : (
-          <p className="text-sm text-gray-500">No image uploaded</p>
-        )}
-      </div>
-
-      {/* Proof of Address */}
-      <div>
-        <p className="font-semibold">Proof of Address:</p>
-        {selectedProfile.documents?.proofOfAddress ? (
-          <img
-            src={`http://localhost:3000${selectedProfile.documents.proofOfAddress}`}
-            alt="Proof of Address"
-            className="w-full h-40 object-cover rounded-lg border"
-          />
-        ) : (
-          <p className="text-sm text-gray-500">No image uploaded</p>
-        )}
-      </div>
-
-      {/* Medical Certificate */}
-      <div>
-        <p className="font-semibold">Medical Certificate:</p>
-        {selectedProfile.documents?.medicalCertificate ? (
-          <img
-            src={`http://localhost:3000${selectedProfile.documents.medicalCertificate}`}
-            alt="Medical Certificate"
-            className="w-full h-40 object-cover rounded-lg border"
-          />
-        ) : (
-          <p className="text-sm text-gray-500">No image uploaded</p>
-        )}
-      </div>
-
-      {/* Certificates */}
-      <div>
-        <p className="font-semibold">Certificates:</p>
-        {selectedProfile.documents?.certificates ? (
-          <img
-            src={`http://localhost:3000${selectedProfile.documents.certificates}`}
-            alt="Certificates"
-            className="w-full h-40 object-cover rounded-lg border"
-          />
-        ) : (
-          <p className="text-sm text-gray-500">No image uploaded</p>
-        )}
-      </div>
+      {[
+        { label: "Primary ID Front", key: "primaryIDFront" },
+        { label: "Primary ID Back", key: "primaryIDBack" },
+        { label: "Secondary ID", key: "secondaryID" },
+        { label: "Clearance", key: "clearance" },
+        { label: "Proof of Address", key: "proofOfAddress" },
+        { label: "Medical Certificate", key: "medicalCertificate" },
+        { label: "Certificates", key: "certificates" },
+      ].map(({ label, key }) => (
+        <div key={key}>
+          <p className="font-semibold">{label}:</p>
+          {selectedProfile.documents?.[key] ? (
+            <a href={`http://localhost:3000${selectedProfile.documents[key]}`} target="_blank" rel="noopener noreferrer">
+              <img
+                src={`http://localhost:3000${selectedProfile.documents[key]}`}
+                alt={label}
+                className="w-full h-40 object-cover rounded-lg border cursor-pointer"
+              />
+            </a>
+          ) : (
+            <p className="text-sm text-gray-500">No image uploaded</p>
+          )}
+        </div>
+      ))}
     </div>
   </div>
 )}
