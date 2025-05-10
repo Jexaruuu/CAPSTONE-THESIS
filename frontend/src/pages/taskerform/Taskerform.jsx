@@ -525,6 +525,24 @@ const TaskerForm = () => {
     ))}
   </div>
 
+  {/* ✅ Tools/Equipment Field */}
+  <div className="mt-6">
+<FormField
+  label="Do you have your own tools or equipment?"
+  name="tools_equipment"
+  register={register}
+  errors={errors}
+  type="select"
+  required
+  options={[
+    { value: "Yes", label: "Yes" },
+    { value: "No", label: "No" }
+  ]}
+  placeholder="Select Yes or No"
+/>
+</div>
+
+
   {/* ✅ Skills Textarea */}
   <div className="mt-6">
     <label className="block font-medium text-gray-700 mb-1">Skills & Certifications</label>

@@ -17,7 +17,6 @@ const saveFile = (file, folder) => {
 };
 
 // ✅ Main form submission controller
-// ✅ Main form submission controller
 const submitTaskerForm = async (req, res) => {
   try {
     const data = req.body;
@@ -34,29 +33,20 @@ const submitTaskerForm = async (req, res) => {
     const medicalCertificate = req.files?.medicalCertificate ? saveFile(req.files.medicalCertificate, 'medical') : null;
     const certificates = req.files?.certificates ? saveFile(req.files.certificates, 'certificates') : null;
 
-    // ✅ Fix jobType: parse cleanly even if it's a JSON string
     let jobTypeArray;
     try {
-      jobTypeArray = typeof data.jobType === 'string'
-        ? JSON.parse(data.jobType)
-        : data.jobType;
-
-      if (!Array.isArray(jobTypeArray)) {
-        jobTypeArray = [jobTypeArray];
-      }
+      jobTypeArray = typeof data.jobType === 'string' ? JSON.parse(data.jobType) : data.jobType;
+      if (!Array.isArray(jobTypeArray)) jobTypeArray = [jobTypeArray];
     } catch (err) {
-      console.warn("Failed to parse jobType, using fallback.");
+      console.warn("Failed to parse jobType");
       jobTypeArray = [data.jobType];
     }
 
-    // ✅ Fix serviceCategory parsing
     let serviceCategoryObject;
     try {
-      serviceCategoryObject = typeof data.serviceCategory === 'string'
-        ? JSON.parse(data.serviceCategory)
-        : data.serviceCategory;
+      serviceCategoryObject = typeof data.serviceCategory === 'string' ? JSON.parse(data.serviceCategory) : data.serviceCategory;
     } catch (err) {
-      console.warn("Failed to parse serviceCategory, using fallback.");
+      console.warn("Failed to parse serviceCategory");
       serviceCategoryObject = data.serviceCategory || {};
     }
 
@@ -73,22 +63,21 @@ const submitTaskerForm = async (req, res) => {
       proofOfAddress,
       medicalCertificate,
       certificates,
-      social_media: data.social_media
+      social_media: data.social_media,
+      tools_equipment: data.tools_equipment || null // ✅ use correct column name
     };
 
-    // ✅ Clean undefined values
     Object.keys(taskerData).forEach(key => {
       if (taskerData[key] === undefined) taskerData[key] = null;
     });
 
-    const result = await createTasker(taskerData);
+    await createTasker(taskerData);
     res.status(201).json({ message: 'Tasker form submitted successfully' });
   } catch (error) {
     console.error('Error submitting tasker form:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 
 // 🔥 Fetch all taskers
 const getAllTaskers = async (req, res) => {
@@ -108,6 +97,7 @@ const getAllTaskers = async (req, res) => {
         tf.experience,
         tf.skills,
         tf.rate_per_hour,
+        tf.has_tools,
         td.proofOfAddress,
         td.medicalCertificate,
         td.certificates AS additionalCertificate
@@ -191,10 +181,11 @@ const getAllApprovedTaskers = async (req, res) => {
         tf.experience,
         tf.skills,
         tf.rate_per_hour,
+        tf.has_tools,
         td.proofOfAddress,
         td.medicalCertificate,
         td.certificates AS additionalCertificate,
-        td.clearance                          -- ✅ make sure this is present
+        td.clearance
       FROM tasker_personal tp
       JOIN tasker_professional tf ON tp.id = tf.id
       LEFT JOIN tasker_documents td ON tp.id = td.id
@@ -207,14 +198,11 @@ const getAllApprovedTaskers = async (req, res) => {
     }));
     
     res.json(taskersWithPrice);
-
   } catch (error) {
     console.error('Error fetching approved taskers with full info:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-
 
 // ✅ New controller: Get taskers with full info
 const getTaskersWithFullInfo = async (req, res) => {
@@ -264,7 +252,7 @@ const setTaskerPending = async (req, res) => {
   }
 };
 
-// ✅ Serve Profile Picture from DB
+// ✅ Serve files
 const getProfilePicture = async (req, res) => {
   const { id } = req.params;
   try {
@@ -279,7 +267,6 @@ const getProfilePicture = async (req, res) => {
   }
 };
 
-// ✅ Serve Proof of Address
 const getProofOfAddress = async (req, res) => {
   const { id } = req.params;
   try {
@@ -294,7 +281,6 @@ const getProofOfAddress = async (req, res) => {
   }
 };
 
-// ✅ Serve Medical Certificate
 const getMedicalCertificate = async (req, res) => {
   const { id } = req.params;
   try {
@@ -309,7 +295,6 @@ const getMedicalCertificate = async (req, res) => {
   }
 };
 
-// ✅ Serve Optional Certificate
 const getOptionalCertificate = async (req, res) => {
   const { id } = req.params;
   try {
@@ -338,7 +323,6 @@ const getClearance = async (req, res) => {
   }
 };
 
-
 module.exports = {
   submitTaskerForm,
   getAllTaskers,
@@ -349,7 +333,7 @@ module.exports = {
   getTaskersWithFullInfo,
   setTaskerRate,
   setTaskerPending,
-  getProfilePicture,          // ✅ Export added functions
+  getProfilePicture,
   getProofOfAddress,
   getMedicalCertificate,
   getOptionalCertificate,

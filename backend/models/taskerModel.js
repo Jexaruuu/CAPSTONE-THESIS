@@ -13,17 +13,18 @@ const createTasker = async (taskerData) => {
     taskerData.email,
     taskerData.address,
     taskerData.profilePicture,
-    taskerData.social_media,  // 👈 Add this
+    taskerData.social_media,
   ]);
 
   await db.execute(`
-    INSERT INTO tasker_professional (jobType, serviceCategory, experience, skills)
-    VALUES (?,?,?,?)
+    INSERT INTO tasker_professional (jobType, serviceCategory, experience, skills, tools_equipment)
+    VALUES (?,?,?,?,?)
   `, [
     taskerData.jobType,
     taskerData.serviceCategory,
     taskerData.experience,
     taskerData.skills,
+    taskerData.tools_equipment, // ✅ added here
   ]);
 
   await db.execute(`
@@ -50,7 +51,6 @@ const createTasker = async (taskerData) => {
   ]);
 };
 
-// ✅ New: Fetch taskers with personal and professional info
 const fetchTaskersWithFullInfo = async () => {
   const [taskers] = await db.query(`
     SELECT 
@@ -62,16 +62,15 @@ const fetchTaskersWithFullInfo = async () => {
       tf.jobType,
       tf.serviceCategory,
       tf.experience,
-      tp.status -- ✅ ✅ ✅ ADD THIS
-    FROM 
-      tasker_personal tp
-    LEFT JOIN 
-      tasker_professional tf ON tp.id = tf.id
+      tf.tools_equipment,
+      tp.status
+    FROM tasker_personal tp
+    LEFT JOIN tasker_professional tf ON tp.id = tf.id
   `);
   return taskers;
 };
 
 module.exports = { 
   createTasker,
-  fetchTaskersWithFullInfo // ✅ export it
+  fetchTaskersWithFullInfo
 };

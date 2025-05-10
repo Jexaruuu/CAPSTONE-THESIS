@@ -331,8 +331,7 @@ const getStatusBadge = (status) => {
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
       <div className="flex">
-      <aside className="w-72 h-screen bg-white text-black flex flex-col justify-between p-4">
-
+      <aside className="w-72 h-screen bg-white text-black flex flex-col justify-between p-4 fixed top-0 left-0 z-40 shadow-md">
           <div>
             <div className="flex items-center mb-10">
               <img src="/logo.png" alt="Logo" className="w-66 h-66 mr-2" />
@@ -447,7 +446,7 @@ const getStatusBadge = (status) => {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 p-6 relative">
+       <main className="ml-72 p-6 relative w-[calc(100%-18rem)]">
           {/* Profile Modal (existing) */}
           {modalOpen && selectedProfile && (
   <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
@@ -626,19 +625,21 @@ const getStatusBadge = (status) => {
   </div>
 )}
 
-            {/* Clock & Date */}
-            <div className="absolute top-6 right-6 text-lg font-semibold text-gray-700 flex items-center space-x-4">
-            <div>🕒 {clock}</div>
-            <div>📅 {date}</div>
-          </div>
+{/* Sticky Header */}
+<div className="sticky top-0 z-30 bg-gray-100 py-4 px-6 shadow-sm border-b border-gray-200 flex items-center justify-between mb-6">
+  <h2 className="text-2xl font-semibold">
+    {active === "Dashboard" && "Dashboard Overview"}
+    {active === "Users" && "Manage Users"}
+    {active === "Applications" && "Service Applications"}
+    {active === "ServiceRequests" && "Service Requests"}
+    {active === "Settings" && "Admin Settings"}
+  </h2>
 
-          <h2 className="text-2xl font-semibold mb-6">
-            {active === "Dashboard" && "Dashboard Overview"}
-            {active === "Users" && "Manage Users"}
-            {active === "Applications" && "Service Applications"}
-            {active === "ServiceRequests" && "Service Requests"}
-            {active === "Settings" && "Admin Settings"}
-          </h2>
+  <div className="text-lg font-semibold text-gray-700 flex items-center space-x-4">
+    <div>🕒 {clock}</div>
+    <div>📅 {date}</div>
+  </div>
+</div>
 
           <div className="bg-white p-6 rounded-lg">
             {active === "Dashboard" && (
@@ -773,115 +774,86 @@ const getStatusBadge = (status) => {
             )}
 
              {/* ✨ New Applications View ✨ */}
-             {active === "Applications" && (
+{active === "Applications" && (
   <div>
     <p className="mb-6">
       Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.
     </p>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
+    <div className="flex flex-col gap-5">
       {taskers.map((tasker) => (
         <div
           key={tasker.id}
-          className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-[250px] transition-transform transform hover:scale-[1.02] hover:shadow-2xl duration-300"
+          className="bg-white rounded-2xl shadow-md p-4 flex items-center justify-between hover:shadow-xl transition-all"
         >
-          {/* Profile Picture */}
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow-md mb-4">
+          {/* Left Info */}
+          <div className="flex items-center gap-4">
             <img
               src={`http://localhost:3000${tasker.profilePicture}`}
               alt="Profile"
-              className="w-full h-full object-cover"
+              className="w-20 h-20 rounded-full object-cover border-4 border-blue-200"
             />
+            <div className="space-y-1">
+              <h3 className="text-lg font-bold text-gray-800">{tasker.fullName}</h3>
+              <p className="text-sm text-gray-600">Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}</p>
+              <p className="text-sm text-gray-600">Job: {tasker.jobType || "N/A"}</p>
+              <p className="text-sm text-gray-600">Category: {tasker.serviceCategory || "N/A"}</p>
+              <p className="text-sm text-gray-600">Experience: {tasker.experience || "N/A"} yrs</p>
+              <div>{getStatusBadge(tasker.status)}</div>
+            </div>
           </div>
 
-          {/* Text Info */}
-          <h3 className="text-lg font-bold text-gray-800 mb-1 text-center break-words">
-            {tasker.fullName}
-          </h3>
-          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
-            Age: <span className="font-semibold">{tasker.age || "N/A"}</span>
-          </p>
-          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
-            Gender: <span className="font-semibold">{tasker.gender || "N/A"}</span>
-          </p>
-          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
-            Job: <span className="font-semibold">{tasker.jobType || "N/A"}</span>
-          </p>
-          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
-            Category: <span className="font-semibold">{tasker.serviceCategory || "N/A"}</span>
-          </p>
-          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
-            Experience: <span className="font-semibold">{tasker.experience || "N/A"} yrs</span>
-          </p>
+          {/* Right Actions */}
+          <div className="flex flex-col gap-2 w-64">
+            <div className="flex w-full">
+              <span className="px-3 py-2 bg-gray-100 border border-r-0 rounded-l text-sm">₱</span>
+              <input
+                type="number"
+                className="border border-l-0 p-2 text-center w-full text-sm rounded-r"
+                placeholder="Rate per hour"
+                value={rateInputs[tasker.id] || ""}
+                onChange={(e) =>
+                  setRateInputs({ ...rateInputs, [tasker.id]: e.target.value })
+                }
+              />
+            </div>
+           <button
+  onClick={() => handleSetRate(tasker.id)}
+  className="bg-[#000081] text-white px-3 py-1.5 text-sm rounded hover:bg-blue-700"
+>
+  Set Rate
+</button>
+<button
+  onClick={() => handleViewTaskerProfile(tasker.id)}
+  className="bg-gray-800 text-white px-3 py-1.5 text-sm rounded hover:bg-gray-700"
+>
+  View
+</button>
+<button
+  onClick={() => handleApproveTasker(tasker.id)}
+  className="bg-green-600 text-white px-3 py-1.5 text-sm rounded hover:bg-green-500"
+>
+  Approve
+</button>
+<button
+  onClick={() => handleRejectTasker(tasker.id)}
+  className="bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-400"
+>
+  Reject
+</button>
+<button
+  onClick={() => handleSetPendingTasker(tasker.id)}
+  className="bg-yellow-500 text-white px-3 py-1.5 text-sm rounded hover:bg-yellow-400"
+>
+  Pending
+</button>
 
-         {/* Status Badge */}
-<div className="mb-3 mt-2">
-  {getStatusBadge(tasker.status)}
-</div>
-
-{/* 💡 Rate Input Field and Set Button */}
-<div className="w-full mt-2">
-  <div className="flex w-full">
-    <span className="px-3 py-2 bg-gray-100 border border-r-0 rounded-l text-sm">₱</span>
-    <input
-      type="number"
-      className="border border-l-0 p-2 text-center w-full text-sm rounded-r"
-      placeholder="Rate per hour"
-      value={rateInputs[tasker.id] || ""}
-      onChange={(e) =>
-        setRateInputs({ ...rateInputs, [tasker.id]: e.target.value })
-      }
-    />
-  </div>
-  <button
-    onClick={() => handleSetRate(tasker.id)}
-    className="relative w-full mt-2 rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Set Rate</span>
-  </button>
-</div>
-
-{/* Action Buttons */}
-<div className="flex flex-col gap-2 w-full mt-4">
-  <button
-    onClick={() => handleViewTaskerProfile(tasker.id)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">View</span>
-  </button>
-
-  <button
-    onClick={() => handleApproveTasker(tasker.id)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Approve</span>
-  </button>
-
-  <button
-    onClick={() => handleRejectTasker(tasker.id)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Reject</span>
-  </button>
-
-  <button
-    onClick={() => handleSetPendingTasker(tasker.id)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Pending</span>
-  </button>
-</div>
+          </div>
         </div>
       ))}
     </div>
   </div>
 )}
-
 
 {active === "ServiceRequests" && (
   <div>
