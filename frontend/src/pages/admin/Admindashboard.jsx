@@ -819,29 +819,36 @@ const getStatusBadge = (status) => {
             {/* Right Actions */}
             <div className="flex flex-col gap-2 w-64">
               <button
-                onClick={() => handleViewTaskerProfile(tasker.id)}
-                className="bg-gray-800 text-white px-3 py-1.5 text-sm rounded hover:bg-gray-700"
-              >
-                View
-              </button>
-              <button
-                onClick={() => handleApproveTasker(tasker.id)}
-                className="bg-green-600 text-white px-3 py-1.5 text-sm rounded hover:bg-green-500"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => handleRejectTasker(tasker.id)}
-                className="bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-400"
-              >
-                Reject
-              </button>
-              <button
-                onClick={() => handleSetPendingTasker(tasker.id)}
-                className="bg-yellow-500 text-white px-3 py-1.5 text-sm rounded hover:bg-yellow-400"
-              >
-                Pending
-              </button>
+  onClick={() => handleViewTaskerProfile(tasker.id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">View</span>
+</button>
+
+<button
+  onClick={() => handleApproveTasker(tasker.id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Approve</span>
+</button>
+
+<button
+  onClick={() => handleRejectTasker(tasker.id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Reject</span>
+</button>
+
+<button
+  onClick={() => handleSetPendingTasker(tasker.id)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Pending</span>
+</button>
             </div>
           </div>
         ))}
@@ -934,32 +941,39 @@ const getStatusBadge = (status) => {
             </div>
 
             {/* Right Actions */}
-            <div className="flex flex-col gap-2 w-64">
-              <button
-                onClick={() => handleViewServiceRequest(request)}
-                className="bg-gray-800 text-white px-3 py-1.5 text-sm rounded hover:bg-gray-700"
-              >
-                View
-              </button>
-              <button
-                onClick={() => handleApproveServiceRequest(request.service_id)}
-                className="bg-green-600 text-white px-3 py-1.5 text-sm rounded hover:bg-green-500"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => handleRejectServiceRequest(request.service_id)}
-                className="bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-400"
-              >
-                Reject
-              </button>
-              <button
-                onClick={() => handleSetPendingServiceRequest(request.service_id)}
-                className="bg-yellow-500 text-white px-3 py-1.5 text-sm rounded hover:bg-yellow-400"
-              >
-                Pending
-              </button>
-            </div>
+           <div className="flex flex-col gap-2 w-64">
+  <button
+    onClick={() => handleViewServiceRequest(request)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">View</span>
+  </button>
+
+  <button
+    onClick={() => handleApproveServiceRequest(request.service_id)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Approve</span>
+  </button>
+
+  <button
+    onClick={() => handleRejectServiceRequest(request.service_id)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Reject</span>
+  </button>
+
+  <button
+    onClick={() => handleSetPendingServiceRequest(request.service_id)}
+    className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+  >
+    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+    <span className="relative text-base font-semibold">Pending</span>
+  </button>
+</div>
           </div>
         ))}
     </div>
