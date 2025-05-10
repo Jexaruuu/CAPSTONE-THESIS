@@ -33,6 +33,10 @@ const [selectedJobTypeFilter, setSelectedJobTypeFilter] = useState("All");
 const [currentPage, setCurrentPage] = useState(1);
 const taskersPerPage = 5;
 
+const [currentServicePage, setCurrentServicePage] = useState(1);
+const requestsPerPage = 5;
+
+
 const handleSetRate = async (taskerId) => {
   const rate = rateInputs[taskerId];
   if (!rate) return alert("Please enter a rate");
@@ -750,7 +754,7 @@ const getStatusBadge = (status) => {
     </p>
 
     {/* 🔍 Job Type Filter */}
-    <div className="flex gap-3 mb-4 flex-wrap">
+    <div className="flex gap-3 mb-4 flex-wrap sticky top-[72px] bg-white z-10 py-2">
       {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((job) => (
         <button
           key={job}
@@ -793,8 +797,10 @@ const getStatusBadge = (status) => {
                 <h3 className="text-lg font-bold text-gray-800">{tasker.fullName}</h3>
                 <p className="text-sm text-gray-600">Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}</p>
                 <p className="text-sm text-gray-600">
-                  Job: {Array.isArray(tasker.jobType) && tasker.jobType.length > 0 ? tasker.jobType.join(", ") : "N/A"}
-                </p>
+  Job: {Array.isArray(tasker.jobType) && tasker.jobType.length > 0
+    ? tasker.jobType.map(job => job.charAt(0).toUpperCase() + job.slice(1)).join(", ")
+    : "N/A"}
+</p>
                 <p className="text-sm text-gray-600">
                   Category: {tasker.serviceCategory && typeof tasker.serviceCategory === "object" && Object.keys(tasker.serviceCategory).length > 0
                     ? Object.values(tasker.serviceCategory).join(", ")
@@ -868,89 +874,117 @@ const getStatusBadge = (status) => {
 )}
 
 {active === "ServiceRequests" && (
-  <div>
-    <p className="mb-6">
-    Manage and review client service submissions. View their profiles, and decide to approve or reject based on qualifications.
+  <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
+    <p className="mb-4">
+      Manage and review client service submissions. View their profiles, and decide to approve or reject based on qualifications.
     </p>
 
-    {/* ✨ Card layout */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
-      {serviceRequests.map((request) => (
-        <div
-          key={request.client_id}
-          className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-[250px] transition-transform transform hover:scale-[1.02] hover:shadow-2xl duration-300"
+    {/* 🔍 Job Type Filter */}
+    <div className="flex gap-3 mb-4 flex-wrap sticky top-[72px] bg-white z-10 py-2">
+      {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((type) => (
+        <button
+          key={type}
+          onClick={() => {
+            setSelectedJobTypeFilter(type);
+            setCurrentServicePage(1); // Reset to page 1 on filter change
+          }}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+            selectedJobTypeFilter === type
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+          }`}
         >
-          {/* Profile Picture */}
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow-md mb-4">
-            <img
-              src={`http://localhost:3000${request.profile_picture}`}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+          {type}
+        </button>
+      ))}
+    </div>
+
+    {/* ✨ Horizontal Cards */}
+    <div className="flex flex-col gap-5 overflow-y-auto pr-2">
+      {serviceRequests
+        .filter(req =>
+          selectedJobTypeFilter === "All" ||
+          req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())
+        )
+        .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
+        .map((request) => (
+          <div
+            key={request.client_id}
+            className="bg-white rounded-2xl shadow-md p-4 flex items-center justify-between hover:shadow-xl transition-all"
+          >
+            {/* Left Info */}
+            <div className="flex items-center gap-4">
+              <img
+                src={`http://localhost:3000${request.profile_picture}`}
+                alt="Profile"
+                className="w-20 h-20 rounded-full object-cover border-4 border-blue-200"
+              />
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
+                <p className="text-sm text-gray-600">
+                  Address: {request.street}, {request.barangay}
+                  {request.additional_address ? `, ${request.additional_address}` : ""}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
+                </p>
+                <p className="text-sm text-gray-600">Urgent: {request.urgent_request ? "Yes" : "No"}</p>
+                <div>{getStatusBadge(request.status)}</div>
+              </div>
+            </div>
+
+            {/* Right Actions */}
+            <div className="flex flex-col gap-2 w-64">
+              <button
+                onClick={() => handleViewServiceRequest(request)}
+                className="bg-gray-800 text-white px-3 py-1.5 text-sm rounded hover:bg-gray-700"
+              >
+                View
+              </button>
+              <button
+                onClick={() => handleApproveServiceRequest(request.service_id)}
+                className="bg-green-600 text-white px-3 py-1.5 text-sm rounded hover:bg-green-500"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => handleRejectServiceRequest(request.service_id)}
+                className="bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-400"
+              >
+                Reject
+              </button>
+              <button
+                onClick={() => handleSetPendingServiceRequest(request.service_id)}
+                className="bg-yellow-500 text-white px-3 py-1.5 text-sm rounded hover:bg-yellow-400"
+              >
+                Pending
+              </button>
+            </div>
           </div>
+        ))}
+    </div>
 
-          {/* Client Info */}
-          <h3 className="text-lg font-bold text-gray-800 mb-1 text-center break-words">
-            {request.first_name} {request.last_name}
-          </h3>
-          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
-            {request.barangay}, {request.street}
-          </p>
-
-          {/* ✨ Service Need */}
-          <p className="text-indigo-700 font-semibold text-center text-sm mt-2">
-            Service Need: {request.service_type}
-          </p>
-
-          {/* Status Badge */}
-          <div className="mb-3 mt-2">
-          {request.status === "approved" && (
-  <span className="bg-green-200 text-green-800 text-xs font-bold px-2 py-1 rounded">Approved</span>
-)}
-{request.status === "rejected" && (
-  <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>
-)}
-{(!request.status || request.status === "pending") && (
-  <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>
-)}
-
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-2 w-full mt-4">
-          <button
-  onClick={() => handleViewServiceRequest(request)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">View Request</span>
-</button>
-
-<button
-  onClick={() => handleApproveServiceRequest(request.service_id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Approve</span>
-</button>
-
-<button
-  onClick={() => handleRejectServiceRequest(request.service_id, request.client_id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
->
-  <span className="relative text-base font-semibold">Reject</span>
-</button>
-<button
-  onClick={() => handleSetPendingServiceRequest(request.service_id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Pending</span>
-</button>
-
-
-          </div>
-        </div>
+     {/* 🔄 Pagination Controls */}
+    <div className="mt-6 flex justify-center gap-2">
+      {Array.from({
+        length: Math.ceil(
+          serviceRequests.filter(req =>
+            selectedJobTypeFilter === "All" ||
+            req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())
+          ).length / requestsPerPage
+        )
+      }, (_, index) => (
+        <button
+          key={index}
+          onClick={() => setCurrentServicePage(index + 1)}
+          className={`px-4 py-1 rounded-full text-sm font-semibold ${
+            currentServicePage === index + 1
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-800 hover:bg-blue-100"
+          }`}
+        >
+          {index + 1}
+        </button>
       ))}
     </div>
   
