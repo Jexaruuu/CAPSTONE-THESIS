@@ -797,9 +797,25 @@ const getStatusBadge = (status) => {
             <div className="space-y-1">
               <h3 className="text-lg font-bold text-gray-800">{tasker.fullName}</h3>
               <p className="text-sm text-gray-600">Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}</p>
-              <p className="text-sm text-gray-600">Job: {tasker.jobType || "N/A"}</p>
-              <p className="text-sm text-gray-600">Category: {tasker.serviceCategory || "N/A"}</p>
-              <p className="text-sm text-gray-600">Experience: {tasker.experience || "N/A"} yrs</p>
+<p className="text-sm text-gray-600">
+  Job: {Array.isArray(tasker.jobType) && tasker.jobType.length > 0 ? tasker.jobType.join(", ") : "N/A"}
+</p>
+
+<p className="text-sm text-gray-600">
+  Category: {tasker.serviceCategory && typeof tasker.serviceCategory === "object" && Object.keys(tasker.serviceCategory).length > 0
+    ? Object.values(tasker.serviceCategory).join(", ")
+    : "N/A"}
+</p>
+
+<p className="text-sm text-gray-600">
+  Experience: {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
+</p>
+
+<p className="text-sm text-gray-600">
+  Rate: {tasker.rate_per_hour ? `₱${tasker.rate_per_hour}/hr` : "N/A"}
+</p>
+
+
               <div>{getStatusBadge(tasker.status)}</div>
             </div>
           </div>
