@@ -988,65 +988,88 @@ const getStatusBadge = (status) => {
       ))}
     </div>
   
-    {/* 🚀 THIS PART IS YOUR SERVICE REQUEST MODAL */}
-    {requestModalOpen && selectedRequest && (
-      <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
+{/* 🚀 THIS PART IS YOUR SERVICE REQUEST MODAL */}
+{requestModalOpen && selectedRequest && (
+  <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
+    <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-4xl relative border border-gray-200">
+      <button
+        onClick={() => setRequestModalOpen(false)}
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+      >
+        &times;
+      </button>
 
-        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-3xl space-y-6 relative border border-gray-200">
+      <h2 className="text-3xl font-bold text-center mb-8 text-indigo-700 tracking-wide">
+        Service Request Details
+      </h2>
 
-          <button onClick={() => setRequestModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-
-          <h2 className="text-2xl font-bold text-center mb-6 text-indigo-600">Service Request Details</h2>
-
-          <div className="text-gray-700 space-y-4">
-            <div className="flex flex-col items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700">
+        {/* Left Column - Info */}
+        <div className="space-y-6">
+          {/* Client Info */}
+          <div>
+            <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
+              Client Information
+            </h3>
+            <div className="flex flex-col items-center mb-4">
               <img
                 src={`http://localhost:3000${selectedRequest.profile_picture}`}
                 alt="Profile"
-                className="w-32 h-32 rounded-full object-cover mb-4"
+                className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
               />
-              <h3 className="text-lg font-bold">{selectedRequest.first_name} {selectedRequest.last_name}</h3>
+              <h3 className="text-lg font-bold mt-2">
+                {selectedRequest.first_name} {selectedRequest.last_name}
+              </h3>
             </div>
-
             <p><strong>Contact Number:</strong> {selectedRequest.contact_number}</p>
             <p><strong>Email:</strong> {selectedRequest.email}</p>
-            <p><strong>Address:</strong> {selectedRequest.street}, {selectedRequest.barangay}, {selectedRequest.additional_address}</p>
+            <p><strong>Address:</strong> {selectedRequest.street}, {selectedRequest.barangay}{selectedRequest.additional_address ? `, ${selectedRequest.additional_address}` : ""}</p>
+          </div>
+
+          {/* Service Info */}
+          <div>
+            <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
+              Service Information
+            </h3>
             <p><strong>Service Type:</strong> {selectedRequest.service_type}</p>
             <p><strong>Service Description:</strong> {selectedRequest.service_description}</p>
-            <p>
-  <strong>Preferred Date:</strong>{" "}
-  {new Date(selectedRequest.preferred_date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })}
-</p>
-
-<p>
-  <strong>Preferred Time:</strong>{" "}
-  {new Date(`1970-01-01T${selectedRequest.preferred_time}`).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  })}
-</p>
+            <p><strong>Preferred Date:</strong>{" "}
+              {new Date(selectedRequest.preferred_date).toLocaleDateString("en-US", {
+                year: "numeric", month: "long", day: "numeric",
+              })}
+            </p>
+            <p><strong>Preferred Time:</strong>{" "}
+              {new Date(`1970-01-01T${selectedRequest.preferred_time}`).toLocaleTimeString("en-US", {
+                hour: "numeric", minute: "2-digit", hour12: true,
+              })}
+            </p>
             <p><strong>Urgent Request:</strong> {selectedRequest.urgent_request ? "Yes" : "No"}</p>
-
-            {/* Service Image */}
-            {selectedRequest.service_image && (
-              <div>
-                <h3 className="font-semibold mb-2">Service Image:</h3>
-                <img
-                  src={`http://localhost:3000${selectedRequest.service_image}`}
-                  alt="Service"
-                  className="w-full h-60 object-cover rounded-lg border"
-                />
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Right Column - Image */}
+        <div className="space-y-6">
+          <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1">Service Image</h3>
+          {selectedRequest.service_image ? (
+            <a
+              href={`http://localhost:3000${selectedRequest.service_image}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`http://localhost:3000${selectedRequest.service_image}`}
+                alt="Service"
+                className="w-full h-72 object-cover rounded-lg border cursor-pointer hover:opacity-90"
+              />
+            </a>
+          ) : (
+            <p className="text-sm text-gray-500">No image uploaded.</p>
+          )}
+        </div>
       </div>
-    )}
+    </div>
+  </div>
+)}
   </div>
 )}
 
