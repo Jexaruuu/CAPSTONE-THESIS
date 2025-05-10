@@ -30,6 +30,8 @@ const [pendingServiceRequests, setPendingServiceRequests] = useState(0);
 
 const [selectedJobTypeFilter, setSelectedJobTypeFilter] = useState("All");
 
+const [currentPage, setCurrentPage] = useState(1);
+const taskersPerPage = 5;
 
 const handleSetRate = async (taskerId) => {
   const rate = rateInputs[taskerId];
@@ -748,29 +750,33 @@ const getStatusBadge = (status) => {
     </p>
 
     {/* 🔍 Job Type Filter */}
-<div className="flex gap-3 mb-4 flex-wrap">
-  {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((job) => (
-    <button
-      key={job}
-      onClick={() => setSelectedJobTypeFilter(job)}
-      className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-        selectedJobTypeFilter === job
-          ? "bg-blue-600 text-white"
-          : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-      }`}
-    >
-      {job}
-    </button>
-  ))}
-</div>
+    <div className="flex gap-3 mb-4 flex-wrap">
+      {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((job) => (
+        <button
+          key={job}
+          onClick={() => {
+            setSelectedJobTypeFilter(job);
+            setCurrentPage(1); // ✅ reset to page 1 when filter changes
+          }}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+            selectedJobTypeFilter === job
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+          }`}
+        >
+          {job}
+        </button>
+      ))}
+    </div>
 
-    {/* ✨ Scrollable tasker cards */}  
- <div className="flex flex-col gap-5 overflow-y-auto pr-2">
-  {taskers
-    .filter(tasker =>
-      selectedJobTypeFilter === "All" ||
-      (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))
-    )
+    {/* ✨ Scrollable tasker cards with pagination */}
+    <div className="flex flex-col gap-5 overflow-y-auto pr-2">
+      {taskers
+        .filter(tasker =>
+          selectedJobTypeFilter === "All" ||
+          (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))
+        )
+        .slice((currentPage - 1) * taskersPerPage, currentPage * taskersPerPage)
         .map((tasker) => (
           <div
             key={tasker.id}
@@ -832,6 +838,30 @@ const getStatusBadge = (status) => {
               </button>
             </div>
           </div>
+        ))}
+    </div>
+
+    {/* 🔄 Pagination Controls */}
+    <div className="mt-6 flex justify-center gap-2">
+      {Array.from({
+        length: Math.ceil(
+          taskers.filter(tasker =>
+            selectedJobTypeFilter === "All" ||
+            (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))
+          ).length / taskersPerPage
+        )
+      }, (_, index) => (
+        <button
+          key={index}
+          onClick={() => setCurrentPage(index + 1)}
+          className={`px-4 py-1 rounded-full text-sm font-semibold ${
+            currentPage === index + 1
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-800 hover:bg-blue-100"
+          }`}
+        >
+          {index + 1}
+        </button>
       ))}
     </div>
   </div>
