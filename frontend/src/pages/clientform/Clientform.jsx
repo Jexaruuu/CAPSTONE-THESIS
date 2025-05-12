@@ -98,47 +98,54 @@ const ClientForm = () => {
     laundry: "Laundry and dry cleaning services"
   };
 
+  const [showReviewNotice, setShowReviewNotice] = useState(false);
+
   const onSubmit = async (data) => {
-    try {
-      const formData = new FormData();
-  
-      if (data.profilePicture?.length > 0) {
-        formData.append("profilePicture", data.profilePicture[0]);
-      } else {
-        toast.error("Please upload a profile picture before submitting.");
-        return;
-      }
-  
-      if (data.serviceImage?.length > 0) {
-        formData.append("serviceImage", data.serviceImage[0]);
-      }
-  
-      formData.append("firstName", data.firstName);
-      formData.append("lastName", data.lastName);
-      formData.append("contactNumber", data.contactNumber);
-      formData.append("email", data.email);
-      formData.append("street", data.street);
-      formData.append("barangay", data.barangay);
-      formData.append("additionalAddress", data.additionalAddress);
-      formData.append("serviceType", data.serviceType);
-      formData.append("serviceDescription", data.serviceDescription);
-      formData.append("preferredDate", data.preferredDate);
-      formData.append("preferredTime", data.preferredTime);
-      formData.append("urgentRequest", data.urgentRequest ? "on" : "");
-      formData.append("socialMedia", data.socialMedia || "N/A");
-  
-      const response = await axios.post("http://localhost:3000/api/clients/bookservice", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
-  
-      toast.success(response.data.message || "Service booked successfully!");
-      reset();
-    } catch (error) {
-      console.error(error.response?.data || error.message);
-      toast.error("Failed to book service. Please try again.");
+  try {
+    const formData = new FormData();
+
+    if (data.profilePicture?.length > 0) {
+      formData.append("profilePicture", data.profilePicture[0]);
+    } else {
+      toast.error("Please upload a profile picture before submitting.");
+      return;
     }
-  };
+
+    if (data.serviceImage?.length > 0) {
+      formData.append("serviceImage", data.serviceImage[0]);
+    }
+
+    formData.append("firstName", data.firstName);
+    formData.append("lastName", data.lastName);
+    formData.append("contactNumber", data.contactNumber);
+    formData.append("email", data.email);
+    formData.append("street", data.street);
+    formData.append("barangay", data.barangay);
+    formData.append("additionalAddress", data.additionalAddress);
+    formData.append("serviceType", data.serviceType);
+    formData.append("serviceDescription", data.serviceDescription);
+    formData.append("preferredDate", data.preferredDate);
+    formData.append("preferredTime", data.preferredTime);
+    formData.append("urgentRequest", data.urgentRequest ? "on" : "");
+    formData.append("socialMedia", data.socialMedia || "N/A");
+
+    const response = await axios.post("http://localhost:3000/api/clients/bookservice", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
+    });
+
+    toast.success(response.data.message || "Service booked successfully!");
+
+    // ✅ Show blurred center notification
+    setShowReviewNotice(true);
+    setTimeout(() => setShowReviewNotice(false), 10000); // Auto-dismiss after 10s
+
+    reset();
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    toast.error("Failed to book service. Please try again.");
+  }
+};
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -448,7 +455,17 @@ const ClientForm = () => {
           </div>
         </form>
       </div>
-      
+      {showReviewNotice && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30">
+    <div className="bg-white/90 text-gray-800 p-6 rounded-xl shadow-xl text-center max-w-md w-full mx-4 animate-fade-in-up border border-gray-200">
+      <h3 className="text-lg font-bold mb-2">Thank you for your service request!</h3>
+      <p className="text-sm">
+        Our team will review your request and contact you within <span className="font-semibold">24–25 hours</span>.<br />
+        Please keep your lines open for confirmation.
+      </p>
+    </div>
+  </div>
+)}    
       <Footer />
       <ToastContainer
   position="top-right"

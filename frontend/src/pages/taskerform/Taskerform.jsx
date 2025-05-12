@@ -159,6 +159,9 @@ const TaskerForm = () => {
 
   const selectedJobType = watch("jobType"); // still used in some legacy parts if needed
 
+  const [showReviewNotice, setShowReviewNotice] = useState(false);
+
+
   const serviceCategories = {
     carpenter: ["Furniture Repair", "Furniture Assembly", "Cabinet Installation", "Wood Polishing", "Shelving Installation", "Door Repair/Installation", "Wooden Floor Installation/Repair"],
     electrician: ["Wiring Repair", "Lighting Fixtures", "Electrical Panel Service", "Ceiling Fan Installation", "Outlet/Switch Installation", "Home Automation Setup", "Electric Appliance Repair"],
@@ -191,37 +194,43 @@ const TaskerForm = () => {
     { id: "agreements", icon: "file-signature", text: "Agreements" }
   ];
 
-  // ✅ UPDATED SUBMIT HANDLER
-  const onSubmit = async (data) => {
-    try {
-      data.jobType = JSON.stringify(selectedJobTypes);
-      data.serviceCategory = JSON.stringify(selectedCategories);
-  
-      const formData = new FormData();
-      for (const key in data) {
-        if (data[key] instanceof FileList && data[key].length > 0) {
-          formData.append(key, data[key][0]);
-        } else {
-          formData.append(key, data[key]);
-        }
+ // ✅ UPDATED SUBMIT HANDLER
+const onSubmit = async (data) => {
+  try {
+    data.jobType = JSON.stringify(selectedJobTypes);
+    data.serviceCategory = JSON.stringify(selectedCategories);
+
+    const formData = new FormData();
+    for (const key in data) {
+      if (data[key] instanceof FileList && data[key].length > 0) {
+        formData.append(key, data[key][0]);
+      } else {
+        formData.append(key, data[key]);
       }
-  
-      const response = await axios.post("http://localhost:3000/api/taskers/submit", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
-  
-      setSubmitStatus("success");
-      toast.success("Application submitted successfully!");
-      reset();
-      setSelectedJobTypes([]);
-      setSelectedCategories({});
-    } catch (error) {
-      console.error("Error submitting tasker form:", error);
-      setSubmitStatus("error");
-      toast.error("Please complete all required fields correctly.");
     }
-  };
+
+    const response = await axios.post("http://localhost:3000/api/taskers/submit", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
+    });
+
+    setSubmitStatus("success");
+    toast.success("Application submitted successfully!");
+
+    // Show the center notification
+    setShowReviewNotice(true);
+    setTimeout(() => setShowReviewNotice(false), 5000); // hide after 10s
+
+    reset();
+    setSelectedJobTypes([]);
+    setSelectedCategories({});
+  } catch (error) {
+    console.error("Error submitting tasker form:", error);
+    setSubmitStatus("error");
+    toast.error("Please complete all required fields correctly.");
+  }
+};
+
 
   return (
     <div className="bg-[#F8FAFC] font-sans min-h-screen">
@@ -719,6 +728,17 @@ const TaskerForm = () => {
       </div>
       <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
       <ToastContainer />
+     {showReviewNotice && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30">
+    <div className="bg-white/90 text-gray-800 p-6 rounded-xl shadow-xl text-center max-w-md w-full mx-4 animate-fade-in-up border border-gray-200">
+      <h3 className="text-lg font-bold mb-2">Thank you for your application!</h3>
+      <p className="text-sm">
+        Your application will be reviewed within <span className="font-semibold">24–25 hours</span>.<br />
+        Please wait for admin approval.
+      </p>
+    </div>
+  </div>
+)}
 <Footer />
     </div>
   );
