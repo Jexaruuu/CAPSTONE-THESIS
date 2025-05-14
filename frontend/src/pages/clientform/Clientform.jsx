@@ -139,7 +139,7 @@ const ClientForm = () => {
 
     // ✅ Show blurred center notification
     setShowReviewNotice(true);
-    setTimeout(() => setShowReviewNotice(false), 10000); // Auto-dismiss after 10s
+    setTimeout(() => setShowReviewNotice(false), 5000); // Auto-dismiss after 10s
 
     reset();
   } catch (error) {
