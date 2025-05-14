@@ -82,6 +82,7 @@ const ClientForm = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(true);
   const heroImages = ["carpenter.jpg", "electrician.jpg", "plumber.jpg"];
+  const currentUser = JSON.parse(localStorage.getItem("user")) || {};
 
   const barangays = [
     "Alangilan", "Alijis", "Banago", "Bata", "Cabug", "Estefania",
@@ -134,7 +135,7 @@ const ClientForm = () => {
       withCredentials: true,
     });
 
-    toast.success(response.data.message || "Service booked successfully!");
+    toast.success("Service booked successfully. Your form has been reset.");
 
     // ✅ Show blurred center notification
     setShowReviewNotice(true);
@@ -159,6 +160,24 @@ const ClientForm = () => {
   }, []);
 
   const selectedService = watch("serviceType");
+ useEffect(() => {
+  reset({
+    firstName: currentUser.first_name || "",
+    lastName: currentUser.last_name || "",
+    contactNumber: currentUser.mobile || "",
+    email: currentUser.email || "",
+    street: "",
+    barangay: "",
+    additionalAddress: "",
+    socialMedia: "",
+    serviceType: "",
+    serviceDescription: "",
+    preferredDate: "",
+    preferredTime: "",
+    urgentRequest: false,
+    agreeTerms: false
+  });
+}, [reset]);
 
   return (
     <div className="bg-[#F8FAFC] font-sans min-h-screen">
@@ -195,22 +214,34 @@ const ClientForm = () => {
   <div className="flex flex-col md:flex-row md:justify-between gap-10">
     {/* Left side: Form fields */}
     <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <FormField 
-        label="First Name" 
-        name="firstName" 
-        register={register} 
-        errors={errors} 
-        required 
-        placeholder="Juan" 
-      />
-      <FormField 
-        label="Last Name" 
-        name="lastName" 
-        register={register} 
-        errors={errors} 
-        required 
-        placeholder="Dela Cruz" 
-      />
+     <FormField
+  label="First Name"
+  name="firstName"
+  register={register}
+  errors={errors}
+  required
+>
+  <input
+    type="text"
+    value={watch("firstName") || ""}
+    readOnly
+    className="w-full border bg-gray-100 text-gray-600 p-3 rounded-lg"
+  />
+</FormField>
+    <FormField
+  label="Last Name"
+  name="lastName"
+  register={register}
+  errors={errors}
+  required
+>
+  <input
+    type="text"
+    value={watch("lastName") || ""}
+    readOnly
+    className="w-full border bg-gray-100 text-gray-600 p-3 rounded-lg"
+  />
+</FormField>
       <div>
         <label className="block font-medium text-gray-700 mb-1">Contact Number <span className="text-red-500">*</span></label>
         <div className="relative">
@@ -235,14 +266,20 @@ const ClientForm = () => {
           </p>
         )}
       </div>
-      <FormField 
-        label="Email Address" 
-        name="email" 
-        register={register} 
-        errors={errors} 
-        type="email" 
-        placeholder="your.email@example.com" 
-      />
+      <FormField
+  label="Email Address"
+  name="email"
+  register={register}
+  errors={errors}
+  type="email"
+>
+  <input
+    type="email"
+    value={watch("email") || ""}
+    readOnly
+    className="w-full border bg-gray-100 text-gray-600 p-3 rounded-lg"
+  />
+</FormField>
       <FormField 
         label="Street" 
         name="street" 
