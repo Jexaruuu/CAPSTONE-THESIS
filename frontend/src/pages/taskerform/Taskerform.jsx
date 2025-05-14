@@ -170,6 +170,19 @@ const TaskerForm = () => {
     laundry: ["Dry Cleaning", "Wash & Fold", "Ironing Service", "Stain Removal", "Delicates Cleaning", "Comforter/Bedding Cleaning", "Business Uniform Service"]
   };
 
+  const currentUser = JSON.parse(localStorage.getItem("user")) || {};
+
+useEffect(() => {
+  if (currentUser) {
+    reset({
+      fullName: `${currentUser.first_name || ""} ${currentUser.last_name || ""}`.trim(),
+      contactNumber: currentUser.mobile || "",
+      email: currentUser.email || "",
+    });
+  }
+}, [reset]);
+
+
   useEffect(() => {
     const interval = setInterval(() => {
       setFade(false);
@@ -216,12 +229,16 @@ const onSubmit = async (data) => {
 
     setSubmitStatus("success");
     toast.success("Application submitted successfully!");
-
-    // Show the center notification
     setShowReviewNotice(true);
-    setTimeout(() => setShowReviewNotice(false), 5000); // hide after 10s
+    setTimeout(() => setShowReviewNotice(false), 5000);
 
-    reset();
+    // ✅ Reset form but refill default values from logged-in user
+    const currentUser = JSON.parse(localStorage.getItem("user")) || {};
+    reset({
+      fullName: `${currentUser.first_name || ""} ${currentUser.last_name || ""}`.trim(),
+      contactNumber: currentUser.mobile || "",
+      email: currentUser.email || "",
+    });
     setSelectedJobTypes([]);
     setSelectedCategories({});
   } catch (error) {
@@ -230,7 +247,6 @@ const onSubmit = async (data) => {
     toast.error("Please complete all required fields correctly.");
   }
 };
-
 
   return (
     <div className="bg-[#F8FAFC] font-sans min-h-screen">
@@ -283,8 +299,21 @@ const onSubmit = async (data) => {
     {/* 👈 Form fields in 2/3 width */}
     <div className="md:col-span-2 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField label="Full Name" name="fullName" register={register} errors={errors} required placeholder="Juan Dela Cruz" />
-
+        <FormField 
+  label="Full Name" 
+  name="fullName" 
+  register={register} 
+  errors={errors} 
+  required 
+  placeholder="Juan Dela Cruz"
+>
+  <input 
+    type="text"
+    readOnly
+    value={watch("fullName") || ""}
+    className="w-full border border-gray-300 p-3 rounded-lg bg-gray-100 text-gray-700"
+  />
+</FormField>
         {/* ✅ Birth Date with Age Limit 20 to 45 */}
         <FormField 
           label="Birth Date" 
@@ -339,17 +368,22 @@ const onSubmit = async (data) => {
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <span className="text-gray-500">+63</span>
             </div>
-            <input 
-              {...register("contactNumber", { 
-                required: "Contact number is required",
-                pattern: {
-                  value: /^[0-9]{10}$/,
-                  message: "Please enter a valid 10-digit phone number (after +63)"
-                }
-              })} 
-              className={`pl-12 w-full border ${errors.contactNumber ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
-              placeholder="9123456789"
-            />
+           <input 
+  {...register("contactNumber", { 
+    required: "Contact number is required",
+    pattern: {
+      value: /^[0-9]{10}$/,
+      message: "Please enter a valid 10-digit phone number (after +63)"
+    }
+  })}
+  value={watch("contactNumber") || ""}
+  onChange={(e) => reset((prev) => ({
+    ...prev,
+    contactNumber: e.target.value
+  }))}
+  className={`pl-12 w-full border ${errors.contactNumber ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`} 
+  placeholder="9123456789"
+/>
           </div>
           {errors.contactNumber && (
             <p className="text-red-500 text-sm mt-1 flex items-center">
@@ -358,14 +392,21 @@ const onSubmit = async (data) => {
           )}
         </div>
         <FormField 
-          label="Email Address" 
-          name="email" 
-          register={register} 
-          errors={errors} 
-          type="email" 
-          required 
-          placeholder="your.email@example.com" 
-        />
+  label="Email Address" 
+  name="email" 
+  register={register} 
+  errors={errors} 
+  type="email" 
+  required 
+  placeholder="your.email@example.com"
+>
+  <input 
+    type="email"
+    readOnly
+    value={watch("email") || ""}
+    className="w-full border border-gray-300 p-3 rounded-lg bg-gray-100 text-gray-700"
+  />
+</FormField>
         <FormField 
           label="Social Media Account" 
           name="social_media" 
