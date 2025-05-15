@@ -1,56 +1,73 @@
 import { Link, useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { FiBell, FiMessageSquare } from "react-icons/fi";
 
 const UserNavigation = () => {
   const [user, setUser] = useState(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
   const navigate = useNavigate();
+  const bellRef = useRef(null);
+  const msgRef = useRef(null);
 
-  console.log(localStorage.getItem("userId"));
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       let parsedUser = JSON.parse(storedUser);
 
-      // Remove old fields if they exist and use the new ones
       if (parsedUser.firstName || parsedUser.lastName) {
         parsedUser.first_name = parsedUser.first_name || parsedUser.firstName;
         parsedUser.last_name = parsedUser.last_name || parsedUser.lastName;
         delete parsedUser.firstName;
         delete parsedUser.lastName;
-        localStorage.setItem("user", JSON.stringify(parsedUser)); // Save cleaned data back
+        localStorage.setItem("user", JSON.stringify(parsedUser));
       }
 
-      setUser(parsedUser); // Update state with cleaned user data
+      setUser(parsedUser);
     }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        bellRef.current &&
+        !bellRef.current.contains(event.target) &&
+        msgRef.current &&
+        !msgRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+        setShowMessages(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3000/api/logout', {}, { withCredentials: true });
+      await axios.post("http://localhost:3000/api/logout", {}, { withCredentials: true });
 
-      localStorage.removeItem('user');
-      navigate('/');
-
+      localStorage.removeItem("user");
+      navigate("/");
       window.location.reload();
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
   const handleProfileUpdate = (updatedUserData) => {
     const updatedUser = {
       ...updatedUserData,
-      first_name: updatedUserData.first_name, // Ensure you're using new field names
+      first_name: updatedUserData.first_name,
       last_name: updatedUserData.last_name,
     };
-
-    // Remove old fields if they exist
     delete updatedUser.firstName;
     delete updatedUser.lastName;
 
-    setUser(updatedUser); // Update state
-    localStorage.setItem("user", JSON.stringify(updatedUser)); // Save updated data in localStorage
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
   return (
@@ -65,6 +82,38 @@ const UserNavigation = () => {
           </div>
 
           <div className="flex items-center space-x-4 mt-2">
+            <div className="relative flex items-center space-x-3 -mt-8">
+              {/* 🔔 Notification Icon */}
+              <div ref={bellRef} className="relative">
+                <button onClick={() => {
+  setShowNotifications((prev) => !prev);
+  setShowMessages(false); // 👈 Close messages if notifications is opened
+}}>
+                  <FiBell className="text-xl text-gray-600 hover:text-indigo-600" />
+                </button>
+                {showNotifications && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white shadow-lg border rounded-md z-50">
+                    <div className="p-3 text-sm text-gray-700">No new notifications</div>
+                  </div>
+                )}
+              </div>
+
+              {/* 💬 Message Icon */}
+              <div ref={msgRef} className="relative">
+                <button onClick={() => {
+  setShowMessages((prev) => !prev);
+  setShowNotifications(false); // 👈 Close notifications if messages is opened
+}}>
+                  <FiMessageSquare className="text-xl text-gray-600 hover:text-indigo-600" />
+                </button>
+                {showMessages && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white shadow-lg border rounded-md z-50">
+                    <div className="p-3 text-sm text-gray-700">No new messages</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex flex-col">
               {user ? (
                 <p className="text-gray-700 font-medium">{`${user.first_name} ${user.last_name}`}</p>
@@ -79,12 +128,13 @@ const UserNavigation = () => {
                 </>
               )}
             </div>
+
             <div className="flex items-center space-x-2">
-            <img
-  src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
-  alt="User Profile"
-  className="h-14 w-14 rounded-full border border-gray-400 object-cover"
-/>
+              <img
+                src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
+                alt="User Profile"
+                className="h-14 w-14 rounded-full border border-gray-400 object-cover"
+              />
             </div>
           </div>
         </div>
@@ -96,7 +146,6 @@ const UserNavigation = () => {
 
           <nav>
             <div className="flex flex-col">
-              {/* Top Menu Items */}
               <ul className="flex space-x-6 text-[16px] mb-4">
                 <li className="relative group w-max">
                   <Link to="/userhome" className="text-gray-700 font-medium hover:text-[#0d05d2]">
@@ -130,7 +179,6 @@ const UserNavigation = () => {
                 </li>
               </ul>
 
-              {/* Bottom Menu Items */}
               <div className="flex justify-end">
                 <ul className="flex space-x-6 text-[16px]">
                   <li className="relative group w-max">
