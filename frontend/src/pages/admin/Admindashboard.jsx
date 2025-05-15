@@ -268,9 +268,19 @@ const handleViewServiceRequest = (request) => {
       }
     }
   };
+
   
-  
-  
+const handleSetPendingTasker = async (id) => {
+  if (window.confirm("Set this tasker to pending?")) {
+    try {
+      await axios.put(`http://localhost:3000/api/taskers/pending/${id}`);
+      fetchTaskers();
+    } catch (error) {
+      console.error("Error setting tasker to pending:", error);
+    }
+  }
+}
+   
   const handleRejectTasker = async (id) => {
     if (window.confirm("Reject this tasker?")) {
       try {
@@ -304,18 +314,6 @@ const handleApproveServiceRequest = async (serviceId) => {
     }
   }
 };
-
-
-const handleSetPendingTasker = async (id) => {
-  if (window.confirm("Set this tasker to pending?")) {
-    try {
-      await axios.put(`http://localhost:3000/api/taskers/pending/${id}`);
-      fetchTaskers();
-    } catch (error) {
-      console.error("Error setting tasker to pending:", error);
-    }
-  }
-}
 
 // Reject Service Request
 const handleRejectServiceRequest = async (serviceId) => {
