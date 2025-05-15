@@ -57,10 +57,10 @@ const UserAvailableWorkers = () => {
   };
 
   const handleHireNow = (worker) => {
-    if (currentUser?.email?.toLowerCase().trim() === worker.email?.toLowerCase().trim()) {
-      alert("You cannot hire yourself.");
-      return;
-    }
+if (String(worker.user_id) === String(userId)) {
+  alert("You cannot hire yourself.");
+  return;
+}
     navigate(`/hire/${worker.id}`, { state: { worker } });
   };
 

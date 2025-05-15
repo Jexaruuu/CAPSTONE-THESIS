@@ -78,10 +78,10 @@ const UserAvailableServices = () => {
   };
 
   const handleApply = async (service) => {
-    if (currentUser?.email?.toLowerCase().trim() === service.email?.toLowerCase().trim()) {
-      alert("You cannot apply to your own service request.");
-      return;
-    }
+  if (String(service.user_id) === String(userId)) {
+  alert("You cannot apply to your own service request.");
+  return;
+}
 
     try {
       const userId = localStorage.getItem("userId");
