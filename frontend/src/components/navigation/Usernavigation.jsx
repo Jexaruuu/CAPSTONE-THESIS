@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import { Bell, MessageSquare } from "lucide-react"; // ← add this at the top with your imports
 import axios from "axios";
 
 const UserNavigation = () => {
@@ -64,29 +65,44 @@ const UserNavigation = () => {
             <h1 className="text-4xl font-[Poppins] font-bold text-[#000081] mt-2.5">JD HOMECARE</h1>
           </div>
 
-          <div className="flex items-center space-x-4 mt-2">
-            <div className="flex flex-col">
-              {user ? (
-                <p className="text-gray-700 font-medium">{`${user.first_name} ${user.last_name}`}</p>
-              ) : (
-                <p className="text-gray-700 font-medium">Guest</p>
-              )}
+<div className="flex items-center space-x-4 mt-2">
+  {/* 🔔 Icons on the LEFT side */}
+  {user && (
+    <div className="flex items-center space-x-5 mr-7 -mt-8">
+      <Link to="/notifications" className="text-gray-600 hover:text-indigo-600">
+        <Bell className="w-6 h-6" />
+      </Link>
+      <Link to="/messages" className="text-gray-600 hover:text-indigo-600">
+        <MessageSquare className="w-6 h-6" />
+      </Link>
+    </div>
+  )}
 
-              {user && (
-                <>
-                  <Link to="/editprofile" className="text-blue-500 hover:text-blue-700 text-sm cursor-pointer text-right">Edit Profile</Link>
-                  <button onClick={handleLogout} className="text-red-500 hover:text-red-700 text-sm cursor-pointer text-right">Log out</button>
-                </>
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-            <img
-  src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
-  alt="User Profile"
-  className="h-14 w-14 rounded-full border border-gray-400 object-cover"
-/>
-            </div>
-          </div>
+  {/* 🧑 User Info */}
+  <div className="flex flex-col items-end">
+    {user ? (
+      <p className="text-gray-700 font-medium">{`${user.first_name} ${user.last_name}`}</p>
+    ) : (
+      <p className="text-gray-700 font-medium">Guest</p>
+    )}
+
+    {user && (
+      <>
+        <Link to="/editprofile" className="text-blue-500 hover:text-blue-700 text-sm cursor-pointer text-right">Edit Profile</Link>
+        <button onClick={handleLogout} className="text-red-500 hover:text-red-700 text-sm cursor-pointer text-right">Log out</button>
+      </>
+    )}
+  </div>
+
+  {/* 🖼️ Profile Picture */}
+  <div className="flex items-center space-x-2">
+    <img
+      src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
+      alt="User Profile"
+      className="h-14 w-14 rounded-full border border-gray-400 object-cover"
+    />
+  </div>
+</div>
         </div>
 
         <div className="flex justify-between items-center">
