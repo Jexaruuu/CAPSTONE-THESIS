@@ -256,6 +256,72 @@ const UserAvailableServices = () => {
         </div>
       </div>
 
+     {showModal && selectedService && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
+    <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl p-6 relative overflow-y-auto max-h-[90vh]">
+      <button
+        onClick={closeModal}
+        className="absolute top-3 right-4 text-2xl font-bold text-gray-600 hover:text-red-600"
+      >
+        &times;
+      </button>
+
+      {/* Header */}
+      <h2 className="text-2xl font-bold text-[#000081] mb-6 text-center">Service Request Details</h2>
+
+      {/* Client Info Section */}
+      <div className="flex flex-col items-center text-center mb-6">
+        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-2">
+          <img
+            src={`http://localhost:3000${selectedService.profile_picture}`}
+            alt="Client"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <h3 className="text-lg font-bold text-[#000081]">
+          {selectedService.first_name} {selectedService.last_name}
+        </h3>
+        <p className="text-sm text-gray-600">{selectedService.email}</p>
+      </div>
+
+      {/* Contact & Address */}
+      <div className="text-sm text-gray-700 mb-4 space-y-1">
+        <p><strong className="text-blue-800">Contact Number:</strong> {selectedService.contact_number}</p>
+        <p><strong className="text-blue-800">Address:</strong> {selectedService.address}</p>
+      </div>
+
+      {/* Service Info */}
+      <div className="border-t pt-4 mt-4 text-sm text-gray-700 space-y-2">
+        <h3 className="text-lg font-semibold text-[#000081] mb-2">Service Information</h3>
+        <p><strong className="text-blue-800">Service Type:</strong> {selectedService.service_type}</p>
+        <p><strong className="text-blue-800">Description:</strong> {selectedService.service_description || "N/A"}</p>
+        <p><strong className="text-blue-800">Preferred Date:</strong> {formatDate(selectedService.preferred_date)}</p>
+        <p><strong className="text-blue-800">Preferred Time:</strong> {formatTime(selectedService.preferred_time)}</p>
+        <p>
+          <strong className="text-blue-800">Urgent Request:</strong>{" "}
+          <span className={selectedService.urgent_request === "Yes" ? "text-red-600 font-bold" : "text-green-600"}>
+            {selectedService.urgent_request === "Yes" ? "Yes" : "No"}
+          </span>
+        </p>
+      </div>
+
+      {/* Service Image */}
+      {selectedService.service_image && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-[#000081] mb-2">Service Image</h3>
+          <div className="w-full h-48 rounded-lg overflow-hidden shadow">
+            <img
+              src={`http://localhost:3000${selectedService.service_image}`}
+              alt="Service"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
       {/* ✅ Footer */}
       <Footer />
     </div>
