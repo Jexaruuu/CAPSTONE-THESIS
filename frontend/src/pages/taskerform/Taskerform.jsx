@@ -163,11 +163,11 @@ const TaskerForm = () => {
 
 
   const serviceCategories = {
-    carpenter: ["Furniture Repair", "Furniture Assembly", "Cabinet Installation", "Wood Polishing", "Shelving Installation", "Door Repair/Installation", "Wooden Floor Installation/Repair"],
-    electrician: ["Wiring Repair", "Lighting Fixtures", "Electrical Panel Service", "Ceiling Fan Installation", "Outlet/Switch Installation", "Home Automation Setup", "Electric Appliance Repair"],
-    plumber: ["Leak Fixing", "Pipe Installation", "Toilet Repair/Installation", "Faucet Repair/Installation", "Water Heater Services", "Drain Cleaning", "Shower/Bathtub Installation"],
-    carwasher: ["Exterior Wash", "Interior Detailing", "Full Detailing", "Polish & Wax", "Scratch Removal", "Headlight Restoration", "Engine Bay Cleaning"],
-    laundry: ["Dry Cleaning", "Wash & Fold", "Ironing Service", "Stain Removal", "Delicates Cleaning", "Comforter/Bedding Cleaning", "Business Uniform Service"]
+    carpenter: ["General Carpentry", "Furniture Repair", "Wood Polishing", "Door & Window Fitting", "Custom Furniture Design", "Modular Kitchen Installation", "Flooring & Decking", "Cabinet & Wardrobe Fixing", "Wall Paneling & False Ceiling", "Wood Restoration & Refinishing"],
+    electrician: ["Wiring Repair", "Appliance Installation", "Lighting Fixtures", "Circuit Breaker & Fuse Repair", "CCTV & Security System Setup", "Fan & Exhaust Installation", "Inverter & Battery Setup", "Switchboard & Socket Repair", "Electrical Safety Inspection", "Smart Home Automation"],
+    plumber: ["Leak Fixing", "Pipe Installation", "Bathroom Fittings", "Drain Cleaning & Unclogging", "Water Tank Installation", "Gas Pipeline Installation", "Septic Tank & Sewer Repair", "Water Heater Installation", "Toilet & Sink Repair", "Kitchen Plumbing Solutions"],
+    carwasher: ["Exterior Wash", "Interior Detailing", "Wax & Polish", "Underbody Cleaning", "Engine Bay Cleaning", "Headlight Restoration", "Ceramic Coating", "Tire & Rim Cleaning", "Vacuum & Odor Removal", "Paint Protection Film Application"],
+    laundry: ["Dry Cleaning", "Ironing", "Wash & Fold", "Steam Pressing", "Stain Removal Treatment", "Curtains & Upholstery Cleaning", "Delicate Fabric Care", "Shoe & Leather Cleaning", " Express Same-Day Laundry", "Eco-Friendly Washing"]
   };
 
   const currentUser = JSON.parse(localStorage.getItem("user")) || {};
