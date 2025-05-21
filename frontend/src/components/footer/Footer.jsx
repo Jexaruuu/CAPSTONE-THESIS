@@ -35,7 +35,6 @@ const Footer = () => {
               <li>📍 Bacolod City, Negros Occidental</li>
               <li>📞 (+93) 963-301-8545</li>
               <li>📧 jdhomecare@gmail.com</li>
-              <li>🕒 Always Open</li>
             </ul>
           </div>
 
