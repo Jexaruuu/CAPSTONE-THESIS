@@ -36,6 +36,7 @@ const taskersPerPage = 5;
 const [currentServicePage, setCurrentServicePage] = useState(1);
 const requestsPerPage = 5;
 
+const [selectedStatusFilter, setSelectedStatusFilter] = useState(""); // "" means no status filter
 
 const handleSetRate = async (taskerId) => {
   const rate = rateInputs[taskerId];
@@ -750,33 +751,67 @@ const getStatusBadge = (status) => {
       Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.
     </p>
 
-    {/* 🔍 Job Type Filter */}
-    <div className="flex gap-3 mb-4 flex-wrap sticky top-[72px] bg-white z-10 py-2">
-      {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((job) => (
+   {/* 🔍 Job Type Filter */}
+<div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+  <label className="text-sm font-semibold text-gray-700">Filter by Job Type:</label>
+  <div className="flex gap-3 flex-wrap">
+    {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((job) => (
+      <button
+        key={job}
+        onClick={() => {
+          setSelectedJobTypeFilter(job);
+          setCurrentPage(1); // reset to page 1 when filter changes
+        }}
+        className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+          selectedJobTypeFilter === job
+            ? "bg-blue-600 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+        }`}
+      >
+        {job}
+      </button>
+    ))}
+  </div>
+</div>
+
+{/* 🔍 Status Filter */}
+<div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+  <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
+  <div className="flex gap-3 flex-wrap">
+    {["Pending", "Approved", "Rejected"].map((status) => {
+      const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
+      const colorMap = {
+        Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+        Approved: "bg-green-600 text-white hover:bg-green-500",
+        Rejected: "bg-red-500 text-white hover:bg-red-400",
+      };
+      const isActive = selectedStatusFilter === status;
+      return (
         <button
-          key={job}
+          key={status}
           onClick={() => {
-            setSelectedJobTypeFilter(job);
-            setCurrentPage(1); // ✅ reset to page 1 when filter changes
+            setSelectedStatusFilter(status);
+            setCurrentPage(1); // reset pagination
           }}
-          className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-            selectedJobTypeFilter === job
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+          className={`${baseClasses} ${
+            isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
           }`}
         >
-          {job}
+          {status}
         </button>
-      ))}
-    </div>
+      );
+    })}
+  </div>
+</div>
 
     {/* ✨ Scrollable tasker cards with pagination */}
     <div className="flex flex-col gap-5 overflow-y-auto pr-2">
       {taskers
         .filter(tasker =>
-          selectedJobTypeFilter === "All" ||
-          (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))
-        )
+  (selectedJobTypeFilter === "All" ||
+    (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
+  (selectedStatusFilter === "" || tasker.status === selectedStatusFilter.toLowerCase())
+)
         .slice((currentPage - 1) * taskersPerPage, currentPage * taskersPerPage)
         .map((tasker) => (
           <div
