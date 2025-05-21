@@ -36,7 +36,7 @@ const taskersPerPage = 5;
 const [currentServicePage, setCurrentServicePage] = useState(1);
 const requestsPerPage = 5;
 
-const [selectedStatusFilter, setSelectedStatusFilter] = useState(""); // "" means no status filter
+const [selectedStatusFilter, setSelectedStatusFilter] = useState("All");
 
 const handleSetRate = async (taskerId) => {
   const rate = rateInputs[taskerId];
@@ -778,29 +778,31 @@ const getStatusBadge = (status) => {
 <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
   <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
   <div className="flex gap-3 flex-wrap">
-    {["Pending", "Approved", "Rejected"].map((status) => {
-      const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
-      const colorMap = {
-        Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-        Approved: "bg-green-600 text-white hover:bg-green-500",
-        Rejected: "bg-red-500 text-white hover:bg-red-400",
-      };
-      const isActive = selectedStatusFilter === status;
-      return (
-        <button
-          key={status}
-          onClick={() => {
-            setSelectedStatusFilter(status);
-            setCurrentPage(1); // reset pagination
-          }}
-          className={`${baseClasses} ${
-            isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-          }`}
-        >
-          {status}
-        </button>
-      );
-    })}
+    {["All", "Pending", "Approved", "Rejected"].map((status) => {
+  const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
+  const colorMap = {
+    All: "bg-gray-400 text-white hover:bg-gray-300",
+    Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+    Approved: "bg-green-600 text-white hover:bg-green-500",
+    Rejected: "bg-red-500 text-white hover:bg-red-400",
+  };
+  const isActive = selectedStatusFilter === status;
+  return (
+    <button
+      key={status}
+      onClick={() => {
+        setSelectedStatusFilter(status);
+        setCurrentPage?.(1); // Applications pagination
+        setCurrentServicePage?.(1); // ServiceRequests pagination
+      }}
+      className={`${baseClasses} ${
+        isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+      }`}
+    >
+      {status}
+    </button>
+  );
+})}
   </div>
 </div>
 
@@ -810,7 +812,7 @@ const getStatusBadge = (status) => {
         .filter(tasker =>
   (selectedJobTypeFilter === "All" ||
     (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
-  (selectedStatusFilter === "" || tasker.status === selectedStatusFilter.toLowerCase())
+  (selectedStatusFilter === "All" || tasker.status === selectedStatusFilter.toLowerCase())
 )
         .slice((currentPage - 1) * taskersPerPage, currentPage * taskersPerPage)
         .map((tasker) => (
@@ -945,29 +947,31 @@ const getStatusBadge = (status) => {
     <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
       <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
       <div className="flex gap-3 flex-wrap">
-        {["Pending", "Approved", "Rejected"].map((status) => {
-          const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
-          const colorMap = {
-            Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-            Approved: "bg-green-600 text-white hover:bg-green-500",
-            Rejected: "bg-red-500 text-white hover:bg-red-400",
-          };
-          const isActive = selectedStatusFilter === status;
-          return (
-            <button
-              key={status}
-              onClick={() => {
-                setSelectedStatusFilter(status);
-                setCurrentServicePage(1);
-              }}
-              className={`${baseClasses} ${
-                isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-              }`}
-            >
-              {status}
-            </button>
-          );
-        })}
+        {["All", "Pending", "Approved", "Rejected"].map((status) => {
+  const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
+  const colorMap = {
+    All: "bg-gray-400 text-white hover:bg-gray-300",
+    Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+    Approved: "bg-green-600 text-white hover:bg-green-500",
+    Rejected: "bg-red-500 text-white hover:bg-red-400",
+  };
+  const isActive = selectedStatusFilter === status;
+  return (
+    <button
+      key={status}
+      onClick={() => {
+        setSelectedStatusFilter(status);
+        setCurrentPage?.(1); // Applications pagination
+        setCurrentServicePage?.(1); // ServiceRequests pagination
+      }}
+      className={`${baseClasses} ${
+        isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+      }`}
+    >
+      {status}
+    </button>
+  );
+})}
       </div>
     </div>
     
@@ -977,7 +981,7 @@ const getStatusBadge = (status) => {
         .filter(req =>
           (selectedJobTypeFilter === "All" ||
             req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())) &&
-          (selectedStatusFilter === "" || (req.status?.toLowerCase() === selectedStatusFilter.toLowerCase()))
+          (selectedStatusFilter === "All" || (req.status?.toLowerCase() === selectedStatusFilter.toLowerCase()))
         )
         .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
         .map((request) => (
