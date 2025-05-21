@@ -83,6 +83,7 @@ const ClientForm = () => {
   const [fade, setFade] = useState(true);
   const heroImages = ["carpenter.jpg", "electrician.jpg", "plumber.jpg"];
   const currentUser = JSON.parse(localStorage.getItem("user")) || {};
+  const todayDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
   const barangays = [
     "Alangilan", "Alijis", "Banago", "Bata", "Cabug", "Estefania",
@@ -396,14 +397,25 @@ const ClientForm = () => {
                 <p className="text-sm text-gray-500 mt-1">The more details you provide, the better we can serve you.</p>
               </div>
               
-              <FormField 
-                label="Preferred Date" 
-                name="preferredDate" 
-                register={register} 
-                errors={errors} 
-                type="date" 
-                required 
-              />
+          <FormField 
+  label="Preferred Date" 
+  name="preferredDate" 
+  register={register} 
+  errors={errors} 
+  type="date" 
+  required
+>
+  <input
+    type="date"
+    {...register("preferredDate", {
+      required: "Preferred date is required",
+      validate: (value) =>
+        new Date(value) >= new Date(todayDate) || "Date must be today or in the future",
+    })}
+    min={todayDate}
+    className={`w-full border ${errors.preferredDate ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+  />
+</FormField>
               
               <FormField 
                 label="Preferred Time" 

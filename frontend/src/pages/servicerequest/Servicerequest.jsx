@@ -256,7 +256,7 @@ const UserAvailableServices = () => {
         </div>
       </div>
 
-     {showModal && selectedService && (
+{showModal && selectedService && (
   <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
     <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl p-6 relative overflow-y-auto max-h-[90vh]">
       <button
@@ -281,19 +281,25 @@ const UserAvailableServices = () => {
         <h3 className="text-lg font-bold text-[#000081]">
           {selectedService.first_name} {selectedService.last_name}
         </h3>
+      
         <p className="text-sm text-gray-600">{selectedService.email}</p>
       </div>
 
       {/* Contact & Address */}
-      <div className="text-sm text-gray-700 mb-4 space-y-1">
-        <p><strong className="text-blue-800">Contact Number:</strong> {selectedService.contact_number}</p>
+      <div className="text-sm md:text-base text-gray-700 mb-4 space-y-1">
+        <p><strong className="text-blue-800">Contact Number:</strong> {formatPhone(selectedService.contact_number)}</p>
         <p><strong className="text-blue-800">Address:</strong> {selectedService.address}</p>
       </div>
 
       {/* Service Info */}
-      <div className="border-t pt-4 mt-4 text-sm text-gray-700 space-y-2">
+      <div className="border-t pt-4 mt-4 text-sm md:text-base text-gray-700 space-y-2">
         <h3 className="text-lg font-semibold text-[#000081] mb-2">Service Information</h3>
-        <p><strong className="text-blue-800">Service Type:</strong> {selectedService.service_type}</p>
+        <p>
+  <strong className="text-blue-800">Service Type:</strong>{" "}
+  <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm capitalize">
+    {selectedService.service_type || "N/A"}
+  </span>
+</p>
         <p><strong className="text-blue-800">Description:</strong> {selectedService.service_description || "N/A"}</p>
         <p><strong className="text-blue-800">Preferred Date:</strong> {formatDate(selectedService.preferred_date)}</p>
         <p><strong className="text-blue-800">Preferred Time:</strong> {formatTime(selectedService.preferred_time)}</p>
