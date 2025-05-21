@@ -1054,7 +1054,7 @@ const getStatusBadge = (status) => {
           serviceRequests.filter(req =>
             (selectedJobTypeFilter === "All" ||
               req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())) &&
-            (selectedStatusFilter === "" || (req.status?.toLowerCase() === selectedStatusFilter.toLowerCase()))
+            (selectedStatusFilter === "All" || (req.status?.toLowerCase() === selectedStatusFilter.toLowerCase()))
           ).length / requestsPerPage
         )
       }, (_, index) => (
