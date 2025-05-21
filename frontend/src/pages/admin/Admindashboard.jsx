@@ -919,31 +919,65 @@ const getStatusBadge = (status) => {
     </p>
 
     {/* 🔍 Job Type Filter */}
-    <div className="flex gap-3 mb-4 flex-wrap sticky top-[72px] bg-white z-10 py-2">
-      {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((type) => (
-        <button
-          key={type}
-          onClick={() => {
-            setSelectedJobTypeFilter(type);
-            setCurrentServicePage(1); // Reset to page 1 on filter change
-          }}
-          className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-            selectedJobTypeFilter === type
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-          }`}
-        >
-          {type}
-        </button>
-      ))}
+    <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+      <label className="text-sm font-semibold text-gray-700">Filter by Job Type:</label>
+      <div className="flex gap-3 flex-wrap">
+        {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((type) => (
+          <button
+            key={type}
+            onClick={() => {
+              setSelectedJobTypeFilter(type);
+              setCurrentServicePage(1);
+            }}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+              selectedJobTypeFilter === type
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+            }`}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
     </div>
 
-    {/* ✨ Horizontal Cards */}
+    {/* 🔍 Status Filter */}
+    <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+      <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
+      <div className="flex gap-3 flex-wrap">
+        {["Pending", "Approved", "Rejected"].map((status) => {
+          const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
+          const colorMap = {
+            Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+            Approved: "bg-green-600 text-white hover:bg-green-500",
+            Rejected: "bg-red-500 text-white hover:bg-red-400",
+          };
+          const isActive = selectedStatusFilter === status;
+          return (
+            <button
+              key={status}
+              onClick={() => {
+                setSelectedStatusFilter(status);
+                setCurrentServicePage(1);
+              }}
+              className={`${baseClasses} ${
+                isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+              }`}
+            >
+              {status}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+    
+        {/* ✨ Service Request Cards */}
     <div className="flex flex-col gap-5 overflow-y-auto pr-2">
       {serviceRequests
         .filter(req =>
-          selectedJobTypeFilter === "All" ||
-          req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())
+          (selectedJobTypeFilter === "All" ||
+            req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())) &&
+          (selectedStatusFilter === "" || (req.status?.toLowerCase() === selectedStatusFilter.toLowerCase()))
         )
         .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
         .map((request) => (
@@ -951,7 +985,6 @@ const getStatusBadge = (status) => {
             key={request.client_id}
             className="bg-white rounded-2xl shadow-md p-4 flex items-center justify-between hover:shadow-xl transition-all"
           >
-            {/* Left Info */}
             <div className="flex items-center gap-4">
               <img
                 src={`http://localhost:3000${request.profile_picture}`}
@@ -1010,13 +1043,14 @@ const getStatusBadge = (status) => {
         ))}
     </div>
 
-     {/* 🔄 Pagination Controls */}
+    {/* 🔄 Pagination */}
     <div className="mt-6 flex justify-center gap-2">
       {Array.from({
         length: Math.ceil(
           serviceRequests.filter(req =>
-            selectedJobTypeFilter === "All" ||
-            req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())
+            (selectedJobTypeFilter === "All" ||
+              req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())) &&
+            (selectedStatusFilter === "" || (req.status?.toLowerCase() === selectedStatusFilter.toLowerCase()))
           ).length / requestsPerPage
         )
       }, (_, index) => (
