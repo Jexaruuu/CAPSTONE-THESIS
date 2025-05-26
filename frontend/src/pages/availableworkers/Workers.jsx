@@ -226,6 +226,12 @@ if (String(worker.user_id) === String(userId)) {
                       <p><span className="text-blue-800 font-semibold">Address:</span> {worker.address || "N/A"}</p>
                       <p><span className="text-blue-800 font-semibold">Experience:</span> {worker.experience} years</p>
                       <p><span className="text-blue-800 font-semibold">Skills:</span> {worker.skills}</p>
+                     <p>
+  <span className="text-blue-800 font-semibold">Tools & Equipment:</span>{" "}
+  <span className={worker.tools_equipment?.toLowerCase() === "yes" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+    {worker.tools_equipment?.toLowerCase() === "yes" ? "Yes" : "No"}
+  </span>
+</p>
                       {worker.serviceCategory && (
                         <p>
                           <span className="text-blue-800 font-semibold">Categories:</span>{" "}
@@ -358,6 +364,12 @@ if (String(worker.user_id) === String(userId)) {
                 <p><span className="text-blue-800 font-semibold">Address:</span> {selectedWorker.address || "N/A"}</p>
                 <p><span className="text-blue-800 font-semibold">Experience:</span> {selectedWorker.experience} years</p>
                 <p><span className="text-blue-800 font-semibold">Skills:</span> {selectedWorker.skills}</p>
+<p>
+  <span className="text-blue-800 font-semibold">Tools & Equipment:</span>{" "}
+  <span className={selectedWorker.tools_equipment?.toLowerCase() === "yes" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+    {selectedWorker.tools_equipment?.toLowerCase() === "yes" ? "Yes" : "No"}
+  </span>
+</p>
                 {selectedWorker.serviceCategory && (
                   <p className="mt-2">
                     <span className="text-blue-800 font-semibold">Categories:</span>{" "}
