@@ -170,10 +170,10 @@ const Payment = () => {
                 className="border border-gray-300 rounded-lg p-6 hover:border-blue-500 hover:shadow-xl transition text-center group"
               >
                 <img
-                  src={`/${method.toLowerCase().replace(" ", "")}.png`}
-                  alt={method}
-                  className="w-16 h-16 mx-auto mb-3 group-hover:scale-110 transition-transform"
-                />
+  src={`/${method.toLowerCase().replace(" ", "")}.png`}
+  alt={method}
+  className="w-20 h-20 object-contain mx-auto mb-3 group-hover:scale-110 transition-transform"
+/>
                 <span className="text-lg font-semibold">{method}</span>
               </button>
             ))}
