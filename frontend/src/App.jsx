@@ -17,8 +17,9 @@ import BookServices from "./pages/services/Bookservices";
 import UserHeader from "./components/header/Userheader";
 import AdminDashboard from "./pages/admin/Admindashboard";
 import ClientForm from "./pages/clientform/Clientform";
-import AvailableWorkers from "./pages/availableworkers/workers";
+import AvailableWorkers from "./pages/availableworkers/Workers";
 import UserAvailableServices from "./pages/servicerequest/Servicerequest";
+import Payment from "./pages/payment/Payment"; // ✅ import this
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/clientform" element={<ProtectedRoute element={<ClientForm />} />} />
         <Route path="/availableworkers" element={<ProtectedRoute element={<AvailableWorkers />} />} />\
         <Route path="/servicerequest" element={<ProtectedRoute element={<UserAvailableServices />} />} />
+        <Route path="/payment" element={<ProtectedRoute element={<Payment />} />} /> 
       </Routes>
     </Router>
   );

@@ -56,13 +56,13 @@ const UserAvailableWorkers = () => {
     setSelectedWorker(null);
   };
 
-  const handleHireNow = (worker) => {
-if (String(worker.user_id) === String(userId)) {
-  alert("You cannot hire yourself.");
-  return;
-}
-    navigate(`/hire/${worker.id}`, { state: { worker } });
-  };
+const handleHireNow = (worker) => {
+  if (String(worker.user_id) === String(userId)) {
+    alert("You cannot hire yourself.");
+    return;
+  }
+  navigate("/payment", { state: { worker } });
+};
 
   const formatPhone = (number) => {
     if (!number) return "N/A";
