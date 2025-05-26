@@ -84,6 +84,7 @@ const ClientForm = () => {
   const heroImages = ["carpenter.jpg", "electrician.jpg", "plumber.jpg"];
   const currentUser = JSON.parse(localStorage.getItem("user")) || {};
   const todayDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const barangays = [
     "Alangilan", "Alijis", "Banago", "Bata", "Cabug", "Estefania",
@@ -481,13 +482,22 @@ const ClientForm = () => {
               />
 
               <CheckboxField 
-                id="agreeTerms" 
-                label="I agree to JD HOMECARE's Terms of Service and Privacy Policy." 
-                description={<><a href="#" className="text-blue-600 hover:underline">View Terms of Service</a> and <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a></>}
-                register={register}
-                errors={errors}
-                required
-              />
+  id="agreeTerms" 
+  label="I agree to JD HOMECARE's Terms of Service and Privacy Policy." 
+  description={
+    <button
+      type="button"
+      onClick={() => setShowTermsModal(true)}
+      className="text-blue-600 hover:underline"
+    >
+      View Terms of Service and Privacy Policy
+    </button>
+  }
+  register={register}
+  errors={errors}
+  required
+/>
+
             </div>
           </section>
 
@@ -515,6 +525,28 @@ const ClientForm = () => {
     </div>
   </div>
 )}    
+
+{showTermsModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
+    <div className="bg-white w-full max-w-3xl rounded-xl shadow-xl p-6 relative max-h-[90vh] overflow-y-auto border border-gray-200">
+      <button
+        onClick={() => setShowTermsModal(false)}
+        className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
+      >
+        &times;
+      </button>
+      <h2 className="text-2xl font-bold text-center text-blue-800 mb-4">Terms of Service & Privacy Policy</h2>
+      <div className="space-y-4 text-gray-700 text-sm leading-relaxed">
+        <p><strong>1. Service Agreement:</strong> JD HOMECARE connects clients with trusted home service workers. By booking a service, you agree to treat workers respectfully and pay fairly for completed tasks.</p>
+        <p><strong>2. Booking & Scheduling:</strong> Preferred dates and times are not guaranteed. A coordinator may call to confirm or adjust schedules based on worker availability.</p>
+        <p><strong>3. Safety:</strong> For everyone's safety, workers may ask for identification before starting. JD HOMECARE does not tolerate any form of harassment or abuse.</p>
+        <p><strong>4. Privacy:</strong> Your personal data is collected only for matching services and improving platform safety, and is processed in accordance with the Data Privacy Act (RA 10173).</p>
+        <p><strong>5. Modifications:</strong> Policies may change, and updated terms will apply to future service requests.</p>
+      </div>
+    </div>
+  </div>
+)}
+
       <Footer />
       <ToastContainer
   position="top-right"

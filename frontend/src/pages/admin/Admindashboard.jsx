@@ -522,7 +522,7 @@ const getStatusBadge = (status) => {
         }) : "N/A"}</p>
         <p><strong>Age:</strong> {selectedProfile.personal?.age}</p>
         <p><strong>Gender:</strong> {selectedProfile.personal?.gender}</p>
-        <p><strong>Contact:</strong> {selectedProfile.personal?.contactNumber}</p>
+        <p><strong>Contact:</strong>+63{selectedProfile.personal?.contactNumber}</p>
         <p><strong>Email:</strong> {selectedProfile.personal?.email}</p>
         <p><strong>Social Media:</strong> {selectedProfile.personal?.social_media || "N/A"}</p>
         <p><strong>Address:</strong> {selectedProfile.personal?.address}</p>
@@ -806,87 +806,106 @@ const getStatusBadge = (status) => {
   </div>
 </div>
 
-    {/* ✨ Scrollable tasker cards with pagination */}
-    <div className="flex flex-col gap-5 overflow-y-auto pr-2">
-      {taskers
-        .filter(tasker =>
-  (selectedJobTypeFilter === "All" ||
-    (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
-  (selectedStatusFilter === "All" || tasker.status === selectedStatusFilter.toLowerCase())
-)
-        .slice((currentPage - 1) * taskersPerPage, currentPage * taskersPerPage)
-        .map((tasker) => (
-          <div
-            key={tasker.id}
-            className="bg-white rounded-2xl shadow-md p-4 flex items-center justify-between hover:shadow-xl transition-all"
-          >
-            {/* Left Info */}
-            <div className="flex items-center gap-4">
-              <img
-                src={`http://localhost:3000${tasker.profilePicture}`}
-                alt="Profile"
-                className="w-20 h-20 rounded-full object-cover border-4 border-blue-200"
-              />
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold text-gray-800">{tasker.fullName}</h3>
-                <p className="text-sm text-gray-600">Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}</p>
-                <p className="text-sm text-gray-600">
-  Job: {Array.isArray(tasker.jobType) && tasker.jobType.length > 0
-    ? tasker.jobType.map(job => job.charAt(0).toUpperCase() + job.slice(1)).join(", ")
-    : "N/A"}
-</p>
-                <p className="text-sm text-gray-600">
-                  Category: {tasker.serviceCategory && typeof tasker.serviceCategory === "object" && Object.keys(tasker.serviceCategory).length > 0
-                    ? Object.values(tasker.serviceCategory).join(", ")
-                    : "N/A"}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Experience: {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Rate: {tasker.rate_per_hour ? `₱${tasker.rate_per_hour}/hr` : "N/A"}
-                </p>
-                <div>{getStatusBadge(tasker.status)}</div>
-              </div>
-            </div>
-
-            {/* Right Actions */}
-            <div className="flex flex-col gap-2 w-64">
-              <button
-  onClick={() => handleViewTaskerProfile(tasker.id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">View</span>
-</button>
-
-<button
-  onClick={() => handleApproveTasker(tasker.id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Approve</span>
-</button>
-
-<button
-  onClick={() => handleRejectTasker(tasker.id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Reject</span>
-</button>
-
-<button
-  onClick={() => handleSetPendingTasker(tasker.id)}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Pending</span>
-</button>
-            </div>
+{/* ✨ Scrollable tasker cards with pagination */}
+<div className="flex flex-col gap-5 overflow-y-auto pr-2">
+  {taskers
+    .filter(tasker =>
+      (selectedJobTypeFilter === "All" ||
+        (Array.isArray(tasker.jobType) &&
+          tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
+      (selectedStatusFilter === "All" ||
+        tasker.status === selectedStatusFilter.toLowerCase())
+    )
+    .slice((currentPage - 1) * taskersPerPage, currentPage * taskersPerPage)
+    .map((tasker) => (
+      <div
+        key={tasker.id}
+        className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
+      >
+        {/* Left Info */}
+        <div className="flex items-start gap-5">
+          <img
+            src={`http://localhost:3000${tasker.profilePicture}`}
+            alt="Profile"
+            className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
+          />
+          <div className="space-y-1 text-sm text-gray-700">
+            <h3 className="text-xl font-bold text-gray-800">
+              {tasker.fullName}
+            </h3>
+            <p>
+              Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}
+            </p>
+            <p>
+              Job:{" "}
+              {Array.isArray(tasker.jobType) && tasker.jobType.length > 0
+                ? tasker.jobType
+                    .map(
+                      (job) =>
+                        job.charAt(0).toUpperCase() + job.slice(1)
+                    )
+                    .join(", ")
+                : "N/A"}
+            </p>
+            <p>
+              Category:{" "}
+              {tasker.serviceCategory &&
+              typeof tasker.serviceCategory === "object" &&
+              Object.keys(tasker.serviceCategory).length > 0
+                ? Object.values(tasker.serviceCategory).join(", ")
+                : "N/A"}
+            </p>
+            <p>
+              Experience:{" "}
+              {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
+            </p>
+            <p>
+              Rate:{" "}
+              {tasker.rate_per_hour
+                ? `₱${tasker.rate_per_hour}/hr`
+                : "N/A"}
+            </p>
+            <div className="mt-2">{getStatusBadge(tasker.status)}</div>
           </div>
-        ))}
-    </div>
+        </div>
+
+        {/* Right Actions */}
+        <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
+          <button
+            onClick={() => handleViewTaskerProfile(tasker.id)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">View</span>
+          </button>
+
+          <button
+            onClick={() => handleApproveTasker(tasker.id)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">Approve</span>
+          </button>
+
+          <button
+            onClick={() => handleRejectTasker(tasker.id)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">Reject</span>
+          </button>
+
+          <button
+            onClick={() => handleSetPendingTasker(tasker.id)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">Pending</span>
+          </button>
+        </div>
+      </div>
+    ))}
+</div>
 
     {/* 🔄 Pagination Controls */}
     <div className="mt-6 flex justify-center gap-2">
@@ -975,77 +994,84 @@ const getStatusBadge = (status) => {
       </div>
     </div>
     
-        {/* ✨ Service Request Cards */}
-    <div className="flex flex-col gap-5 overflow-y-auto pr-2">
-      {serviceRequests
-        .filter(req =>
-          (selectedJobTypeFilter === "All" ||
-            req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())) &&
-          (selectedStatusFilter === "All" || (req.status?.toLowerCase() === selectedStatusFilter.toLowerCase()))
-        )
-        .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
-        .map((request) => (
-          <div
-            key={request.client_id}
-            className="bg-white rounded-2xl shadow-md p-4 flex items-center justify-between hover:shadow-xl transition-all"
-          >
-            <div className="flex items-center gap-4">
-              <img
-                src={`http://localhost:3000${request.profile_picture}`}
-                alt="Profile"
-                className="w-20 h-20 rounded-full object-cover border-4 border-blue-200"
-              />
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
-                <p className="text-sm text-gray-600">
-                  Address: {request.street}, {request.barangay}
-                  {request.additional_address ? `, ${request.additional_address}` : ""}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
-                </p>
-                <p className="text-sm text-gray-600">Urgent: {request.urgent_request ? "Yes" : "No"}</p>
-                <div>{getStatusBadge(request.status)}</div>
-              </div>
-            </div>
+       {/* ✨ Service Request Cards */}
+<div className="flex flex-col gap-5 overflow-y-auto pr-2">
+  {serviceRequests
+    .filter(req => {
+  const jobMatch =
+    selectedJobTypeFilter === "All" ||
+    req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
 
-            {/* Right Actions */}
-           <div className="flex flex-col gap-2 w-64">
-  <button
-    onClick={() => handleViewServiceRequest(request)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">View</span>
-  </button>
+  const statusMatch =
+    selectedStatusFilter === "All" ||
+    (req.status ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase() : "pending" === selectedStatusFilter.toLowerCase());
 
-  <button
-    onClick={() => handleApproveServiceRequest(request.service_id)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Approve</span>
-  </button>
-
-  <button
-    onClick={() => handleRejectServiceRequest(request.service_id)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Reject</span>
-  </button>
-
-  <button
-    onClick={() => handleSetPendingServiceRequest(request.service_id)}
-    className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-  >
-    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-    <span className="relative text-base font-semibold">Pending</span>
-  </button>
-</div>
+  return jobMatch && statusMatch;
+})
+    .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
+    .map((request) => (
+      <div
+        key={request.client_id}
+        className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
+      >
+        {/* Left Info */}
+        <div className="flex items-start gap-5">
+          <img
+            src={`http://localhost:3000${request.profile_picture}`}
+            alt="Profile"
+            className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
+          />
+          <div className="space-y-1 text-sm text-gray-700">
+            <h3 className="text-xl font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
+            <p>
+              Address: {request.street}, {request.barangay}
+              {request.additional_address ? `, ${request.additional_address}` : ""}
+            </p>
+            <p>
+              Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
+            </p>
+            <p>Urgent: {request.urgent_request ? "Yes" : "No"}</p>
+            <div className="mt-2">{getStatusBadge(request.status)}</div>
           </div>
-        ))}
-    </div>
+        </div>
+
+        {/* Right Actions */}
+        <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
+          <button
+            onClick={() => handleViewServiceRequest(request)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">View</span>
+          </button>
+
+          <button
+            onClick={() => handleApproveServiceRequest(request.service_id)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">Approve</span>
+          </button>
+
+          <button
+            onClick={() => handleRejectServiceRequest(request.service_id)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">Reject</span>
+          </button>
+
+          <button
+            onClick={() => handleSetPendingServiceRequest(request.service_id)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">Pending</span>
+          </button>
+        </div>
+      </div>
+    ))}
+</div>
 
     {/* 🔄 Pagination */}
     <div className="mt-6 flex justify-center gap-2">

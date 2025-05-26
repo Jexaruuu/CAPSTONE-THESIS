@@ -161,6 +161,7 @@ const TaskerForm = () => {
 
   const [showReviewNotice, setShowReviewNotice] = useState(false);
 
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const serviceCategories = {
     carpenter: ["General Carpentry", "Furniture Repair", "Wood Polishing", "Door & Window Fitting", "Custom Furniture Design", "Modular Kitchen Installation", "Flooring & Decking", "Cabinet & Wardrobe Fixing", "Wall Paneling & False Ceiling", "Wood Restoration & Refinishing"],
@@ -735,13 +736,21 @@ const onSubmit = async (data) => {
               />
 
               <CheckboxField 
-                id="agreeTerms" 
-                label="I agree to JD HOMECARE's Terms of Service and Privacy Policy." 
-                description={<><a href="#" className="text-blue-600 hover:underline">View Terms of Service</a> and <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a></>}
-                register={register}
-                errors={errors}
-                required
-              />
+  id="agreeTerms" 
+  label="I agree to JD HOMECARE's Terms of Service and Privacy Policy." 
+  description={
+    <button
+      type="button"
+      onClick={() => setShowTermsModal(true)}
+      className="text-blue-600 hover:underline"
+    >
+      View Terms of Service and Privacy Policy
+    </button>
+  }
+  register={register}
+  errors={errors}
+  required
+/>
 
               <CheckboxField 
                 id="consentDataPrivacy" 
@@ -780,6 +789,28 @@ const onSubmit = async (data) => {
     </div>
   </div>
 )}
+
+{showTermsModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
+    <div className="bg-white w-full max-w-3xl rounded-lg shadow-xl p-6 relative max-h-[90vh] overflow-y-auto border border-gray-200">
+      <button
+        onClick={() => setShowTermsModal(false)}
+        className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
+      >
+        &times;
+      </button>
+      <h2 className="text-2xl font-bold text-center text-blue-800 mb-4">Terms of Service & Privacy Policy</h2>
+      <div className="space-y-4 text-gray-700 text-sm leading-relaxed">
+        <p><strong>1. Acceptance of Terms:</strong> By submitting this form, you agree to abide by JD HOMECARE’s rules and policies.</p>
+        <p><strong>2. Data Privacy:</strong> Your personal data is collected only for service matching, and is securely stored in compliance with RA 10173.</p>
+        <p><strong>3. Document Verification:</strong> All uploaded documents are subject to validation. Falsification may lead to blacklisting.</p>
+        <p><strong>4. Service Conduct:</strong> JD HOMECARE expects professionalism and safety from all service providers.</p>
+        <p><strong>5. Updates:</strong> Policies may change; continued use indicates acceptance of revised terms.</p>
+      </div>
+    </div>
+  </div>
+)}
+
 <Footer />
     </div>
   );
