@@ -128,7 +128,16 @@ const ClientForm = () => {
     formData.append("serviceType", data.serviceType);
     formData.append("serviceDescription", data.serviceDescription);
     formData.append("preferredDate", data.preferredDate);
-    formData.append("preferredTime", data.preferredTime);
+
+    const rawTime = data.preferredTimeRaw;
+const [hour, minute] = rawTime.split(":");
+let hourNum = parseInt(hour, 10);
+const ampm = hourNum >= 12 ? "PM" : "AM";
+hourNum = hourNum % 12 || 12;
+const formattedTime = `${hourNum}:${minute} ${ampm}`;
+
+formData.append("preferredTime", formattedTime);
+
     formData.append("urgentRequest", data.urgentRequest ? "on" : "");
     formData.append("socialMedia", data.socialMedia || "N/A");
 
@@ -426,16 +435,11 @@ const ClientForm = () => {
   required
 >
   <input
-    type="text"
-    {...register("preferredTime", {
+    type="time"
+    {...register("preferredTimeRaw", {
       required: "Preferred time is required",
-      pattern: {
-        value: /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i,
-        message: "Use 12-hour format like 02:30 PM",
-      },
     })}
-    className={`w-full border ${errors.preferredTime ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
-    placeholder="e.g. 02:30 PM"
+    className={`w-full border ${errors.preferredTimeRaw ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
   />
 </FormField>
             </div>
