@@ -1148,11 +1148,7 @@ const getStatusBadge = (status) => {
                 year: "numeric", month: "long", day: "numeric",
               })}
             </p>
-            <p><strong>Preferred Time:</strong>{" "}
-              {new Date(`1970-01-01T${selectedRequest.preferred_time}`).toLocaleTimeString("en-US", {
-                hour: "numeric", minute: "2-digit", hour12: true,
-              })}
-            </p>
+          <p><strong>Preferred Time:</strong> {selectedRequest.preferred_time}</p>
             <p><strong>Urgent Request:</strong> {selectedRequest.urgent_request ? "Yes" : "No"}</p>
           </div>
         </div>

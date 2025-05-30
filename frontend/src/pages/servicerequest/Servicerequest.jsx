@@ -62,14 +62,12 @@ const UserAvailableServices = () => {
     }
   };
 
-  const formatTime = (timeString) => {
-    try {
-      const date = new Date(`1970-01-01T${timeString}`);
-      return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    } catch {
-      return "Invalid time";
-    }
-  };
+ const formatTime = (timeString) => {
+  if (!timeString) return "N/A";
+  const trimmed = timeString.trim();
+  const isValidFormat = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i.test(trimmed);
+  return isValidFormat ? trimmed.toUpperCase() : "Invalid time";
+};
 
   const formatPhone = (number) => {
     if (!number) return "N/A";

@@ -418,14 +418,26 @@ const ClientForm = () => {
   />
 </FormField>
               
-              <FormField 
-                label="Preferred Time" 
-                name="preferredTime" 
-                register={register} 
-                errors={errors} 
-                type="time" 
-                required 
-              />
+              <FormField
+  label="Preferred Time"
+  name="preferredTime"
+  register={register}
+  errors={errors}
+  required
+>
+  <input
+    type="text"
+    {...register("preferredTime", {
+      required: "Preferred time is required",
+      pattern: {
+        value: /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i,
+        message: "Use 12-hour format like 02:30 PM",
+      },
+    })}
+    className={`w-full border ${errors.preferredTime ? "border-red-300" : "border-gray-300"} p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+    placeholder="e.g. 02:30 PM"
+  />
+</FormField>
             </div>
 
 {/* 📷 Styled Upload Service Image (Like Certificates) */}
