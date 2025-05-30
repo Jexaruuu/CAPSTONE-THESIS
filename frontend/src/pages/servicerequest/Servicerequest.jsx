@@ -94,17 +94,20 @@ const UserAvailableServices = () => {
     }
   };
 
-  const filteredServices =
-    selectedCategory === "All"
-      ? approvedServices
-      : approvedServices.filter((service) =>
-          service.service_type?.toLowerCase().includes(selectedCategory.toLowerCase())
-        );
+const filteredServices =
+  selectedCategory === "All"
+    ? approvedServices
+    : approvedServices.filter((service) =>
+        service.service_type?.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const paginatedServices = filteredServices.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredServices.length / itemsPerPage);
+// Filter out expired services
+const nonExpiredServices = filteredServices.filter(service => !service.expired);
+
+const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const paginatedServices = nonExpiredServices.slice(indexOfFirstItem, indexOfLastItem);
+const totalPages = Math.ceil(nonExpiredServices.length / itemsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -163,75 +166,79 @@ const UserAvailableServices = () => {
         {/* Cards Grid */}
         <div className="w-full md:w-3/4 flex flex-col space-y-6">
           {paginatedServices.map((service, index) => (
-            <div
-              key={index}
-              className="bg-white shadow-xl rounded-2xl p-6 flex flex-col sm:flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
-            >
-              {/* Right: Profile */}
-              <div className="flex-shrink-0 flex flex-col items-center">
-                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-2">
-                  <img
-                    src={`http://localhost:3000${service.profile_picture}`}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className="text-[13px] text-gray-700 font-semibold mb-1">Service Need:</span>
-                <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
-                  {service.service_type
-                    ? service.service_type.charAt(0).toUpperCase() +
-                      service.service_type.slice(1).toLowerCase()
-                    : "N/A"}
-                </span>
-                <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mt-4">
-                  ✅ Verified by Admin
-                </span>
-              </div>
+  <div
+    key={index}
+    className="bg-white shadow-xl rounded-2xl p-6 flex flex-col sm:flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
+  >
+    <div className="flex-shrink-0 flex flex-col items-center">
+      <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-2">
+        <img
+          src={`http://localhost:3000${service.profile_picture}`}
+          alt="Profile"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <span className="text-[13px] text-gray-700 font-semibold mb-1">Service Need:</span>
+      <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
+        {service.service_type
+          ? service.service_type.charAt(0).toUpperCase() + service.service_type.slice(1).toLowerCase()
+          : "N/A"}
+      </span>
+      <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm mt-4">
+        ✅ Verified by Admin
+      </span>
+      {/* Display expired badge */}
+      {service.expired && (
+        <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full mt-2">
+          Expired
+        </span>
+      )}
+    </div>
 
-              {/* Left: Details */}
-              <div className="flex-grow text-[15px] md:text-base text-gray-700">
-                <h3 className="text-xl font-bold text-[#000081] mb-2">
-                  {`${service.first_name || ""} ${service.last_name || ""}`.trim() || "Client"}
-                </h3>
-                <p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(service.contact_number)}</p>
-                <p><span className="text-blue-800 font-semibold">Address:</span> {service.address || "N/A"}</p>
-                <p><span className="text-blue-800 font-semibold">Date:</span> {formatDate(service.preferred_date)}</p>
-                <p><span className="text-blue-800 font-semibold">Time:</span> {formatTime(service.preferred_time)}</p>
-                <p>
-                  <span className="text-blue-800 font-semibold">Urgent:</span>{" "}
-                  <span className={service.urgent_request === "Yes" ? "text-red-600 font-bold" : "text-green-600"}>
-                    {service.urgent_request === "Yes" ? "Yes" : "No"}
-                  </span>
-                </p>
-                <p className="text-[15px] md:text-base text-gray-700">
-                  <span className="text-blue-800 font-semibold">Service Description:</span>{" "}
-                  {service.service_description?.length > 60
-                    ? service.service_description.substring(0, 60) + "..."
-                    : service.service_description || "No description available."}
-                </p>
+    {/* Left: Details */}
+    <div className="flex-grow text-[15px] md:text-base text-gray-700">
+      <h3 className="text-xl font-bold text-[#000081] mb-2">
+        {`${service.first_name || ""} ${service.last_name || ""}`.trim() || "Client"}
+      </h3>
+      <p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(service.contact_number)}</p>
+      <p><span className="text-blue-800 font-semibold">Address:</span> {service.address || "N/A"}</p>
+      <p><span className="text-blue-800 font-semibold">Date:</span> {formatDate(service.preferred_date)}</p>
+      <p><span className="text-blue-800 font-semibold">Time:</span> {formatTime(service.preferred_time)}</p>
+      <p>
+        <span className="text-blue-800 font-semibold">Urgent:</span>{" "}
+        <span className={service.urgent_request === "Yes" ? "text-red-600 font-bold" : "text-green-600"}>
+          {service.urgent_request === "Yes" ? "Yes" : "No"}
+        </span>
+      </p>
+      <p className="text-[15px] md:text-base text-gray-700">
+        <span className="text-blue-800 font-semibold">Service Description:</span>{" "}
+        {service.service_description?.length > 60
+          ? service.service_description.substring(0, 60) + "..."
+          : service.service_description || "No description available."}
+      </p>
 
-                <div className="flex flex-wrap gap-4 mt-4">
-                  <button
-                    onClick={() => openModal(service)}
-                    className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-                  >
-                    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                    <span className="relative text-base font-semibold">Service Request Details</span>
-                  </button>
+      <div className="flex flex-wrap gap-4 mt-4">
+        <button
+          onClick={() => openModal(service)}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-base font-semibold">Service Request Details</span>
+        </button>
 
-                  {currentUser?.email !== service.email && (
-                    <button
-                      onClick={() => handleApply(service)}
-                      className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
-                    >
-                      <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                      <span className="relative text-base font-semibold">Apply for this Service Request</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+        {currentUser?.email !== service.email && (
+          <button
+            onClick={() => handleApply(service)}
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-base font-semibold">Apply for this Service Request</span>
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+))}
 
           {/* ✅ Pagination Controls */}
           {totalPages > 1 && (

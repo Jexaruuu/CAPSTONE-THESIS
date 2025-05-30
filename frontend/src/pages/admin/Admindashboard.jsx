@@ -58,16 +58,25 @@ const handleSetRate = async (taskerId) => {
 const fetchServiceRequests = async () => {
   try {
     const response = await axios.get('http://localhost:3000/api/clients/requests');
-    setServiceRequests(response.data);
+    const updatedRequests = response.data.map(req => {
+      const preferredDateTime = new Date(`${req.preferred_date} ${req.preferred_time}`);
+      const currentDateTime = new Date();
 
-    // ✅ Always recalculate the actual number of pending requests
-    const pending = response.data.filter(req => !req.status || req.status === "pending").length;
+      // Check if the service request has expired (is the preferred date/time less than now?)
+      const expired = preferredDateTime < currentDateTime;
+
+      return { ...req, expired }; // Add expired flag to the request
+    });
+
+    setServiceRequests(updatedRequests);
+
+    // Recalculate the number of pending requests
+    const pending = updatedRequests.filter(req => !req.status || req.status === "pending").length;
     setPendingServiceRequests(pending);
   } catch (error) {
     console.error('Error fetching service requests:', error);
   }
 };
-
 
 // ✨ [Update] Inside your useEffect where you call fetchCounts(), fetchUsers(), fetchAdmins(), fetchTaskers()
 useEffect(() => {
@@ -1023,18 +1032,34 @@ const getStatusBadge = (status) => {
             alt="Profile"
             className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
           />
-          <div className="space-y-1 text-sm text-gray-700">
-            <h3 className="text-xl font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
-            <p>
-              Address: {request.street}, {request.barangay}
-              {request.additional_address ? `, ${request.additional_address}` : ""}
-            </p>
-            <p>
-              Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
-            </p>
-            <p>Urgent: {request.urgent_request ? "Yes" : "No"}</p>
-            <div className="mt-2">{getStatusBadge(request.status)}</div>
-          </div>
+
+<div className="space-y-1 text-sm text-gray-700">
+  <h3 className="text-xl font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
+  <p>
+    Address: {request.street}, {request.barangay}
+    {request.additional_address ? `, ${request.additional_address}` : ""}
+  </p>
+  <p>
+    Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
+  </p>
+  <p>
+    Preferred Date:{" "}
+    {request.preferred_date
+      ? new Date(request.preferred_date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : "N/A"}
+  </p>
+  <p>Preferred Time: {request.preferred_time || "N/A"}</p>
+  <p>Urgent: {request.urgent_request ? "Yes" : "No"}</p>
+
+  {request.expired && (
+    <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full">Expired</span>
+  )}
+  <div className="mt-2">{getStatusBadge(request.status)}</div>
+</div>
         </div>
 
         {/* Right Actions */}
