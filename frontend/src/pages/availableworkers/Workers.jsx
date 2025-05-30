@@ -301,172 +301,115 @@ const handleHireNow = (worker) => {
       </div>
 
       {/* ✅ Modal */}
-      {showModal && selectedWorker && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-xl relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
+     {showModal && selectedWorker && (
+  <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
+    <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-xl relative overflow-y-auto max-h-[90vh]">
+      <button
+        onClick={closeModal}
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+        aria-label="Close modal"
+      >
+        &times;
+      </button>
 
-            <div className="flex flex-col md:flex-row items-start gap-8">
-              {/* Profile Image */}
-              <div className="flex-shrink-0 mx-auto md:mx-0 flex flex-col items-center gap-4">
-                <img
-                  src={`http://localhost:3000/api/taskers/${selectedWorker.id}/profile-picture`}
-                  alt={selectedWorker.fullName}
-                  className="w-36 h-36 object-cover rounded-full border-4 border-blue-300 shadow"
-                />
-                {currentUser?.email?.toLowerCase().trim() !== selectedWorker.email?.toLowerCase().trim() && (
-                  <button
-                    onClick={() => handleHireNow(selectedWorker)}
-                    className="relative rounded px-6 py-3 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
-                  >
-                    <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                    <span className="relative text-base font-semibold">Hire Now</span>
-                  </button>
-                )}
-              </div>
-
-              {/* Info Section */}
-              <div className="flex-1 text-gray-800 space-y-1">
-                <h2 className="text-2xl font-bold text-[#000081] mb-2">{selectedWorker.fullName}</h2>
-                <p><span className="text-blue-800 font-semibold">Job Type:</span></p>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {(() => {
-                    try {
-                      const parsed = JSON.parse(selectedWorker.jobType);
-                      const jobTypes = Array.isArray(parsed) ? parsed : [parsed];
-                      return jobTypes.map((job, index) => (
-                        <span
-                          key={index}
-                          className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm"
-                        >
-                          {capitalizeFirst(job)}
-                        </span>
-                      ));
-                    } catch {
-                      return (
-                        <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
-                          {selectedWorker.jobType}
-                        </span>
-                      );
-                    }
-                  })()}
-                </div>
-                <p><span className="text-blue-800 font-semibold">Age:</span> {selectedWorker.age}</p>
-                <p><span className="text-blue-800 font-semibold">Gender:</span> {selectedWorker.gender}</p>
-                <p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(selectedWorker.contactNumber)}</p>
-                <p><span className="text-blue-800 font-semibold">Email:</span> {selectedWorker.email || "N/A"}</p>
-                <p><span className="text-blue-800 font-semibold">Address:</span> {selectedWorker.address || "N/A"}</p>
-                <p><span className="text-blue-800 font-semibold">Experience:</span> {selectedWorker.experience} years</p>
-                <p><span className="text-blue-800 font-semibold">Skills:</span> {selectedWorker.skills}</p>
-<p>
-  <span className="text-blue-800 font-semibold">Tools & Equipment:</span>{" "}
-  <span className={selectedWorker.tools_equipment?.toLowerCase() === "yes" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
-    {selectedWorker.tools_equipment?.toLowerCase() === "yes" ? "Yes" : "No"}
-  </span>
-</p>
-                {selectedWorker.serviceCategory && (
-                  <p className="mt-2">
-                    <span className="text-blue-800 font-semibold">Categories:</span>{" "}
-                    {(() => {
-                      try {
-                        const categories = JSON.parse(selectedWorker.serviceCategory);
-                        return Object.entries(categories)
-                          .map(([key, value]) => `${capitalizeFirst(key)}: ${value}`)
-                          .join(", ");
-                      } catch {
-                        return selectedWorker.serviceCategory;
-                      }
-                    })()}
-                  </p>
-                )}
-                <p className="text-green-700 font-semibold text-lg mt-2">
-                  <strong>Price Rate:</strong> ₱{selectedWorker.pricePerHour} / hour
-                </p>
-              </div>
-            </div>
-
-            {/* Document Section */}
-            <div className="mt-8 border-t pt-6 text-sm text-gray-700">
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="hidden md:block w-36"></div>
-                <div className="flex-1 space-y-3">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center">📁 Documents</h3>
-
-                  <div>
-                    <span className="text-black font-semibold">Proof of Address:</span>{" "}
-                    {selectedWorker.proofOfAddress ? (
-                      <a
-                        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/proof-of-address`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline ml-1"
-                      >
-                        View Document
-                      </a>
-                    ) : (
-                      <span className="text-red-500 ml-1">Not Provided</span>
-                    )}
-                  </div>
-
-                  <div>
-                    <span className="text-black font-semibold">Medical Certificate:</span>{" "}
-                    {selectedWorker.medicalCertificate ? (
-                      <a
-                        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/medical-certificate`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline ml-1"
-                      >
-                        View Document
-                      </a>
-                    ) : (
-                      <span className="text-red-500 ml-1">Not Provided</span>
-                    )}
-                  </div>
-
-                  <div>
-                    <span className="text-black font-semibold">Certificates (e.g. TESDA):</span>{" "}
-                    {selectedWorker.additionalCertificate ? (
-                      <a
-                        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/optional-certificate`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline ml-1"
-                      >
-                        View Document
-                      </a>
-                    ) : (
-                      <span className="text-gray-500 ml-1">Optional - Not Uploaded</span>
-                    )}
-                  </div>
-
-                  <div>
-                    <span className="text-black font-semibold">Clearance:</span>{" "}
-                    {selectedWorker.clearance ? (
-                      <a
-                        href={`http://localhost:3000/api/taskers/${selectedWorker.id}/clearance`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline ml-1"
-                      >
-                        View Document
-                      </a>
-                    ) : (
-                      <span className="text-red-500 ml-1">Not Provided</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="flex flex-col md:flex-row items-start gap-8">
+        <div className="flex-shrink-0 mx-auto md:mx-0 flex flex-col items-center gap-4">
+          <img
+            src={`http://localhost:3000/api/taskers/${selectedWorker.id}/profile-picture`}
+            alt={selectedWorker.fullName}
+            className="w-36 h-36 object-cover rounded-full border-4 border-blue-300 shadow"
+          />
         </div>
-      )}
+
+        <div className="flex-1 text-gray-800 space-y-1">
+          <h2 className="text-2xl font-bold text-[#000081] mb-2">{selectedWorker.fullName}</h2>
+          <p><span className="text-blue-800 font-semibold">Job Type:</span></p>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {(() => {
+              try {
+                const parsed = JSON.parse(selectedWorker.jobType);
+                const jobTypes = Array.isArray(parsed) ? parsed : [parsed];
+                return jobTypes.map((job, index) => (
+                  <span
+                    key={index}
+                    className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm"
+                  >
+                    {capitalizeFirst(job)}
+                  </span>
+                ));
+              } catch {
+                return (
+                  <span className="inline-block bg-yellow-100 text-yellow-800 text-sm font-semibold px-4 py-1 rounded-full shadow-sm">
+                    {selectedWorker.jobType}
+                  </span>
+                );
+              }
+            })()}
+          </div>
+          <p><span className="text-blue-800 font-semibold">Age:</span> {selectedWorker.age}</p>
+          <p><span className="text-blue-800 font-semibold">Gender:</span> {selectedWorker.gender}</p>
+          <p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(selectedWorker.contactNumber)}</p>
+          <p><span className="text-blue-800 font-semibold">Email:</span> {selectedWorker.email || "N/A"}</p>
+          <p><span className="text-blue-800 font-semibold">Address:</span> {selectedWorker.address || "N/A"}</p>
+          <p><span className="text-blue-800 font-semibold">Experience:</span> {selectedWorker.experience} years</p>
+          <p><span className="text-blue-800 font-semibold">Skills:</span> {selectedWorker.skills}</p>
+          <p>
+            <span className="text-blue-800 font-semibold">Tools & Equipment:</span>{" "}
+            <span className={selectedWorker.tools_equipment?.toLowerCase() === "yes" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+              {selectedWorker.tools_equipment?.toLowerCase() === "yes" ? "Yes" : "No"}
+            </span>
+          </p>
+          {selectedWorker.serviceCategory && (
+            <p className="mt-2">
+              <span className="text-blue-800 font-semibold">Categories:</span>{" "}
+              {(() => {
+                try {
+                  const categories = JSON.parse(selectedWorker.serviceCategory);
+                  return Object.entries(categories)
+                    .map(([key, value]) => `${capitalizeFirst(key)}: ${value}`)
+                    .join(", ");
+                } catch {
+                  return selectedWorker.serviceCategory;
+                }
+              })()}
+            </p>
+          )}
+          <p className="text-green-700 font-semibold text-lg mt-2">
+            <strong>Price Rate:</strong> ₱{selectedWorker.pricePerHour} / hour
+          </p>
+        </div>
+      </div>
+
+      {/* 📁 Embedded Documents */}
+      <div className="mt-8 border-t pt-6 text-sm text-gray-700">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">📁 Documents</h3>
+        <div className="grid gap-6">
+          {[
+            { label: "Proof of Address", key: "proofOfAddress", route: "proof-of-address" },
+            { label: "Medical Certificate", key: "medicalCertificate", route: "medical-certificate" },
+            { label: "TESDA Certificate", key: "additionalCertificate", route: "optional-certificate" },
+            { label: "Clearance", key: "clearance", route: "clearance" },
+          ].map((doc, index) => (
+            <div key={index}>
+              <p className="font-medium">{doc.label}:</p>
+              {selectedWorker[doc.key] ? (
+                <img
+                  src={`http://localhost:3000/api/taskers/${selectedWorker.id}/${doc.route}`}
+                  alt={doc.label}
+                  className="w-full max-h-72 object-contain border mt-2 rounded shadow"
+                />
+              ) : (
+                <p className={`mt-1 ${doc.key === "additionalCertificate" ? "text-gray-500" : "text-red-500"}`}>
+                  {doc.key === "additionalCertificate" ? "Optional - Not Uploaded" : "Not Provided"}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
       <Footer />
     </div>
