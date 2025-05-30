@@ -909,14 +909,16 @@ const getStatusBadge = (status) => {
 
     {/* 🔄 Pagination Controls */}
     <div className="mt-6 flex justify-center gap-2">
-      {Array.from({
-        length: Math.ceil(
-          taskers.filter(tasker =>
-            selectedJobTypeFilter === "All" ||
-            (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))
-          ).length / taskersPerPage
-        )
-      }, (_, index) => (
+     {Array.from({
+  length: Math.ceil(
+    taskers.filter(tasker =>
+      (selectedJobTypeFilter === "All" ||
+        (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
+      (selectedStatusFilter === "All" ||
+        tasker.status === selectedStatusFilter.toLowerCase())
+    ).length / taskersPerPage
+  )
+}, (_, index) => (
         <button
           key={index}
           onClick={() => setCurrentPage(index + 1)}
@@ -1076,14 +1078,22 @@ const getStatusBadge = (status) => {
     {/* 🔄 Pagination */}
     <div className="mt-6 flex justify-center gap-2">
       {Array.from({
-        length: Math.ceil(
-          serviceRequests.filter(req =>
-            (selectedJobTypeFilter === "All" ||
-              req.service_type.toLowerCase().includes(selectedJobTypeFilter.toLowerCase())) &&
-            (selectedStatusFilter === "All" || (req.status?.toLowerCase() === selectedStatusFilter.toLowerCase()))
-          ).length / requestsPerPage
-        )
-      }, (_, index) => (
+  length: Math.ceil(
+    serviceRequests.filter(req => {
+      const jobMatch =
+        selectedJobTypeFilter === "All" ||
+        req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
+
+      const statusMatch =
+        selectedStatusFilter === "All" ||
+        (req.status
+          ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
+          : selectedStatusFilter.toLowerCase() === "pending");
+
+      return jobMatch && statusMatch;
+    }).length / requestsPerPage
+  )
+}, (_, index) => (
         <button
           key={index}
           onClick={() => setCurrentServicePage(index + 1)}
