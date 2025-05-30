@@ -12,6 +12,9 @@ const Payment = () => {
   const [fade, setFade] = useState(true);
   const heroImages = ["/carpenter.jpg", "/electrician.jpg", "/plumber.jpg"];
 
+  const [showDocModal, setShowDocModal] = useState(false);
+const [currentDoc, setCurrentDoc] = useState({ label: "", url: "" });
+
   useEffect(() => {
     const interval = setInterval(() => {
       setFade(false);
@@ -142,14 +145,18 @@ const Payment = () => {
                 <li key={i} className="flex items-center justify-between text-sm">
                   <span className="font-medium">{doc.label}:</span>
                   {doc.available ? (
-                    <a
-                      href={`http://localhost:3000/api/taskers/${worker.id}/${doc.path}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-600 hover:underline hover:text-blue-800 flex items-center gap-1"
-                    >
-                      <i className="fas fa-file-alt" /> View
-                    </a>
+                   <button
+  onClick={() => {
+    setCurrentDoc({
+      label: doc.label,
+      url: `http://localhost:3000/api/taskers/${worker.id}/${doc.path}`
+    });
+    setShowDocModal(true);
+  }}
+  className="text-blue-600 hover:underline hover:text-blue-800 flex items-center gap-1"
+>
+  <i className="fas fa-file-alt" /> View
+</button>
                   ) : (
                     <span className={`text-sm ${doc.path === "optional-certificate" ? "text-gray-500" : "text-red-500"}`}>
                       {doc.path === "optional-certificate" ? "Optional" : "Not Provided"}
@@ -184,16 +191,40 @@ const Payment = () => {
           {/* 🔙 Back Button */}
           <div className="pt-10 text-center">
             <button
-              onClick={() => navigate(-1)}
-              className="mt-6 inline-flex items-center gap-2 bg-[#000081] text-white font-semibold py-3 px-6 rounded-lg shadow hover:shadow-md transition-all hover:bg-[#1c1cb8] hover:scale-105"
-            >
-              <i className="fas fa-arrow-left"></i>
-              Back to Previous
-            </button>
+  onClick={() => navigate(-1)}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#1c1cb8] text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative flex items-center gap-2 text-base font-semibold">
+    <i className="fas fa-arrow-left"></i>
+    Back to Previous
+  </span>
+</button>
             <p className="text-gray-500 mt-4 text-sm">Go back to previous page.</p>
           </div>
         </div>
       </div>
+
+{showDocModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div className="bg-white p-6 rounded-xl shadow-2xl max-w-2xl w-full relative">
+      <button
+        onClick={() => setShowDocModal(false)}
+        className="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
+      >
+        &times;
+      </button>
+      <h3 className="text-xl font-bold text-[#000081] mb-4 text-center">{currentDoc.label}</h3>
+      <div className="max-h-[70vh] overflow-auto rounded border">
+        <img
+          src={currentDoc.url}
+          alt={currentDoc.label}
+          className="w-full h-auto object-contain rounded"
+        />
+      </div>
+    </div>
+  </div>
+)}
 
       <Footer />
     </div>
