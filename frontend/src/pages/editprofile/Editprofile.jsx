@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
@@ -12,13 +11,13 @@ const EditProfile = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-   const [currentPassword, setCurrentPassword] = useState("");
+    const [currentPassword, setCurrentPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showServiceMenu, setShowServiceMenu] = useState(false);
     const navigate = useNavigate();
 
-    // Assuming userId is stored in localStorage after user logs in
-    const userId = localStorage.getItem("userId");  // Make sure the userId is available here
+    const userId = localStorage.getItem("userId");
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -26,7 +25,7 @@ const EditProfile = () => {
                 const response = await axios.get(`http://localhost:3000/api/user/${userId}`, {
                     withCredentials: true
                 });
-    
+
                 const userData = response.data;
                 setFirstName(userData.first_name || "");
                 setLastName(userData.last_name || "");
@@ -43,48 +42,38 @@ const EditProfile = () => {
                 }
             }
         };
-    
+
         if (userId) {
             fetchUser();
         } else {
             setError("User not logged in");
         }
     }, [userId]);
-    
 
-    // Handle account deletion
     const handleDeleteAccount = async () => {
         const confirmDelete = window.confirm(
-          "Are you sure you want to permanently delete your account? This cannot be undone."
+            "Are you sure you want to permanently delete your account? This cannot be undone."
         );
-      
+
         if (!confirmDelete) return;
-      
+
         try {
-          const response = await axios.delete(`http://localhost:3000/api/user/${userId}`, {
-            withCredentials: true,
-          });
-      
-          alert("Account deleted successfully!");
-      
-          // Clear local storage/session
-          localStorage.removeItem("userId");
-          localStorage.removeItem("user");
-      
-          // Redirect
-          navigate("/");
+            await axios.delete(`http://localhost:3000/api/user/${userId}`, {
+                withCredentials: true,
+            });
+
+            alert("Account deleted successfully!");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("user");
+            navigate("/");
         } catch (error) {
-          console.error("Error deleting account:", error);
-          setError(error.response?.data?.message || "Error deleting account. Please try again.");
+            console.error("Error deleting account:", error);
+            setError(error.response?.data?.message || "Error deleting account. Please try again.");
         }
-      };
-      
+    };
 
     const handleDeleteAccountWithScroll = async () => {
-        // Smooth scroll to the top
         window.scrollTo({ top: 0, behavior: "smooth" });
-
-        // Call the original handleDeleteAccount function
         await handleDeleteAccount();
     };
 
@@ -95,8 +84,7 @@ const EditProfile = () => {
             return setError("Only Gmail addresses are allowed.");
         }
 
-        const mobilePattern = /^[0-9]{11}$/;
-        if (!mobilePattern.test(mobile)) {
+        if (!/^[0-9]{11}$/.test(mobile)) {
             return setError("Mobile number must be exactly 11 digits.");
         }
 
@@ -109,16 +97,15 @@ const EditProfile = () => {
             last_name,
             mobile,
             email,
-            password: password || undefined, // Only send password if it's being changed
+            password: password || undefined,
         };
 
         setLoading(true);
         setError("");
 
         try {
-            const response = await axios.put(`http://localhost:3000/api/user/${userId}`, userData);
+            await axios.put(`http://localhost:3000/api/user/${userId}`, userData);
 
-            // Update local storage if email or name changed
             const currentUser = JSON.parse(localStorage.getItem("user"));
             if (currentUser) {
                 currentUser.email = email;
@@ -127,14 +114,10 @@ const EditProfile = () => {
                 localStorage.setItem("user", JSON.stringify(currentUser));
             }
 
-            // Check if the password was updated
             if (password) {
                 alert("Your password has been updated. Please log out and log in again.");
-                // Optionally log the user out by removing session data
                 localStorage.removeItem("userId");
                 localStorage.removeItem("user");
-
-                // Redirect to the login page
                 navigate("/login");
             } else {
                 alert("Profile updated successfully!");
@@ -162,49 +145,33 @@ const EditProfile = () => {
         setError("");
 
         try {
-            const response = await axios.put(`http://localhost:3000/api/user/update/${userId}`, userData);
-
-            // Update local storage if email or name changed
+            await axios.put(`http://localhost:3000/api/user/update/${userId}`, userData);
             const currentUser = JSON.parse(localStorage.getItem("user"));
-            // if (currentUser) {
-                currentUser.email = email;
-                currentUser.first_name = first_name;
-                currentUser.last_name = last_name;
-                localStorage.setItem("user", JSON.stringify(currentUser));
-    
-                alert("Profile updated successfully!");
-                navigate(0);
-            // }
+            currentUser.email = email;
+            currentUser.first_name = first_name;
+            currentUser.last_name = last_name;
+            localStorage.setItem("user", JSON.stringify(currentUser));
+            alert("Profile updated successfully!");
+            navigate(0);
         } catch (error) {
             console.error(error);
             setError(error.response?.data?.message || "Error during profile update");
-        } 
+        }
     };
 
-    // Add this function with your other handlers
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
-        
-        if (!currentPassword) {
-            return setError("Current password is required");
-        }
-        
-        if (!password || password !== confirmPassword) {
-            return setError("Passwords don't match or are empty");
-        }
-    
+
+        if (!currentPassword) return setError("Current password is required");
+        if (!password || password !== confirmPassword) return setError("Passwords don't match");
+
         try {
             const response = await axios.put(
                 `http://localhost:3000/api/user/update-password/${userId}`,
-                {
-                    currentPassword: currentPassword,
-                    newPassword: password
-                },
-                {
-                    withCredentials: true
-                }
+                { currentPassword, newPassword: password },
+                { withCredentials: true }
             );
-    
+
             alert(response.data.message);
             localStorage.removeItem("userId");
             localStorage.removeItem("user");
@@ -215,221 +182,140 @@ const EditProfile = () => {
         }
     };
 
-
     return (
         <div className="bg-[#F3F4F6] font-sans min-h-screen">
             <Navigation />
-
-            {/* Form Header */}
-            <div className="max-w-6xl mx-auto px-4 py-8">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                        Update Your Profile
-                    </h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        Edit your personal information below. Fields marked with * are required.
-                    </p>
-                    <div className="w-24 h-1 bg-blue-500 mx-auto mt-4 rounded-full"></div>
+            <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-8">
+                
+                {/* Sidebar */}
+                <div className="w-full md:w-64 bg-white shadow rounded-xl p-5 h-fit">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Account Menu</h2>
+                    <ul className="space-y-3">
+                        <li>
+                            <Link to="/editprofile" className="text-blue-700 font-medium hover:underline">Edit Profile</Link>
+                        </li>
+                        <li>
+                            <button
+                                onClick={() => setShowServiceMenu(!showServiceMenu)}
+                                className="text-blue-700 font-medium w-full text-left hover:underline"
+                            >
+                                Service Request Status
+                            </button>
+                            {showServiceMenu && (
+                                <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-700">
+                                    <li>
+                                        <Link to="/tracker" className="hover:text-blue-600">Service Request Tracker</Link>
+                                    </li>
+                                </ul>
+                            )}
+                        </li>
+                        <li>
+                            <Link to="/application-status" className="text-blue-700 font-medium hover:underline">
+                                Application Status
+                            </Link>
+                        </li>
+                    </ul>
                 </div>
 
-                {/* <form onSubmit={handleUpdateProfile} className="space-y-8"> */}
-                {/* Personal Information Section */}
-                {error && (
-                    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <i className="fas fa-exclamation-circle text-red-500"></i>
-                            </div>
-                            <div className="ml-3">
-                                <p className="text-sm text-red-700">{error}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                
-                <form className="form" onSubmit={handleUpdateInfo}>
-                    <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                        <div className="flex items-center mb-6">
-                            <div className="bg-blue-100 p-2 rounded-full mr-4">
-                                <i className="fas fa-user text-blue-600 text-lg w-6 h-6 text-center"></i>
-                            </div>
-                            <h3 className="text-2xl font-semibold text-gray-800">
-                                Personal Information
-                            </h3>
-                        </div>
+                {/* Main Content */}
+                <div className="flex-1 space-y-10">
+  {/* Page Header */}
+<form className="form" onSubmit={handleUpdateInfo}>
+  <section className="bg-white p-8 rounded-2xl shadow-md border border-gray-200">
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block font-medium text-gray-700 mb-1">
-                                    First Name <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    value={first_name}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                    required
-                                    placeholder="Enter your first name"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block font-medium text-gray-700 mb-1">
-                                    Last Name <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    value={last_name}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                    required
-                                    placeholder="Enter your last name"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block font-medium text-gray-700 mb-1">
-                                    Mobile Number <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <span className="text-gray-500">+63</span>
-                                    </div>
-                                    <input
-                                        type="tel"
-                                        className="pl-12 w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                        value={mobile}
-                                        onChange={(e) => setMobile(e.target.value)}
-                                        required
-                                        placeholder="9123456789"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block font-medium text-gray-700 mb-1">
-                                    Email Address <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="email"
-                                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    placeholder="your.email@gmail.com"
-                                />
-                            </div>
-                        </div>
-                        <div className="flex justify-between items-center w-full gap-4 mt-4">
-  <button
-    type="submit"
-    className="relative w-full max-w-[200px] rounded px-5 py-2.5 overflow-hidden group bg-[#000081] 
-               hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
-               text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 
-               transition-all ease-out duration-300 cursor-pointer"
-  >
-    <span
-      className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform 
-                 translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"
-    ></span>
-    <span className="relative text-base font-semibold">Update Profile</span>
-  </button>
-
-  <button
-    onClick={handleDeleteAccountWithScroll}
-    className="text-red-600 hover:text-red-700 font-semibold"
-  >
-    Delete Account
-  </button>
-</div>
-                    </section>
-                </form>
-
-                <section className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 mt-6">
-    <div className="flex items-center mb-6">
-        <div className="bg-blue-100 p-2 rounded-full mr-4">
-            <i className="fas fa-lock text-blue-600 text-lg w-6 h-6 text-center"></i>
-        </div>
-        <h3 className="text-2xl font-semibold text-gray-800">Password Update</h3>
+    {/* 🔵 Heading now inside card for alignment */}
+    <div className="text-center mb-15">
+      <h2 className="text-3xl font-extrabold text-gray-800 mb-2">Update Your Profile</h2>
+      <p className="text-gray-600 text-sm">
+        Edit your personal information below. Fields marked with <span className="text-red-500 font-bold">*</span> are required.
+      </p>
+      <div className="w-24 h-1 bg-blue-600 mx-auto mt-4 rounded-full"></div>
     </div>
 
-    <form onSubmit={handleUpdatePassword}>
-        <div className="grid grid-cols-1 gap-6">
-            <div>
-                <label className="block font-medium text-gray-700 mb-1">Current Password*</label>
-                <input
-                    type="password"
-                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="Enter current password"
-                    required
-                />
-            </div>
-            <div>
-                <label className="block font-medium text-gray-700 mb-1">New Password*</label>
-                <input
-                    type="password"
-                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter new password"
-                    required
-                    minLength="6"
-                />
-            </div>
-            <div>
-                <label className="block font-medium text-gray-700 mb-1">Confirm New Password*</label>
-                <input
-                    type="password"
-                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm new password"
-                    required
-                    minLength="6"
-                />
-            </div>
-        </div>
+    {/* 🔴 Error inside form */}
+    {error && (
+      <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6 shadow">
+        <p className="text-sm text-red-700">{error}</p>
+      </div>
+    )}
 
-        {/* Update Password Button */}
-        <div className="mt-8">
-            <button
-                type="submit"
-                className="relative w-full max-w-[200px] rounded px-5 py-2.5 overflow-hidden group bg-[#000081] 
-                         hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
-                         text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 
-                         transition-all ease-out duration-300 cursor-pointer"
-            >
-                <span
-                    className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform 
-                               translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"
-                ></span>
-                <span className="relative text-base font-semibold">Update Password</span>
-            </button>
+    {/* 🧾 Inputs */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">First Name <span className="text-red-500">*</span></label>
+        <input type="text" value={first_name} onChange={(e) => setFirstName(e.target.value)} required className="w-full border border-gray-300 p-3 rounded-lg" />
+      </div>
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">Last Name <span className="text-red-500">*</span></label>
+        <input type="text" value={last_name} onChange={(e) => setLastName(e.target.value)} required className="w-full border border-gray-300 p-3 rounded-lg" />
+      </div>
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">Mobile Number <span className="text-red-500">*</span></label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">+63</div>
+          <input type="tel" value={mobile} onChange={(e) => setMobile(e.target.value)} required placeholder="9123456789" className="pl-12 w-full border border-gray-300 p-3 rounded-lg" />
         </div>
+      </div>
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">Email Address <span className="text-red-500">*</span></label>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="your.email@gmail.com" className="w-full border border-gray-300 p-3 rounded-lg" />
+      </div>
+    </div>
+
+    {/* 🔘 Actions */}
+    <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8">
+      <button type="submit" className="bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg transition duration-200 w-full md:w-auto">
+        Update Profile
+      </button>
+      <button type="button" onClick={handleDeleteAccountWithScroll} className="text-red-600 hover:text-red-700 font-medium transition duration-200">
+        Delete Account
+      </button>
+    </div>
+  </section>
+</form>
+
+  {/* Password Section */}
+  <section className="bg-white p-8 rounded-2xl shadow-md border border-gray-200">
+    <div className="flex items-center mb-6">
+      <div className="bg-blue-100 p-3 rounded-full mr-4">
+        <i className="fas fa-lock text-blue-600 text-xl"></i>
+      </div>
+      <h3 className="text-xl font-semibold text-gray-800">Update Password</h3>
+    </div>
+
+    <form onSubmit={handleUpdatePassword} className="grid grid-cols-1 gap-6">
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">Current Password <span className="text-red-500">*</span></label>
+        <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Enter current password" required className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+      </div>
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">New Password <span className="text-red-500">*</span></label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter new password" required className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+      </div>
+      <div>
+        <label className="block font-medium text-gray-700 mb-1">Confirm New Password <span className="text-red-500">*</span></label>
+        <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm new password" required className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+      </div>
+
+      <div className="pt-4">
+        <button type="submit" className="bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg transition duration-200">
+          Update Password
+        </button>
+      </div>
     </form>
-</section>
+  </section>
 
-{/* Form Submission */}
-<div className="relative pt-8">
-  {/* Updated Back Button with the same style as the "Book Service" button */}
-  <div className="text-center pt-8">
-    <Link to="/userhome"
-      type="submit"
-      className="relative overflow-hidden group bg-[#000081] hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:ring-2 hover:ring-offset-2 hover:ring-blue-400"
-    >
-      <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-      <span className="relative">
-        <i className="fas fa-arrow-left mr-2"></i> Back
-      </span>
+  {/* Back Button */}
+  <div className="text-center pt-10">
+    <Link to="/userhome" className="inline-block bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg shadow transition duration-300">
+      <i className="fas fa-arrow-left mr-2"></i> Back
     </Link>
-    <p className="text-gray-500 mt-4 text-sm">Go back to previous page.</p>
+    <p className="text-sm text-gray-500 mt-2">Go back to previous page.</p>
   </div>
 </div>
-    </div>
+            </div>
             <Footer />
-     </div>
+        </div>
     );
 };
 

@@ -117,7 +117,7 @@ const UserNavigation = () => {
 
             <div className="flex flex-col">
               {user ? (
-                <p className="text-gray-700 font-medium">{`${user.first_name} ${user.last_name}`}</p>
+                <p className="text-gray-700 font-medium text-right">{`${user.first_name} ${user.last_name}`}</p>
               ) : (
                 <p className="text-gray-700 font-medium">Guest</p>
               )}
