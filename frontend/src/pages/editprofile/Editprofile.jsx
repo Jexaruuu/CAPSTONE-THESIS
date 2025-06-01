@@ -151,15 +151,6 @@ const EditProfile = () => {
     const handleUpdateInfo = async (e) => {
         e.preventDefault();
 
-        // if (!email.endsWith("@gmail.com")) {
-        //     return setError("Only Gmail addresses are allowed.");
-        // }
-
-        // const mobilePattern = /^[0-9]{11}$/;
-        // if (!mobilePattern.test(mobile)) {
-        //     return setError("Mobile number must be exactly 11 digits.");
-        // }
-
         const userData = {
             first_name,
             last_name,
@@ -420,8 +411,6 @@ const EditProfile = () => {
     </form>
 </section>
 
-                
-
 {/* Form Submission */}
 <div className="relative pt-8">
   {/* Updated Back Button with the same style as the "Book Service" button */}
@@ -438,16 +427,9 @@ const EditProfile = () => {
     <p className="text-gray-500 mt-4 text-sm">Go back to previous page.</p>
   </div>
 </div>
-
-
-
-
-
-
-            </div>
-
+    </div>
             <Footer />
-        </div>
+     </div>
     );
 };
 
