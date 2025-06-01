@@ -304,16 +304,8 @@ const EditProfile = () => {
       </div>
     </form>
   </section>
-
-  {/* Back Button */}
-  <div className="text-center pt-10">
-    <Link to="/userhome" className="inline-block bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg shadow transition duration-300">
-      <i className="fas fa-arrow-left mr-2"></i> Back
-    </Link>
-    <p className="text-sm text-gray-500 mt-2">Go back to previous page.</p>
-  </div>
 </div>
-            </div>
+</div>
             <Footer />
         </div>
     );
