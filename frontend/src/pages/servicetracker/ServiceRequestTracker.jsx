@@ -55,16 +55,15 @@ const ServiceRequestTracker = () => {
     }
   };
 
-  const filteredRequests = requests.filter(
-    (req) =>
-      req.status?.toLowerCase() !== "cancelled" &&
-      (selectedService.toLowerCase() === "all" ||
-        req.service_category?.toLowerCase() === selectedService.toLowerCase()) &&
-      (selectedStatus.toLowerCase() === "all" ||
-        (req.status
-          ? req.status.toLowerCase() === selectedStatus.toLowerCase()
-          : selectedStatus.toLowerCase() === "pending"))
-  );
+const filteredRequests = requests.filter(
+  (req) =>
+    (selectedService.toLowerCase() === "all" ||
+      req.service_category?.toLowerCase() === selectedService.toLowerCase()) &&
+    (selectedStatus.toLowerCase() === "all" ||
+      (req.status
+        ? req.status.toLowerCase() === selectedStatus.toLowerCase()
+        : selectedStatus.toLowerCase() === "pending"))
+);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -129,7 +128,7 @@ const ServiceRequestTracker = () => {
                     to="/application-status"
                     className="hover:text-blue-600"
                   >
-                    Overall Status
+                    Current Application
                   </Link>
                 </li>
                 <li>
@@ -254,38 +253,49 @@ const ServiceRequestTracker = () => {
         </div>
       </div>
 
-      <div className="pt-3 flex flex-wrap items-center gap-2">
-        <span
-          className={`text-xs font-bold px-3 py-1 rounded-full capitalize shadow-sm ${
-            req.status?.toLowerCase() === "approved"
-              ? "bg-green-100 text-green-800"
-              : req.status?.toLowerCase() === "rejected"
-              ? "bg-red-100 text-red-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
-          {req.status || "Pending"}
-        </span>
+<div className="pt-3 flex flex-wrap items-center gap-2">
+  <span
+    className={`text-xs font-bold px-3 py-1 rounded-full capitalize shadow-sm ${
+      req.status?.toLowerCase() === "approved"
+        ? "bg-green-100 text-green-800"
+        : req.status?.toLowerCase() === "rejected"
+        ? "bg-red-100 text-red-800"
+        : req.status?.toLowerCase() === "cancelled"
+        ? "bg-gray-200 text-gray-700"
+        : "bg-yellow-100 text-yellow-800"
+    }`}
+  >
+    {req.status || "Pending"}
+  </span>
 
-        {req.status?.toLowerCase() === "approved" && (
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 shadow-sm">
-            Verified by Admin
-          </span>
-        )}
+  {req.status?.toLowerCase() === "approved" && (
+    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 shadow-sm">
+      Verified by Admin
+    </span>
+  )}
 
-        {req.status?.toLowerCase() !== "cancelled" && (
-          <button
-            onClick={() => handleCancel(req.id)}
-            className="ml-auto px-4 py-1 text-sm font-semibold rounded-full border border-red-500 text-red-600 hover:bg-red-100 transition"
-          >
-            Cancel Request
-          </button>
-        )}
-      </div>
+  {req.status?.toLowerCase() === "cancelled" && (
+    <span className="text-xs font-medium px-3 py-1 rounded-full bg-gray-100 text-gray-500">
+      Cancelled by You
+    </span>
+  )}
+
+  <button
+    onClick={() => handleCancel(req.id)}
+    disabled={req.status?.toLowerCase() === "cancelled"}
+    className={`ml-auto px-4 py-1 text-sm font-semibold rounded-full border transition ${
+      req.status?.toLowerCase() === "cancelled"
+        ? "border-gray-300 text-gray-400 cursor-not-allowed"
+        : "border-red-500 text-red-600 hover:bg-red-100"
+    }`}
+  >
+    Cancel Request
+  </button>
+</div>
     </div>
   </div>
 ))}
-            </div>
+</div>
           )}
 
           {totalPages > 1 && (

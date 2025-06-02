@@ -367,9 +367,11 @@ const getStatusBadge = (status) => {
   if (status === "rejected") {
     return <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>;
   }
+  if (status === "cancelled") {
+    return <span className="bg-gray-200 text-gray-800 text-xs font-bold px-2 py-1 rounded">Cancelled</span>;
+  }
   return <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>;
 };
-
 
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
@@ -789,14 +791,15 @@ const getStatusBadge = (status) => {
 <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
   <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
   <div className="flex gap-3 flex-wrap">
-    {["All", "Pending", "Approved", "Rejected"].map((status) => {
+    {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => {
   const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
-  const colorMap = {
-    All: "bg-gray-400 text-white hover:bg-gray-300",
-    Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-    Approved: "bg-green-600 text-white hover:bg-green-500",
-    Rejected: "bg-red-500 text-white hover:bg-red-400",
-  };
+const colorMap = {
+  All: "bg-gray-400 text-white hover:bg-gray-300",
+  Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+  Approved: "bg-green-600 text-white hover:bg-green-500",
+  Rejected: "bg-red-500 text-white hover:bg-red-400",
+  Cancelled: "bg-gray-500 text-white hover:bg-gray-400", // ✅ NEW
+};
   const isActive = selectedStatusFilter === status;
   return (
     <button
@@ -979,13 +982,14 @@ const getStatusBadge = (status) => {
     <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
       <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
       <div className="flex gap-3 flex-wrap">
-        {["All", "Pending", "Approved", "Rejected"].map((status) => {
+       {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => {
   const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
-  const colorMap = {
-    All: "bg-gray-400 text-white hover:bg-gray-300",
-    Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-    Approved: "bg-green-600 text-white hover:bg-green-500",
-    Rejected: "bg-red-500 text-white hover:bg-red-400",
+const colorMap = {
+  All: "bg-gray-400 text-white hover:bg-gray-300",
+  Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+  Approved: "bg-green-600 text-white hover:bg-green-500",
+  Rejected: "bg-red-500 text-white hover:bg-red-400",
+  Cancelled: "bg-gray-500 text-white hover:bg-gray-400", // ✅ NEW
   };
   const isActive = selectedStatusFilter === status;
   return (
@@ -1015,9 +1019,11 @@ const getStatusBadge = (status) => {
     selectedJobTypeFilter === "All" ||
     req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
 
-  const statusMatch =
-    selectedStatusFilter === "All" ||
-    (req.status ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase() : "pending" === selectedStatusFilter.toLowerCase());
+const statusMatch =
+  selectedStatusFilter === "All" ||
+  (req.status
+    ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
+    : "pending" === selectedStatusFilter.toLowerCase());
 
   return jobMatch && statusMatch;
 })
@@ -1074,29 +1080,47 @@ const getStatusBadge = (status) => {
             <span className="relative text-base font-semibold">View</span>
           </button>
 
-          <button
-            onClick={() => handleApproveServiceRequest(request.service_id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Approve</span>
-          </button>
+          {/* Approve Button */}
+<button
+  onClick={() => handleApproveServiceRequest(request.service_id)}
+  disabled={request.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${request.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Approve</span>
+</button>
 
-          <button
-            onClick={() => handleRejectServiceRequest(request.service_id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Reject</span>
-          </button>
+{/* Reject Button */}
+<button
+  onClick={() => handleRejectServiceRequest(request.service_id)}
+  disabled={request.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${request.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Reject</span>
+</button>
 
-          <button
-            onClick={() => handleSetPendingServiceRequest(request.service_id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Pending</span>
-          </button>
+{/* Pending Button */}
+<button
+  onClick={() => handleSetPendingServiceRequest(request.service_id)}
+  disabled={request.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${request.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Pending</span>
+</button>
         </div>
       </div>
     ))}
