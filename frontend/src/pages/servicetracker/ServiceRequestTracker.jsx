@@ -229,71 +229,89 @@ const filteredRequests = requests.filter(
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
              {currentRequests.map((req) => (
   <div
-    key={req.id}
-    className="bg-white rounded-2xl border border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col justify-between"
-  >
-    {req.service_image && (
-      <img
-        src={`http://localhost:3000${req.service_image}`}
-        alt="Service"
-        className="w-full h-48 object-cover"
-      />
+  key={req.id}
+  className="bg-white rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden"
+>
+  {/* Service Image */}
+  {req.service_image && (
+    <img
+      src={`http://localhost:3000${req.service_image}`}
+      alt="Service"
+      className="w-full h-48 object-cover"
+    />
+  )}
+
+  {/* Content Area */}
+  <div className="p-6 flex flex-col justify-between h-full space-y-4">
+    {/* Service Info */}
+    <div className="space-y-3">
+      <h3 className="text-lg font-bold text-gray-800">
+        Service Need:{" "}
+        <span className="text-blue-700">
+          {req.service_category?.toUpperCase()}
+        </span>
+      </h3>
+
+      <div className="text-sm text-gray-700 space-y-1">
+        <p>
+          <span className="font-semibold">📍 Address:</span> {req.address}
+        </p>
+        <p>
+          <span className="font-semibold">⏰ Preferred Time:</span>{" "}
+          {req.preferred_time}
+        </p>
+        <p>
+          <span className="font-semibold">⚠️ Urgency:</span> {req.urgency}
+        </p>
+      </div>
+    </div>
+
+    {/* Footer Area with Status + Button */}
+<div className="mt-4 pt-3 border-t border-gray-100 flex flex-col items-start gap-2">
+  {/* Status Badges - stacked above the button */}
+  <div className="flex flex-wrap gap-2">
+    <span
+      className={`text-xs font-bold px-3 py-1 rounded-full capitalize shadow-sm ${
+        req.status?.toLowerCase() === "approved"
+          ? "bg-green-100 text-green-800"
+          : req.status?.toLowerCase() === "rejected"
+          ? "bg-red-100 text-red-800"
+          : req.status?.toLowerCase() === "cancelled"
+          ? "bg-gray-200 text-gray-700"
+          : "bg-yellow-100 text-yellow-800"
+      }`}
+    >
+      {req.status || "Pending"}
+    </span>
+
+    {req.status?.toLowerCase() === "approved" && (
+      <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 shadow-sm">
+        Verified by Admin
+      </span>
     )}
 
-    <div className="p-6 flex flex-col justify-between h-full space-y-4">
-      <div className="space-y-2">
-        <h3 className="text-lg font-bold text-gray-800">
-          Service Need: <span className="text-blue-700">{req.service_category?.toUpperCase()}</span>
-        </h3>
+    {req.status?.toLowerCase() === "cancelled" && (
+      <span className="text-xs font-medium px-3 py-1 rounded-full bg-gray-100 text-gray-500">
+        Cancelled by You
+      </span>
+    )}
+  </div>
 
-        <div className="text-sm text-gray-700 space-y-1">
-          <p><span className="font-semibold">📍 Address:</span> {req.address}</p>
-          <p><span className="font-semibold">⏰ Preferred Time:</span> {req.preferred_time}</p>
-          <p><span className="font-semibold">⚠️ Urgency:</span> {req.urgency}</p>
-        </div>
-      </div>
-
-<div className="pt-3 flex flex-wrap items-center gap-2">
-  <span
-    className={`text-xs font-bold px-3 py-1 rounded-full capitalize shadow-sm ${
-      req.status?.toLowerCase() === "approved"
-        ? "bg-green-100 text-green-800"
-        : req.status?.toLowerCase() === "rejected"
-        ? "bg-red-100 text-red-800"
-        : req.status?.toLowerCase() === "cancelled"
-        ? "bg-gray-200 text-gray-700"
-        : "bg-yellow-100 text-yellow-800"
-    }`}
-  >
-    {req.status || "Pending"}
-  </span>
-
-  {req.status?.toLowerCase() === "approved" && (
-    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 shadow-sm">
-      Verified by Admin
-    </span>
-  )}
-
-  {req.status?.toLowerCase() === "cancelled" && (
-    <span className="text-xs font-medium px-3 py-1 rounded-full bg-gray-100 text-gray-500">
-      Cancelled by You
-    </span>
-  )}
-
+  {/* Cancel Button - below badges */}
   <button
     onClick={() => handleCancel(req.id)}
     disabled={req.status?.toLowerCase() === "cancelled"}
-    className={`ml-auto px-4 py-1 text-sm font-semibold rounded-full border transition ${
+    className={`text-xs font-medium px-20 py-2 mt-3 rounded-full border transition ${
       req.status?.toLowerCase() === "cancelled"
         ? "border-gray-300 text-gray-400 cursor-not-allowed"
-        : "border-red-500 text-red-600 hover:bg-red-100"
+        : "border-red-500 text-red-600 hover:bg-red-50"
     }`}
   >
     Cancel Request
   </button>
 </div>
-    </div>
   </div>
+</div>
 ))}
 </div>
           )}
