@@ -130,8 +130,8 @@ const ServiceRequestTracker = () => {
   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
     {requests
   .filter((req) =>
-    (selectedService === "All" || req.service_category?.toLowerCase() === selectedService.toLowerCase()) &&
-    (selectedStatus === "All" || req.status?.toLowerCase() === selectedStatus.toLowerCase())
+    (selectedService.toLowerCase() === "all" || req.service_category?.toLowerCase() === selectedService.toLowerCase()) &&
+    (selectedStatus.toLowerCase() === "all" || req.status?.toLowerCase() === selectedStatus.toLowerCase())
   )
   .map((req) => (
       <div
