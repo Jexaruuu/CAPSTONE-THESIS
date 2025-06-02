@@ -46,7 +46,9 @@ const ServiceRequestTracker = () => {
       (selectedService.toLowerCase() === "all" ||
         req.service_category?.toLowerCase() === selectedService.toLowerCase()) &&
       (selectedStatus.toLowerCase() === "all" ||
-        req.status?.toLowerCase() === selectedStatus.toLowerCase())
+ (req.status
+   ? req.status.toLowerCase() === selectedStatus.toLowerCase()
+   : selectedStatus.toLowerCase() === "pending"))
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
