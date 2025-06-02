@@ -1,33 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const { 
-  bookService, 
-  getServiceRequests, 
+const {
+  bookService,
+  getServiceRequests,
   deleteClientRequest,
   getApprovedServices,
   setPendingServiceRequest,
-  getServiceRequestsByUser // 👈 add this here
+  getServiceRequestsByUser
 } = require('../controllers/clientController');
-const db = require('../db'); // ✅ Keep db at top
+const db = require('../db');
 
 // ============================
 // 📌 Existing Endpoints
 // ============================
 
-// ✅ Book a new service request
 router.post('/bookservice', bookService);
-
-// ✅ Fetch all service requests (pending + approved + rejected)
 router.get('/requests', getServiceRequests);
-
-// ✅ Delete a service request completely
 router.delete('/:id', deleteClientRequest);
 
-// ============================
-// 📌 Approve / Reject Endpoints
-// ============================
+// ✅ Soft cancel by setting status to "cancelled"
+router.put('/requests/cancel/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('UPDATE service_details SET status = "cancelled" WHERE id = ?', [id]);
+    res.status(200).json({ message: 'Service request marked as cancelled.' });
+  } catch (error) {
+    console.error('Error cancelling request:', error);
+    res.status(500).json({ message: 'Failed to cancel request.' });
+  }
+});
 
-// ✅ Approve service request
 router.put('/approve/:serviceId', async (req, res) => {
   const { serviceId } = req.params;
   try {
@@ -39,8 +41,6 @@ router.put('/approve/:serviceId', async (req, res) => {
   }
 });
 
-// ✅ Reject service request
-// (In frontend we call DELETE now, but keep this PUT if you still want optional future "reject only" without delete)
 router.put('/reject/:serviceId', async (req, res) => {
   const { serviceId } = req.params;
   try {
@@ -63,15 +63,8 @@ router.put('/pending/:serviceId', async (req, res) => {
   }
 });
 
-// ============================
-// 📌 Fetch Approved Services Only
-// ============================
-
 router.get('/approved', getApprovedServices);
-
 router.put('/pending/:serviceId', setPendingServiceRequest);
-
-// ✅ Fetch service requests by email (for tracker)
 router.get('/requests/:email', getServiceRequestsByUser);
 
 module.exports = router;

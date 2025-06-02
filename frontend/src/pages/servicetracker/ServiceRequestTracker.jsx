@@ -36,19 +36,34 @@ const ServiceRequestTracker = () => {
     fetchRequests();
   }, [userEmail]);
 
-  // 🔄 Reset page when filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedService, selectedStatus]);
 
+  const handleCancel = async (id) => {
+    const confirmCancel = window.confirm("Are you sure you want to cancel this service request?");
+    if (!confirmCancel) return;
+
+    try {
+      await axios.put(`http://localhost:3000/api/clients/requests/cancel/${id}`);
+      setRequests((prev) => prev.map((req) =>
+        req.id === id ? { ...req, status: "cancelled" } : req
+      ));
+    } catch (err) {
+      console.error("Error cancelling request", err);
+      alert("Failed to cancel the request. Please try again.");
+    }
+  };
+
   const filteredRequests = requests.filter(
     (req) =>
+      req.status?.toLowerCase() !== "cancelled" &&
       (selectedService.toLowerCase() === "all" ||
         req.service_category?.toLowerCase() === selectedService.toLowerCase()) &&
       (selectedStatus.toLowerCase() === "all" ||
- (req.status
-   ? req.status.toLowerCase() === selectedStatus.toLowerCase()
-   : selectedStatus.toLowerCase() === "pending"))
+        (req.status
+          ? req.status.toLowerCase() === selectedStatus.toLowerCase()
+          : selectedStatus.toLowerCase() === "pending"))
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -63,7 +78,6 @@ const ServiceRequestTracker = () => {
     <div className="bg-[#F3F4F6] font-sans min-h-screen">
       <Navigation />
       <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-8">
-        {/* Sidebar */}
         <div className="w-full md:w-64 bg-white shadow rounded-xl p-5 h-fit">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
             Account Menu
@@ -77,7 +91,6 @@ const ServiceRequestTracker = () => {
                 Edit Profile
               </Link>
             </li>
-
             <li>
               <button className="text-blue-700 font-medium w-full text-left hover:underline">
                 Service Request Status
@@ -106,7 +119,6 @@ const ServiceRequestTracker = () => {
                 </li>
               </ul>
             </li>
-
             <li>
               <button className="text-blue-700 font-medium w-full text-left hover:underline">
                 Application Status
@@ -149,7 +161,6 @@ const ServiceRequestTracker = () => {
           </ul>
         </div>
 
-        {/* Main Content */}
         <div className="flex-1">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">
             Your Service Requests
@@ -222,7 +233,6 @@ const ServiceRequestTracker = () => {
                   key={req.id}
                   className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden"
                 >
-                  {/* 🖼️ Service Image */}
                   {req.service_image && (
                     <img
                       src={`http://localhost:3000${req.service_image}`}
@@ -231,31 +241,17 @@ const ServiceRequestTracker = () => {
                     />
                   )}
 
-                  {/* 📄 Card Content */}
                   <div className="p-6 space-y-3">
                     <h3 className="text-xl font-extrabold text-gray-800 tracking-wide">
-                      Service Need:{" "}
-                      <span className="text-blue-700">
-                        {req.service_category?.toUpperCase()}
-                      </span>
+                      Service Need: <span className="text-blue-700">{req.service_category?.toUpperCase()}</span>
                     </h3>
 
                     <div className="text-sm text-gray-700 space-y-1">
-                      <p>
-                        <span className="font-semibold">Address:</span>{" "}
-                        {req.address}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Preferred Time:</span>{" "}
-                        {req.preferred_time}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Urgency:</span>{" "}
-                        {req.urgency}
-                      </p>
+                      <p><span className="font-semibold">Address:</span> {req.address}</p>
+                      <p><span className="font-semibold">Preferred Time:</span> {req.preferred_time}</p>
+                      <p><span className="font-semibold">Urgency:</span> {req.urgency}</p>
                     </div>
 
-                    {/* 🏷️ Status Badges */}
                     <div className="pt-3 flex flex-wrap items-center gap-2">
                       <span
                         className={`text-xs font-bold px-3 py-1 rounded-full capitalize shadow-sm ${
@@ -266,7 +262,7 @@ const ServiceRequestTracker = () => {
                             : "bg-yellow-100 text-yellow-800"
                         }`}
                       >
-                        {req.status}
+                        {req.status || "Pending"}
                       </span>
 
                       {req.status?.toLowerCase() === "approved" && (
@@ -274,6 +270,13 @@ const ServiceRequestTracker = () => {
                           Verified by Admin
                         </span>
                       )}
+
+                      <button
+                        onClick={() => handleCancel(req.id)}
+                        className="ml-auto text-sm text-red-600 font-semibold hover:underline hover:text-red-800"
+                      >
+                        Cancel Request
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -281,7 +284,6 @@ const ServiceRequestTracker = () => {
             </div>
           )}
 
-          {/* 🔄 Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center mt-8 space-x-2">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(

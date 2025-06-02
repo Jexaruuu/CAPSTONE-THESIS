@@ -71,8 +71,10 @@ const fetchServiceRequests = async () => {
     setServiceRequests(updatedRequests);
 
     // Recalculate the number of pending requests
-    const pending = updatedRequests.filter(req => !req.status || req.status === "pending").length;
-    setPendingServiceRequests(pending);
+const pending = updatedRequests.filter(
+  req => !req.status || req.status.toLowerCase() === "pending"
+).length;
+setPendingServiceRequests(pending);
   } catch (error) {
     console.error('Error fetching service requests:', error);
   }
@@ -449,15 +451,15 @@ const getStatusBadge = (status) => {
   `}
 >
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold">
-    <ClipboardListIcon className="mr-3 w-5 h-5" />
-    Service Requests
-    {pendingServiceRequests > 0 && (
-  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-    {pendingServiceRequests}
-  </span>
-)}
-  </span>
+<span className="relative flex items-center text-base font-semibold">
+  <ClipboardListIcon className="mr-3 w-5 h-5" />
+  Service Requests
+  {pendingServiceRequests > 0 && (
+    <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+      {pendingServiceRequests}
+    </span>
+  )}
+</span>
 </button>
 
 <button
