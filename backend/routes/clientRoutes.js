@@ -5,7 +5,8 @@ const {
   getServiceRequests, 
   deleteClientRequest,
   getApprovedServices,
-  setPendingServiceRequest
+  setPendingServiceRequest,
+  getServiceRequestsByUser // 👈 add this here
 } = require('../controllers/clientController');
 const db = require('../db'); // ✅ Keep db at top
 
@@ -70,5 +71,7 @@ router.get('/approved', getApprovedServices);
 
 router.put('/pending/:serviceId', setPendingServiceRequest);
 
+// ✅ Fetch service requests by email (for tracker)
+router.get('/requests/:email', getServiceRequestsByUser);
 
 module.exports = router;
