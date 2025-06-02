@@ -101,7 +101,7 @@ const ServiceRequestTracker = () => {
                     to="/tracker"
                     className="hover:text-blue-600 font-semibold"
                   >
-                    Service Request Tracker
+                    Current Service Request
                   </Link>
                 </li>
                 <li>
@@ -163,7 +163,7 @@ const ServiceRequestTracker = () => {
 
         <div className="flex-1">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">
-            Your Service Requests
+            Current Service Requests
           </h2>
 
           {/* Service Need Filter */}
@@ -228,59 +228,63 @@ const ServiceRequestTracker = () => {
             <p className="text-gray-600">You have no service requests yet.</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {currentRequests.map((req) => (
-                <div
-                  key={req.id}
-                  className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden"
-                >
-                  {req.service_image && (
-                    <img
-                      src={`http://localhost:3000${req.service_image}`}
-                      alt="Service"
-                      className="w-full h-48 object-cover rounded-t-2xl"
-                    />
-                  )}
+             {currentRequests.map((req) => (
+  <div
+    key={req.id}
+    className="bg-white rounded-2xl border border-gray-300 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col justify-between"
+  >
+    {req.service_image && (
+      <img
+        src={`http://localhost:3000${req.service_image}`}
+        alt="Service"
+        className="w-full h-48 object-cover"
+      />
+    )}
 
-                  <div className="p-6 space-y-3">
-                    <h3 className="text-xl font-extrabold text-gray-800 tracking-wide">
-                      Service Need: <span className="text-blue-700">{req.service_category?.toUpperCase()}</span>
-                    </h3>
+    <div className="p-6 flex flex-col justify-between h-full space-y-4">
+      <div className="space-y-2">
+        <h3 className="text-lg font-bold text-gray-800">
+          Service Need: <span className="text-blue-700">{req.service_category?.toUpperCase()}</span>
+        </h3>
 
-                    <div className="text-sm text-gray-700 space-y-1">
-                      <p><span className="font-semibold">Address:</span> {req.address}</p>
-                      <p><span className="font-semibold">Preferred Time:</span> {req.preferred_time}</p>
-                      <p><span className="font-semibold">Urgency:</span> {req.urgency}</p>
-                    </div>
+        <div className="text-sm text-gray-700 space-y-1">
+          <p><span className="font-semibold">📍 Address:</span> {req.address}</p>
+          <p><span className="font-semibold">⏰ Preferred Time:</span> {req.preferred_time}</p>
+          <p><span className="font-semibold">⚠️ Urgency:</span> {req.urgency}</p>
+        </div>
+      </div>
 
-                    <div className="pt-3 flex flex-wrap items-center gap-2">
-                      <span
-                        className={`text-xs font-bold px-3 py-1 rounded-full capitalize shadow-sm ${
-                          req.status?.toLowerCase() === "approved"
-                            ? "bg-green-100 text-green-800"
-                            : req.status?.toLowerCase() === "rejected"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {req.status || "Pending"}
-                      </span>
+      <div className="pt-3 flex flex-wrap items-center gap-2">
+        <span
+          className={`text-xs font-bold px-3 py-1 rounded-full capitalize shadow-sm ${
+            req.status?.toLowerCase() === "approved"
+              ? "bg-green-100 text-green-800"
+              : req.status?.toLowerCase() === "rejected"
+              ? "bg-red-100 text-red-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {req.status || "Pending"}
+        </span>
 
-                      {req.status?.toLowerCase() === "approved" && (
-                        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 shadow-sm">
-                          Verified by Admin
-                        </span>
-                      )}
+        {req.status?.toLowerCase() === "approved" && (
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800 shadow-sm">
+            Verified by Admin
+          </span>
+        )}
 
-                      <button
-                        onClick={() => handleCancel(req.id)}
-                        className="ml-auto text-sm text-red-600 font-semibold hover:underline hover:text-red-800"
-                      >
-                        Cancel Request
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+        {req.status?.toLowerCase() !== "cancelled" && (
+          <button
+            onClick={() => handleCancel(req.id)}
+            className="ml-auto px-4 py-1 text-sm font-semibold rounded-full border border-red-500 text-red-600 hover:bg-red-100 transition"
+          >
+            Cancel Request
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+))}
             </div>
           )}
 
