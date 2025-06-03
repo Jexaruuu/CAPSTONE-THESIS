@@ -188,35 +188,36 @@ const filteredRequests = requests.filter(
             </div>
           </div>
 
-          {/* Status Filter */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Filter by Status:
-            </label>
-            <div className="flex flex-wrap gap-3">
-              {["All", "Pending", "Approved", "Rejected"].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setSelectedStatus(status)}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition 
-                    ${
-                      selectedStatus.toLowerCase() === status.toLowerCase()
-                        ? status === "Approved"
-                          ? "bg-green-600 text-white"
-                          : status === "Rejected"
-                          ? "bg-red-600 text-white"
-                          : status === "Pending"
-                          ? "bg-yellow-500 text-white"
-                          : "bg-gray-500 text-white"
-                        : "bg-gray-200 text-gray-800 hover:bg-blue-100"
-                    }`}
-                >
-                  {status}
-                </button>
-              ))}
-            </div>
-          </div>
-
+         {/* Status Filter */}
+<div className="mb-6">
+  <label className="block text-sm font-semibold text-gray-700 mb-3">
+    Filter by Status:
+  </label>
+  <div className="flex flex-wrap gap-3">
+    {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => (
+      <button
+        key={status}
+        onClick={() => setSelectedStatus(status)}
+        className={`px-4 py-2 rounded-full text-sm font-semibold transition 
+          ${
+            selectedStatus.toLowerCase() === status.toLowerCase()
+              ? status === "Approved"
+                ? "bg-green-600 text-white"
+                : status === "Rejected"
+                ? "bg-red-600 text-white"
+                : status === "Pending"
+                ? "bg-yellow-500 text-white"
+                : status === "Cancelled"
+                ? "bg-gray-500 text-white"
+                : "bg-gray-400 text-white"
+              : "bg-gray-200 text-gray-800 hover:bg-blue-100"
+          }`}
+      >
+        {status}
+      </button>
+    ))}
+  </div>
+</div>
           {error && (
             <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
               {error}
@@ -224,7 +225,7 @@ const filteredRequests = requests.filter(
           )}
 
           {filteredRequests.length === 0 ? (
-            <p className="text-gray-600">You have no service requests yet.</p>
+            <p className="text-gray-600">There's no Service Request Here.</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
              {currentRequests.map((req) => (
@@ -252,17 +253,23 @@ const filteredRequests = requests.filter(
         </span>
       </h3>
 
-      <div className="text-sm text-gray-700 space-y-1">
-        <p>
-          <span className="font-semibold">📍 Address:</span> {req.address}
-        </p>
-        <p>
-          <span className="font-semibold">⏰ Preferred Time:</span>{" "}
-          {req.preferred_time}
-        </p>
-        <p>
-          <span className="font-semibold">⚠️ Urgency:</span> {req.urgency}
-        </p>
+     <div className="flex items-start text-sm text-gray-700 gap-2">
+  <span className="mt-0.5">📍</span>
+  <p className="flex-1">
+    <span className="font-semibold">Address:</span> {req.address}
+  </p>
+</div>
+        <div className="flex items-start text-sm text-gray-700 gap-2">
+  <span className="mt-0.5">⏰</span>
+  <p className="flex-1">
+    <span className="font-semibold">Preferred Time:</span> {req.preferred_time}
+  </p>
+</div>
+        <div className="flex items-start text-sm text-gray-700 gap-2">
+  <span className="mt-0.5">⚠️</span>
+  <p className="flex-1">
+    <span className="font-semibold">Urgency:</span> {req.urgency}
+  </p>
       </div>
     </div>
 
