@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import SidebarMenu from "../../components/sidemenu/SidebarMenu";
 
 const EditProfile = () => {
     const [first_name, setFirstName] = useState("");
@@ -14,9 +15,7 @@ const EditProfile = () => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [showServiceMenu, setShowServiceMenu] = useState(false);
     const navigate = useNavigate();
-    const [showApplicationMenu, setShowApplicationMenu] = useState(false);
 
     const userId = localStorage.getItem("userId");
 
@@ -187,66 +186,8 @@ const EditProfile = () => {
         <div className="bg-[#F3F4F6] font-sans min-h-screen">
             <Navigation />
             <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-8">
-                
-                {/* Sidebar */}
-<div className="w-full md:w-64 bg-white shadow rounded-xl p-5 h-fit">
-  <h2 className="text-lg font-semibold text-gray-800 mb-4">Account Menu</h2>
-  <ul className="space-y-3">
-    {/* 🔹 Edit Profile */}
-    <li>
-      <Link to="/editprofile" className="text-blue-700 font-medium hover:underline">Edit Profile</Link>
-    </li>
-
-    {/* 🔹 Service Request Status */}
-    <li>
-      <button
-        onClick={() => setShowServiceMenu(!showServiceMenu)}
-        className="text-blue-700 font-medium w-full text-left hover:underline"
-      >
-        Service Request Status
-      </button>
-      {showServiceMenu && (
-        <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-700">
-          <li>
-            <Link to="/tracker" className="hover:text-blue-600">Service Request Tracker</Link>
-          </li>
-          <li>
-            <Link to="/schedule-tracker" className="hover:text-blue-600">Schedule Tracker</Link>
-          </li>
-          <li>
-            <Link to="/applicant-responses" className="hover:text-blue-600">Applicant Responses</Link>
-          </li>
-        </ul>
-      )}
-    </li>
-
-    {/* 🔹 Application Status */}
-    <li>
-      <button
-        onClick={() => setShowApplicationMenu((prev) => !prev)}
-        className="text-blue-700 font-medium w-full text-left hover:underline"
-      >
-        Application Status
-      </button>
-      {showApplicationMenu && (
-        <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-700">
-          <li>
-            <Link to="/application-status" className="hover:text-blue-600">Overall Status</Link>
-          </li>
-          <li>
-            <Link to="/application-approved" className="hover:text-green-600">Approved Applications</Link>
-          </li>
-          <li>
-            <Link to="/application-pending" className="hover:text-yellow-600">Pending Applications</Link>
-          </li>
-          <li>
-            <Link to="/application-rejected" className="hover:text-red-600">Rejected Applications</Link>
-          </li>
-        </ul>
-      )}
-    </li>
-  </ul>
-</div>
+ {/* Sidebar */}
+                <SidebarMenu />
 
                 {/* Main Content */}
                 <div className="flex-1 space-y-10">

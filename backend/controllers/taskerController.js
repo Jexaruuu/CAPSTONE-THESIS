@@ -323,6 +323,51 @@ const getClearance = async (req, res) => {
   }
 };
 
+// ✅ Fetch tasker applications by email
+const getTaskersByEmail = async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        tp.id,
+        tp.fullName,
+        tp.profilePicture,
+        tp.email,
+        tp.status,
+        tf.jobType,
+        tf.serviceCategory,
+        tf.experience,
+        tf.skills,
+        tf.rate_per_hour
+      FROM tasker_personal tp
+      JOIN tasker_professional tf ON tp.id = tf.id
+      WHERE tp.email = ?
+    `, [email]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No tasker applications found for this email." });
+    }
+
+    // Parse jobType and serviceCategory fields
+    const parsed = rows.map(tasker => ({
+      ...tasker,
+      job_type: JSON.parse(tasker.jobType || "[]")[0] || "",  // use first job if array
+      serviceCategory: JSON.parse(tasker.serviceCategory || "{}"),
+      experience: tasker.experience,
+      skills: tasker.skills,
+      status: tasker.status,
+      profilePicture: tasker.profilePicture,
+    }));
+
+    res.json(parsed);
+  } catch (error) {
+    console.error("Error fetching taskers by email:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 module.exports = {
   submitTaskerForm,
   getAllTaskers,
@@ -337,5 +382,6 @@ module.exports = {
   getProofOfAddress,
   getMedicalCertificate,
   getOptionalCertificate,
-  getClearance
+  getClearance,
+  getTaskersByEmail
 };

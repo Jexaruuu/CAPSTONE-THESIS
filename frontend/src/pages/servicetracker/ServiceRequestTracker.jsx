@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import SidebarMenu from "../../components/sidemenu/SidebarMenu";
 
 const ServiceRequestTracker = () => {
   const [requests, setRequests] = useState([]);
@@ -16,25 +17,29 @@ const ServiceRequestTracker = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        if (!userEmail) {
-          setError("User email not found. Please log in again.");
-          return;
-        }
-        const response = await axios.get(
-          `http://localhost:3000/api/clients/requests/${userEmail}`
-        );
-        setRequests(response.data);
-      } catch (err) {
-        console.error("Failed to fetch service requests", err);
-        setError("Unable to fetch service requests.");
+useEffect(() => {
+  const fetchRequests = async () => {
+    try {
+      if (!userEmail) {
+        setError("User email not found. Please log in again.");
+        return;
       }
-    };
+      const response = await axios.get(`http://localhost:3000/api/clients/requests/${userEmail}`);
 
-    fetchRequests();
-  }, [userEmail]);
+      // Sort newest first by creation date
+      const sorted = response.data.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      );
+
+      setRequests(sorted);
+    } catch (err) {
+      console.error("Failed to fetch service requests", err);
+      setError("Unable to fetch service requests.");
+    }
+  };
+
+  fetchRequests();
+}, [userEmail]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -77,88 +82,7 @@ const filteredRequests = requests.filter(
     <div className="bg-[#F3F4F6] font-sans min-h-screen">
       <Navigation />
       <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-64 bg-white shadow rounded-xl p-5 h-fit">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Account Menu
-          </h2>
-          <ul className="space-y-3">
-            <li>
-              <Link
-                to="/editprofile"
-                className="text-blue-700 font-medium hover:underline"
-              >
-                Edit Profile
-              </Link>
-            </li>
-            <li>
-              <button className="text-blue-700 font-medium w-full text-left hover:underline">
-                Service Request Status
-              </button>
-              <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-700">
-                <li>
-                  <Link
-                    to="/tracker"
-                    className="hover:text-blue-600 font-semibold"
-                  >
-                    Current Service Request
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/schedule-tracker" className="hover:text-blue-600">
-                    Schedule Tracker
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/applicant-responses"
-                    className="hover:text-blue-600"
-                  >
-                    Applicant Responses
-                  </Link>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <button className="text-blue-700 font-medium w-full text-left hover:underline">
-                Application Status
-              </button>
-              <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-700">
-                <li>
-                  <Link
-                    to="/application-status"
-                    className="hover:text-blue-600"
-                  >
-                    Current Application
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/application-approved"
-                    className="hover:text-green-600"
-                  >
-                    Approved
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/application-pending"
-                    className="hover:text-yellow-600"
-                  >
-                    Pending
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/application-rejected"
-                    className="hover:text-red-600"
-                  >
-                    Rejected
-                  </Link>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
+        <SidebarMenu />
 
         <div className="flex-1">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">
@@ -225,7 +149,7 @@ const filteredRequests = requests.filter(
           )}
 
           {filteredRequests.length === 0 ? (
-            <p className="text-gray-600">There's no Service Request Here.</p>
+            <p className="text-gray-600">There's no service request here.</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
              {currentRequests.map((req) => (
