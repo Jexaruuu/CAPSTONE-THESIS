@@ -64,7 +64,7 @@ const submitTaskerForm = async (req, res) => {
       medicalCertificate,
       certificates,
       social_media: data.social_media,
-      tools_equipment: data.tools_equipment || null // ✅ use correct column name
+      tools_equipment: data.tools_equipment || null
     };
 
     Object.keys(taskerData).forEach(key => {
@@ -126,7 +126,7 @@ const approveTasker = async (req, res) => {
   }
 };
 
-// ✅ Reject tasker (only update status, not delete)
+// ✅ Reject tasker
 const rejectTasker = async (req, res) => {
   const { id } = req.params;
   try {
@@ -163,40 +163,40 @@ const getTaskerProfile = async (req, res) => {
   }
 };
 
-// 🔥 Fetch ONLY approved taskers with full details
+// 🔥 Fetch only approved taskers
 const getAllApprovedTaskers = async (req, res) => {
   try {
     const [taskers] = await db.query(`
-   SELECT 
-  tp.id,
-  tp.fullName,
-  tp.age,
-  tp.gender,
-  tp.contactNumber,
-  tp.email,
-  tp.address,
-  tp.profilePicture,
-  tf.jobType,
-  tf.serviceCategory,
-  tf.experience,
-  tf.skills,
-  tf.rate_per_hour,
- tf.tools_equipment,
-  td.proofOfAddress,
-  td.medicalCertificate,
-  td.certificates AS additionalCertificate,
-  td.clearance
-FROM tasker_personal tp
-JOIN tasker_professional tf ON tp.id = tf.id
-LEFT JOIN tasker_documents td ON tp.id = td.id
-WHERE tp.status = 'approved'
+      SELECT 
+        tp.id,
+        tp.fullName,
+        tp.age,
+        tp.gender,
+        tp.contactNumber,
+        tp.email,
+        tp.address,
+        tp.profilePicture,
+        tf.jobType,
+        tf.serviceCategory,
+        tf.experience,
+        tf.skills,
+        tf.rate_per_hour,
+        tf.tools_equipment,
+        td.proofOfAddress,
+        td.medicalCertificate,
+        td.certificates AS additionalCertificate,
+        td.clearance
+      FROM tasker_personal tp
+      JOIN tasker_professional tf ON tp.id = tf.id
+      LEFT JOIN tasker_documents td ON tp.id = td.id
+      WHERE tp.status = 'approved'
     `);
 
     const taskersWithPrice = taskers.map(tasker => ({
       ...tasker,
       pricePerHour: tasker.rate_per_hour || null
     }));
-    
+
     res.json(taskersWithPrice);
   } catch (error) {
     console.error('Error fetching approved taskers with full info:', error);
@@ -204,7 +204,6 @@ WHERE tp.status = 'approved'
   }
 };
 
-// ✅ New controller: Get taskers with full info
 const getTaskersWithFullInfo = async (req, res) => {
   try {
     const taskers = await fetchTaskersWithFullInfo();
@@ -215,7 +214,6 @@ const getTaskersWithFullInfo = async (req, res) => {
   }
 };
 
-// ✅ Set rate per hour for tasker (updates tasker_professional)
 const setTaskerRate = async (req, res) => {
   const { id } = req.params;
   const { rate } = req.body;
@@ -252,7 +250,7 @@ const setTaskerPending = async (req, res) => {
   }
 };
 
-// ✅ Serve files
+// ✅ File serving
 const getProfilePicture = async (req, res) => {
   const { id } = req.params;
   try {
@@ -323,7 +321,7 @@ const getClearance = async (req, res) => {
   }
 };
 
-// ✅ Fetch tasker applications by email
+// ✅ Get taskers by email (updated)
 const getTaskersByEmail = async (req, res) => {
   const { email } = req.params;
 
@@ -334,11 +332,15 @@ const getTaskersByEmail = async (req, res) => {
         tp.fullName,
         tp.profilePicture,
         tp.email,
+        tp.age,
+        tp.contactNumber,
+        tp.address,
         tp.status,
         tf.jobType,
         tf.serviceCategory,
         tf.experience,
         tf.skills,
+        tf.tools_equipment,
         tf.rate_per_hour
       FROM tasker_personal tp
       JOIN tasker_professional tf ON tp.id = tf.id
@@ -349,16 +351,41 @@ const getTaskersByEmail = async (req, res) => {
       return res.status(404).json({ message: "No tasker applications found for this email." });
     }
 
-    // Parse jobType and serviceCategory fields
-    const parsed = rows.map(tasker => ({
-      ...tasker,
-      job_type: JSON.parse(tasker.jobType || "[]")[0] || "",  // use first job if array
-      serviceCategory: JSON.parse(tasker.serviceCategory || "{}"),
-      experience: tasker.experience,
-      skills: tasker.skills,
-      status: tasker.status,
-      profilePicture: tasker.profilePicture,
-    }));
+    const parsed = rows.map(tasker => {
+      let jobTypeParsed = [];
+      let serviceCategoriesParsed = [];
+
+      try {
+        jobTypeParsed = JSON.parse(tasker.jobType || "[]");
+      } catch {
+        jobTypeParsed = [];
+      }
+
+      try {
+        serviceCategoriesParsed = Array.isArray(tasker.serviceCategory)
+          ? tasker.serviceCategory
+          : JSON.parse(tasker.serviceCategory || "[]");
+      } catch {
+        serviceCategoriesParsed = [];
+      }
+
+      return {
+        id: tasker.id,
+        fullName: tasker.fullName,
+        email: tasker.email,
+        age: tasker.age,
+        contactNumber: tasker.contactNumber,
+        address: tasker.address,
+        status: tasker.status,
+        profilePicture: tasker.profilePicture,
+        job_type: jobTypeParsed,
+        service_categories: serviceCategoriesParsed,
+        experience: tasker.experience,
+        skills: tasker.skills,
+        tools_equipment: tasker.tools_equipment,
+        price_rate: tasker.rate_per_hour
+      };
+    });
 
     res.json(parsed);
   } catch (error) {
@@ -366,7 +393,6 @@ const getTaskersByEmail = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 module.exports = {
   submitTaskerForm,
