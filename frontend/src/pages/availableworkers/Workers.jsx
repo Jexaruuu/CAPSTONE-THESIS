@@ -302,7 +302,7 @@ const handleHireNow = (worker) => {
 
       {/* ✅ Modal */}
      {showModal && selectedWorker && (
-  <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
     <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-xl relative overflow-y-auto max-h-[90vh]">
       <button
         onClick={closeModal}

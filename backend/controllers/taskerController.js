@@ -326,26 +326,32 @@ const getTaskersByEmail = async (req, res) => {
   const { email } = req.params;
 
   try {
-    const [rows] = await db.query(`
-      SELECT 
-        tp.id,
-        tp.fullName,
-        tp.profilePicture,
-        tp.email,
-        tp.age,
-        tp.contactNumber,
-        tp.address,
-        tp.status,
-        tf.jobType,
-        tf.serviceCategory,
-        tf.experience,
-        tf.skills,
-        tf.tools_equipment,
-        tf.rate_per_hour
-      FROM tasker_personal tp
-      JOIN tasker_professional tf ON tp.id = tf.id
-      WHERE tp.email = ?
-    `, [email]);
+const [rows] = await db.query(`
+  SELECT 
+    tp.id,
+    tp.fullName,
+    tp.profilePicture,
+    tp.email,
+    tp.age,
+    tp.contactNumber,
+    tp.address,
+    tp.status,
+    tf.jobType,
+    tf.serviceCategory,
+    tf.experience,
+    tf.skills,
+    tf.tools_equipment,
+    tf.rate_per_hour,
+    td.proofOfAddress,
+    td.medicalCertificate,
+    td.certificates AS additionalCertificate,
+    td.clearance
+  FROM tasker_personal tp
+  JOIN tasker_professional tf ON tp.id = tf.id
+  LEFT JOIN tasker_documents td ON tp.id = td.id
+  WHERE tp.email = ?
+`, [email]);
+
 
     if (rows.length === 0) {
       return res.status(404).json({ message: "No tasker applications found for this email." });
@@ -369,22 +375,26 @@ const getTaskersByEmail = async (req, res) => {
         serviceCategoriesParsed = [];
       }
 
-      return {
-        id: tasker.id,
-        fullName: tasker.fullName,
-        email: tasker.email,
-        age: tasker.age,
-        contactNumber: tasker.contactNumber,
-        address: tasker.address,
-        status: tasker.status,
-        profilePicture: tasker.profilePicture,
-        job_type: jobTypeParsed,
-        service_categories: serviceCategoriesParsed,
-        experience: tasker.experience,
-        skills: tasker.skills,
-        tools_equipment: tasker.tools_equipment,
-        price_rate: tasker.rate_per_hour
-      };
+return {
+  id: tasker.id,
+  fullName: tasker.fullName,
+  email: tasker.email,
+  age: tasker.age,
+  contactNumber: tasker.contactNumber,
+  address: tasker.address,
+  status: tasker.status,
+  profilePicture: tasker.profilePicture,
+  job_type: jobTypeParsed,
+  service_categories: serviceCategoriesParsed,
+  experience: tasker.experience,
+  skills: tasker.skills,
+  tools_equipment: tasker.tools_equipment,
+  price_rate: tasker.rate_per_hour,
+  proofOfAddress: tasker.proofOfAddress,
+  medicalCertificate: tasker.medicalCertificate,
+  additionalCertificate: tasker.additionalCertificate,
+  clearance: tasker.clearance
+};
     });
 
     res.json(parsed);

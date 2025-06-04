@@ -15,6 +15,9 @@ const ApplicationOverview = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const email = user?.email;
 
+  const [selectedApplication, setSelectedApplication] = useState(null);
+const [showModal, setShowModal] = useState(false);
+
 useEffect(() => {
   const fetchApplications = async () => {
     try {
@@ -245,17 +248,31 @@ const matchJobType =
   )}
 </div>
 
-<button
-  onClick={() => handleCancel(app.id)}
-  disabled={app.status?.toLowerCase() === "cancelled"}
-className={`text-xs font-medium px-6 py-2 rounded-full border transition-all duration-200 ease-in-out ${
-    app.status?.toLowerCase() === "cancelled"
-      ? "border-gray-300 text-gray-400 cursor-not-allowed"
-      : "border-red-500 text-red-600 hover:bg-red-50"
-  }`}
->
-  Cancel Application
-</button>
+<div className="flex gap-2 mt-2">
+  {/* 👇 View Documents Button */}
+  <button
+    onClick={() => {
+      setSelectedApplication(app);
+      setShowModal(true);
+    }}
+    className="text-xs font-medium px-6 py-2 rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 transition-all duration-200 ease-in-out"
+  >
+    View Documents
+  </button>
+
+  {/* 👇 Cancel Button */}
+  <button
+    onClick={() => handleCancel(app.id)}
+    disabled={app.status?.toLowerCase() === "cancelled"}
+    className={`text-xs font-medium px-6 py-2 rounded-full border transition-all duration-200 ease-in-out ${
+      app.status?.toLowerCase() === "cancelled"
+        ? "border-gray-300 text-gray-400 cursor-not-allowed"
+        : "border-red-500 text-red-600 hover:bg-red-50"
+    }`}
+  >
+    Cancel Application
+  </button>
+</div>
                     </div>
                   </div>
                 </div>
@@ -282,6 +299,47 @@ className={`text-xs font-medium px-6 py-2 rounded-full border transition-all dur
           )}
         </div>
       </div>
+
+      {showModal && selectedApplication && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
+    <div className="bg-white w-full max-w-4xl rounded-xl shadow-lg p-6 relative">
+      <h3 className="text-2xl font-bold mb-6 text-gray-800">Uploaded Documents</h3>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {[
+          { label: "Proof of Address", key: "proofOfAddress" },
+          { label: "Medical Certificate", key: "medicalCertificate" },
+          { label: "Certificates", key: "additionalCertificate" },
+          { label: "Clearance", key: "clearance" },
+        ].map(({ label, key }) => {
+          const docPath = selectedApplication[key];
+          return (
+            <div key={key} className="flex flex-col items-start">
+              <p className="font-semibold text-gray-700 mb-2">{label}:</p>
+              {docPath ? (
+                <img
+                  src={`http://localhost:3000${docPath}`}
+                  alt={label}
+                  className="w-full max-h-64 object-cover rounded-lg border border-gray-300 shadow-sm"
+                />
+              ) : (
+                <p className="text-sm text-gray-500 italic">Not uploaded</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <button
+        onClick={() => setShowModal(false)}
+        className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
+
       <Footer />
     </div>
   );
