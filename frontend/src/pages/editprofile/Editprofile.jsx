@@ -183,17 +183,20 @@ const EditProfile = () => {
     };
 
     return (
-        <div className="bg-[#F3F4F6] font-sans min-h-screen">
-            <Navigation />
-            <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-8">
- {/* Sidebar */}
-                <SidebarMenu />
+    <div className="bg-[#F3F4F6] min-h-screen font-sans">
+  <Navigation />
+  <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-[256px_1fr] gap-8">
+    {/* ✅ Sidebar container with sticky */}
+    <div className="h-fit">
+      <div className="sticky top-28">
+        <SidebarMenu />
+      </div>
+    </div>
 
-                {/* Main Content */}
-                <div className="flex-1 space-y-10">
+ <div className="flex flex-col">
   {/* Page Header */}
 <form className="form" onSubmit={handleUpdateInfo}>
-  <section className="bg-white p-8 rounded-2xl shadow-md border border-gray-200">
+  <section className="bg-white p-8 rounded-2xl shadow-md border border-gray-200 mb-5">
 
     {/* 🔵 Heading now inside card for alignment */}
     <div className="text-center mb-15">
@@ -235,7 +238,7 @@ const EditProfile = () => {
     </div>
 
     {/* 🔘 Actions */}
-    <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8">
+    <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8 shadow-md">
       <button type="submit" className="bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg transition duration-200 w-full md:w-auto">
         Update Profile
       </button>

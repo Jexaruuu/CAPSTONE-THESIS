@@ -62,11 +62,16 @@ const ApplicationOverview = () => {
 
   return (
     <div className="bg-[#F3F4F6] min-h-screen font-sans">
-      <Navigation />
-      <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-8">
+  <Navigation />
+  <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-[256px_1fr] gap-8">
+    {/* ✅ Sidebar container with sticky */}
+    <div className="h-fit">
+      <div className="sticky top-28">
         <SidebarMenu />
+      </div>
+    </div>
 
-        <div className="flex-1">
+ <div className="flex flex-col">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">My Tasker Applications</h2>
 
           {/* Filters */}
