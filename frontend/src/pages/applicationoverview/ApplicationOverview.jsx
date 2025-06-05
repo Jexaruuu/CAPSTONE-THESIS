@@ -113,14 +113,16 @@ const matchJobType =
                   className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
                     selectedStatus === status
                       ? status === "Approved"
-                        ? "bg-green-600 text-white"
-                        : status === "Rejected"
-                        ? "bg-red-600 text-white"
-                        : status === "Cancelled"
-                        ? "bg-gray-500 text-white"
-                        : "bg-yellow-500 text-white"
-                      : "bg-gray-200 text-gray-800 hover:bg-blue-100"
-                  }`}
+                ? "bg-green-600 text-white"
+                : status === "Rejected"
+                ? "bg-red-600 text-white"
+                : status === "Pending"
+                ? "bg-yellow-500 text-white"
+                : status === "Cancelled"
+                ? "bg-gray-500 text-white"
+                : "bg-gray-400 text-white"
+              : "bg-gray-200 text-gray-800 hover:bg-blue-100"
+          }`}
                 >
                   {status}
                 </button>
