@@ -120,6 +120,14 @@ const UserNavigation = () => {
             </div>
 
             {/* User Profile Dropdown */}
+            {/* <div className="flex flex-col">
+              {user ? (
+                <p className="text-gray-700 font-medium text-right">{`${user.first_name} ${user.last_name}`}</p>
+              ) : (
+                <p className="text-gray-700 font-medium">Guest</p>
+              )}
+              </div> */}
+
             <div className="relative" ref={profileRef}>
               <div
                 className="flex items-center space-x-2 cursor-pointer"
@@ -133,19 +141,39 @@ const UserNavigation = () => {
               </div>
 
               {showProfileDropdown && user && (
-                
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
-                  <Link to="/editprofile" className="block px-4 py-2 text-blue-500 hover:bg-gray-100">
-                    Edit Profile
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
-                  >
-                    Log out
-                  </button>
+              <div className="absolute right-0 mt-2 w-80 h-52 bg-white border rounded-lg shadow-lg z-50 p-4">
+                <div className="relative" ref={profileRef}>
+                  <div className="flex items-center justify-between">
+                    <img
+                      src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
+                      alt="User Profile"
+                      className="h-14 w-14 rounded-full border border-gray-400 object-cover"
+                    />
+                    <div className="flex flex-col mr-16">
+                      <p className="text-black font-bold">{user ? `${user.first_name} ${user.last_name}` : "Guest"}</p>
+                      <p className="text-gray-500 text-sm">{user?.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col mt-4 items-center">
+                    <button
+                      onClick={() => navigate('/editprofile')}
+                      className="w-full rounded px-5 py-2.5 bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-all"
+                    >
+                      Edit Profile
+                    </button>
+
+                    <button
+                      onClick={handleLogout}
+                      className="mt-2 w-full rounded px-5 py-2.5 bg-red-600 text-white font-semibold hover:bg-red-500 transition-all"
+                    >
+                      Log out
+                    </button>
+                  </div>
                 </div>
+              </div>
               )}
+
             </div>
                 
             {/* <div className="flex flex-col">

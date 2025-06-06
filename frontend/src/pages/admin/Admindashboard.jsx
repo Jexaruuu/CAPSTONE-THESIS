@@ -698,8 +698,7 @@ const getStatusBadge = (status) => {
 
         <button
           onClick={() => handleDeleteUser(user.id)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-600 text-white hover:bg-gradient-to-r hover:from-red-600 hover:to-red-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400
-"
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-600 text-white hover:bg-gradient-to-r hover:from-red-600 hover:to-red-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"
         >
           <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
           <span className="relative text-base font-semibold">Delete</span>
