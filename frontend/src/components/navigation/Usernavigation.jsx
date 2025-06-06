@@ -120,14 +120,6 @@ const UserNavigation = () => {
             </div>
 
             {/* User Profile Dropdown */}
-            <div className="flex flex-col">
-              {user ? (
-                <p className="text-gray-700 font-medium text-right">{`${user.first_name} ${user.last_name}`}</p>
-              ) : (
-                <p className="text-gray-700 font-medium">Guest</p>
-              )}
-              </div>
-
             <div className="relative" ref={profileRef}>
               <div
                 className="flex items-center space-x-2 cursor-pointer"
