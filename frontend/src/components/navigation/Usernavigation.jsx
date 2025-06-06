@@ -186,94 +186,94 @@ const UserNavigation = () => {
             Home Service & Maintenance | Bacolod, Negros Occidental, Philippines
           </div>
 
-<nav>
-  <div className="flex flex-col">
-    <ul className="flex space-x-6 text-[16px] mb-4">
-      <li className="relative group w-max">
-        <Link
-          to="/userhome"
-          className={`font-medium ${
-            location.pathname === "/userhome" ? "text-[#0d05d2]" : "text-gray-700"
-          } hover:text-[#0d05d2]`}
-        >
-          Home
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li className="relative group w-max">
-        <Link
-          to="/userabout"
-          className={`font-medium ${
-            location.pathname === "/userabout" ? "text-[#0d05d2]" : "text-gray-700"
-          } hover:text-[#0d05d2]`}
-        >
-          About
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li className="relative group w-max">
-        <Link
-          to="/bookservices"
-          className={`font-medium ${
-            location.pathname === "/bookservices" ? "text-[#0d05d2]" : "text-gray-700"
-          } hover:text-[#0d05d2]`}
-        >
-          Services
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li className="relative group w-max">
-        <Link
-          to="/clientform"
-          className={`font-medium ${
-            location.pathname === "/clientform" ? "text-[#0d05d2]" : "text-gray-700"
-          } hover:text-[#0d05d2]`}
-        >
-          Service Request
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li className="relative group w-max">
-        <Link
-          to="/taskerform"
-          className={`font-medium ${
-            location.pathname === "/taskerform" ? "text-[#0d05d2]" : "text-gray-700"
-          } hover:text-[#0d05d2]`}
-        >
-          Become a Worker
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
-        </Link>
-      </li>
-    </ul>
-
-    <div className="flex justify-end">
-      <ul className="flex space-x-6 text-[16px]">
+  <nav>
+    <div className="flex flex-col">
+      <ul className="flex space-x-6 text-[16px] mb-4">
         <li className="relative group w-max">
           <Link
-            to="/availableworkers"
+            to="/userhome"
             className={`font-medium ${
-              location.pathname === "/availableworkers" ? "text-[#0d05d2]" : "text-gray-700"
+              location.pathname === "/userhome" ? "text-[#0d05d2]" : "text-gray-700"
             } hover:text-[#0d05d2]`}
           >
-            Hire Worker
+            Home
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
           </Link>
         </li>
         <li className="relative group w-max">
           <Link
-            to="/servicerequest"
+            to="/userabout"
             className={`font-medium ${
-              location.pathname === "/servicerequest" ? "text-[#0d05d2]" : "text-gray-700"
+              location.pathname === "/userabout" ? "text-[#0d05d2]" : "text-gray-700"
             } hover:text-[#0d05d2]`}
           >
-            Find Work
+            About
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
+          </Link>
+        </li>
+        <li className="relative group w-max">
+          <Link
+            to="/bookservices"
+            className={`font-medium ${
+              location.pathname === "/bookservices" ? "text-[#0d05d2]" : "text-gray-700"
+            } hover:text-[#0d05d2]`}
+          >
+            Services
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
+          </Link>
+        </li>
+        <li className="relative group w-max">
+          <Link
+            to="/clientform"
+            className={`font-medium ${
+              location.pathname === "/clientform" ? "text-[#0d05d2]" : "text-gray-700"
+            } hover:text-[#0d05d2]`}
+          >
+            Service Request
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
+          </Link>
+        </li>
+        <li className="relative group w-max">
+          <Link
+            to="/taskerform"
+            className={`font-medium ${
+              location.pathname === "/taskerform" ? "text-[#0d05d2]" : "text-gray-700"
+            } hover:text-[#0d05d2]`}
+          >
+            Become a Worker
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
           </Link>
         </li>
       </ul>
+
+      <div className="flex justify-end">
+        <ul className="flex space-x-6 text-[16px]">
+          <li className="relative group w-max">
+            <Link
+              to="/availableworkers"
+              className={`font-medium ${
+                location.pathname === "/availableworkers" ? "text-[#0d05d2]" : "text-gray-700"
+              } hover:text-[#0d05d2]`}
+            >
+              Hire Worker
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
+            </Link>
+          </li>
+          <li className="relative group w-max">
+            <Link
+              to="/servicerequest"
+              className={`font-medium ${
+                location.pathname === "/servicerequest" ? "text-[#0d05d2]" : "text-gray-700"
+              } hover:text-[#0d05d2]`}
+            >
+              Find Work
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
+            </Link>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
         </div>
       </div>
     </header>
