@@ -77,6 +77,7 @@ const EditProfile = () => {
         await handleDeleteAccount();
     };
 
+    // eslint-disable-next-line no-unused-vars
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
 
@@ -239,8 +240,8 @@ const EditProfile = () => {
 
     {/* 🔘 Actions */}
     <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8 shadow-md">
-      <button type="submit" className="bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg transition duration-200 w-full md:w-auto">
-        Update Profile
+      <button type="submit" disabled={loading} className={`bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg transition duration-200 w-full md:w-auto ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          {loading ? "Updating..." : "Update Profile"}
       </button>
       <button type="button" onClick={handleDeleteAccountWithScroll} className="text-red-600 hover:text-red-700 font-medium transition duration-200">
         Delete Account
@@ -273,8 +274,8 @@ const EditProfile = () => {
       </div>
 
       <div className="pt-4">
-        <button type="submit" className="bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg transition duration-200">
-          Update Password
+        <button type="submit" disabled={loading} className={`bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          {loading ? "Updating..." : "Update Password"}
         </button>
       </div>
     </form>

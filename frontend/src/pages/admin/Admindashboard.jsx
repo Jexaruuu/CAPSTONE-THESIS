@@ -7,6 +7,7 @@ const AdminDashboard = () => {
   const [active, setActive] = useState("Dashboard");
   const [subActive, setSubActive] = useState("");
   const [admin, setAdminName] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(true);
   const [clock, setClock] = useState(new Date().toLocaleTimeString());
   const [date, setDate] = useState(new Date().toLocaleDateString("en-US"));
@@ -17,6 +18,7 @@ const AdminDashboard = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [isTaskerProfile, setIsTaskerProfile] = useState(false); // ✅ New state to track if tasker
+  // eslint-disable-next-line no-unused-vars
   const [rateInputs, setRateInputs] = useState({});
 
 
@@ -38,6 +40,7 @@ const AdminDashboard = () => {
 
   const [selectedStatusFilter, setSelectedStatusFilter] = useState("All");
 
+  // eslint-disable-next-line no-unused-vars
   const handleSetRate = async (taskerId) => {
   const rate = rateInputs[taskerId];
   if (!rate) return alert("Please enter a rate");
@@ -90,6 +93,7 @@ useEffect(() => {
 }, []);
 
 // ✨ [NEW] Handle Delete Service Request
+// eslint-disable-next-line no-unused-vars
 const handleDeleteServiceRequest = async (clientId) => {
   if (window.confirm("Are you sure you want to delete this service request?")) {
     try {
