@@ -176,7 +176,6 @@ const handleViewServiceRequest = (request) => {
     }
   };
   
-
   useEffect(() => {
     fetchCounts();
     fetchUsers();
@@ -351,7 +350,6 @@ const handleRejectServiceRequest = async (serviceId) => {
   }
 };
 
-
 const handleSetPendingServiceRequest = async (serviceId) => {
   if (window.confirm("Set this service request to pending?")) {
     try {
@@ -382,7 +380,7 @@ const getStatusBadge = (status) => {
       <aside className="w-70 h-screen bg-white text-black flex flex-col justify-between p-4 fixed top-0 left-0 z-40 shadow-md">
           <div>
             <div className="flex items-center">
-              <img src="/logo.png" alt="Logo" className="w-60 h-60 mr-2" />
+              <img src="/logo.png" alt="Logo" className="w-60 h-60" />
             </div>
             <div className="text-center mb-6">
               {admin.profile_picture ? (
@@ -446,125 +444,122 @@ const getStatusBadge = (status) => {
               </span>
             </button>
 
-{/* Service Requests Button with Pending Badge */}
-<button
-  onClick={() => { setActive("ServiceRequests"); setSubActive(""); }}
-  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
-    ${active === "ServiceRequests"
-      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
-      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
-  `}
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-<span className="relative flex items-center text-base font-semibold">
-  <ClipboardListIcon className="mr-3 w-5 h-5" />
-  Service Requests
-  {pendingServiceRequests > 0 && (
-    <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-      {pendingServiceRequests}
-    </span>
-  )}
-</span>
-</button>
+            {/* Service Requests Button with Pending Badge */}
+            <button
+              onClick={() => { setActive("ServiceRequests"); setSubActive(""); }}
+              className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+                ${active === "ServiceRequests"
+                  ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+                  : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+              `}
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative flex items-center text-base font-semibold">
+              <ClipboardListIcon className="mr-3 w-5 h-5" />
+              Service Requests
+              {pendingServiceRequests > 0 && (
+                <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  {pendingServiceRequests}
+                </span>
+              )}
+            </span>
+            </button>
 
-<button
-  onClick={() => { setActive("Settings"); setSubActive(""); }}
-  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
-    ${active === "Settings"
-      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
-      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
-  `}
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold"><SettingsIcon className="mr-3 w-5 h-5" /> Settings</span>
-</button>
+            <button
+              onClick={() => { setActive("Settings"); setSubActive(""); }}
+              className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+                ${active === "Settings"
+                  ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+                  : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+              `}
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative flex items-center text-base font-semibold"><SettingsIcon className="mr-3 w-5 h-5" /> Settings</span>
+            </button>
 
             </nav>
-          </div>
+            </div>
 
-          <button
-  onClick={handleLogout}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold">
-    <LogOutIcon className="mr-3 w-5 h-5" /> Logout
-  </span>
-</button>
-
+            <button
+              onClick={handleLogout}
+              className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative flex items-center text-base font-semibold">
+                <LogOutIcon className="mr-3 w-5 h-5" /> Logout
+              </span>
+            </button>
         </aside>
 
-        {/* Main content */}
-       <main className="ml-72 p-6 relative w-[calc(100%-18rem)]">
-          {/* Profile Modal (existing) */}
-          {modalOpen && selectedProfile && (
-  <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
+            {/* Main content */}
+          <main className="ml-72 p-6 relative w-[calc(100%-18rem)]">
+              {/* Profile Modal (existing) */}
+              {modalOpen && selectedProfile && (
+          <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
 
-    <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-4 relative">
-      <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-4 relative">
+              <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                {/* Title */}
+                <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700 tracking-wide">
+                  {isTaskerProfile ? "Tasker Full Profile" : "Profile Details"}
+                </h2>
 
-            {/* Title */}
-            <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700 tracking-wide">
-
-        {isTaskerProfile ? "Tasker Full Profile" : "Profile Details"}
-      </h2>
-
-      {/* Normal User/Admin View */}
-      {!isTaskerProfile && (
-        <div className="space-y-2 text-left text-gray-700">
-          <p><strong>First Name:</strong> {selectedProfile.first_name}</p>
-          <p><strong>Last Name:</strong> {selectedProfile.last_name}</p>
-          {selectedProfile.email && <p><strong>Email:</strong> {selectedProfile.email}</p>}
-          {selectedProfile.mobile && <p><strong>Mobile:</strong> {selectedProfile.mobile}</p>}
-          {selectedProfile.address && <p><strong>Address:</strong> {selectedProfile.address}</p>}
-          {selectedProfile.birth_date && <p><strong>Birth Date:</strong> {selectedProfile.birth_date}</p>}
-          {selectedProfile.gender && <p><strong>Gender:</strong> {selectedProfile.gender}</p>}
-          {selectedProfile.created_at && <p><strong>Joined:</strong> {new Date(selectedProfile.created_at).toLocaleDateString()}</p>}
-        </div>
-      )}
+                {/* Normal User/Admin View */}
+                {!isTaskerProfile && (
+                  <div className="space-y-2 text-left text-gray-700">
+                    <p><strong>First Name:</strong> {selectedProfile.first_name}</p>
+                    <p><strong>Last Name:</strong> {selectedProfile.last_name}</p>
+                    {selectedProfile.email && <p><strong>Email:</strong> {selectedProfile.email}</p>}
+                    {selectedProfile.mobile && <p><strong>Mobile:</strong> {selectedProfile.mobile}</p>}
+                    {selectedProfile.address && <p><strong>Address:</strong> {selectedProfile.address}</p>}
+                    {selectedProfile.birth_date && <p><strong>Birth Date:</strong> {selectedProfile.birth_date}</p>}
+                    {selectedProfile.gender && <p><strong>Gender:</strong> {selectedProfile.gender}</p>}
+                    {selectedProfile.created_at && <p><strong>Joined:</strong> {new Date(selectedProfile.created_at).toLocaleDateString()}</p>}
+                  </div>
+                )}
 
       
-{/* Tasker Full Details */}
-{isTaskerProfile && (
-  <div className="text-left text-gray-700 flex flex-col md:flex-row gap-6">
-    {/* Left Side - Information */}
-    <div className="flex-1 space-y-6">
-      {/* Personal Info */}
-      <div>
-        <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">Personal Information</h3>
-        <p><strong>Full Name:</strong> {selectedProfile.personal?.fullName}</p>
-        <p><strong>Birth Date:</strong> {selectedProfile.personal?.birthDate ? new Date(selectedProfile.personal.birthDate).toLocaleDateString("en-US", {
-          year: "numeric", month: "long", day: "numeric"
-        }) : "N/A"}</p>
-        <p><strong>Age:</strong> {selectedProfile.personal?.age}</p>
-        <p><strong>Gender:</strong> {selectedProfile.personal?.gender}</p>
-        <p><strong>Contact:</strong>+63{selectedProfile.personal?.contactNumber}</p>
-        <p><strong>Email:</strong> {selectedProfile.personal?.email}</p>
-        <p><strong>Social Media:</strong> {selectedProfile.personal?.social_media || "N/A"}</p>
-        <p><strong>Address:</strong> {selectedProfile.personal?.address}</p>
-      </div>
+                {/* Tasker Full Details */}
+                {isTaskerProfile && (
+                  <div className="text-left text-gray-700 flex flex-col md:flex-row gap-6">
+                    {/* Left Side - Information */}
+                    <div className="flex-1 space-y-6">
+                      {/* Personal Info */}
+                      <div>
+                        <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">Personal Information</h3>
+                        <p><strong>Full Name:</strong> {selectedProfile.personal?.fullName}</p>
+                        <p><strong>Birth Date:</strong> {selectedProfile.personal?.birthDate ? new Date(selectedProfile.personal.birthDate).toLocaleDateString("en-US", {
+                          year: "numeric", month: "long", day: "numeric"
+                        }) : "N/A"}</p>
+                        <p><strong>Age:</strong> {selectedProfile.personal?.age}</p>
+                        <p><strong>Gender:</strong> {selectedProfile.personal?.gender}</p>
+                        <p><strong>Contact:</strong>+63{selectedProfile.personal?.contactNumber}</p>
+                        <p><strong>Email:</strong> {selectedProfile.personal?.email}</p>
+                        <p><strong>Social Media:</strong> {selectedProfile.personal?.social_media || "N/A"}</p>
+                        <p><strong>Address:</strong> {selectedProfile.personal?.address}</p>
+                      </div>
 
-      {/* Professional Info */}
-      <div>
-        <h3 className="text-lg font-bold text-indigo-600 mb-2">Work Information</h3>
-        <p><strong>Job Type:</strong>{" "}
-          {Array.isArray(selectedProfile.professional?.jobType)
-            ? selectedProfile.professional.jobType.map(type => type.charAt(0).toUpperCase() + type.slice(1)).join(", ")
-            : "N/A"}
-        </p>
-        <p><strong>Service Category:</strong></p>
-        <ul className="list-disc ml-5 text-sm text-gray-700">
-          {selectedProfile.professional?.serviceCategory && typeof selectedProfile.professional.serviceCategory === "object"
-            ? Object.entries(selectedProfile.professional.serviceCategory).map(([job, category], index) => (
-              <li key={index}><strong>{job.charAt(0).toUpperCase() + job.slice(1)}:</strong> {category}</li>
-            ))
-            : <li>N/A</li>}
-        </ul>
-        <p><strong>Years of Experience:</strong> {selectedProfile.professional?.experience}</p>
-        <p><strong>Skills:</strong> {selectedProfile.professional?.skills}</p>
-        <p><strong>Tools & Equipment:</strong> {selectedProfile.professional?.tools_equipment || "N/A"}</p>
-        <p><strong>Rate Per Hour:</strong> {selectedProfile.professional?.rate_per_hour ? `₱${selectedProfile.professional.rate_per_hour}/hr` : "N/A"}</p>
-      </div>
+          {/* Professional Info */}
+          <div>
+            <h3 className="text-lg font-bold text-indigo-600 mb-2">Work Information</h3>
+            <p><strong>Job Type:</strong>{" "}
+              {Array.isArray(selectedProfile.professional?.jobType)
+                ? selectedProfile.professional.jobType.map(type => type.charAt(0).toUpperCase() + type.slice(1)).join(", ")
+                : "N/A"}
+            </p>
+            <p><strong>Service Category:</strong></p>
+            <ul className="list-disc ml-5 text-sm text-gray-700">
+              {selectedProfile.professional?.serviceCategory && typeof selectedProfile.professional.serviceCategory === "object"
+                ? Object.entries(selectedProfile.professional.serviceCategory).map(([job, category], index) => (
+                  <li key={index}><strong>{job.charAt(0).toUpperCase() + job.slice(1)}:</strong> {category}</li>
+                ))
+                : <li>N/A</li>}
+            </ul>
+            <p><strong>Years of Experience:</strong> {selectedProfile.professional?.experience}</p>
+            <p><strong>Skills:</strong> {selectedProfile.professional?.skills}</p>
+            <p><strong>Tools & Equipment:</strong> {selectedProfile.professional?.tools_equipment || "N/A"}</p>
+            <p><strong>Rate Per Hour:</strong> {selectedProfile.professional?.rate_per_hour ? `₱${selectedProfile.professional.rate_per_hour}/hr` : "N/A"}</p>
+          </div>
 
           {/* Government Info */}
           <div>
@@ -669,7 +664,6 @@ const getStatusBadge = (status) => {
                     Admins
                   </span>
                 </button>
-
                 </div>
               </>
             )}
@@ -680,37 +674,37 @@ const getStatusBadge = (status) => {
                 <div className="overflow-x-auto rounded-lg shadow">
                   <table className="min-w-full bg-white">
                   <thead>
-  <tr className="bg-blue-100 text-gray-700 uppercase text-sm leading-normal">
-    <th className="py-3 px-6 text-left">First Name</th>
-    <th className="py-3 px-6 text-left">Last Name</th>
-    <th className="py-3 px-6 text-right">Actions</th> {/* ✨ Change text-center -> text-right */}
-  </tr>
-</thead>
-<tbody className="text-gray-600 text-sm font-light">
-  {users.map((user) => (
-    <tr key={user.id} className="border-b hover:bg-gray-100 transition duration-300">
-      <td className="py-3 px-6 text-left">{user.first_name}</td>
-      <td className="py-3 px-6 text-left">{user.last_name}</td>
-      <td className="py-3 px-6 text-right space-x-2"> {/* ✨ Change text-center -> text-right */}
-        <button
-          onClick={() => handleViewProfile(user.id)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
-        >
-          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-          <span className="relative text-base font-semibold">View Profile</span>
-        </button>
+                    <tr className="bg-blue-100 text-gray-700 uppercase text-sm leading-normal">
+                      <th className="py-3 px-6 text-left">First Name</th>
+                      <th className="py-3 px-6 text-left">Last Name</th>
+                      <th className="py-3 px-6 text-right">Actions</th> {/* ✨ Change text-center -> text-right */}
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-600 text-sm font-light">
+                    {users.map((user) => (
+                      <tr key={user.id} className="border-b hover:bg-gray-100 transition duration-300">
+                        <td className="py-3 px-6 text-left">{user.first_name}</td>
+                        <td className="py-3 px-6 text-left">{user.last_name}</td>
+                        <td className="py-3 px-6 text-right space-x-2"> {/* ✨ Change text-center -> text-right */}
+                          <button
+                            onClick={() => handleViewProfile(user.id)}
+                            className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+                          >
+                            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                            <span className="relative text-base font-semibold">View Profile</span>
+                          </button>
 
-        <button
-          onClick={() => handleDeleteUser(user.id)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-600 text-white hover:bg-gradient-to-r hover:from-red-600 hover:to-red-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"
-        >
-          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-          <span className="relative text-base font-semibold">Delete</span>
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-600 text-white hover:bg-gradient-to-r hover:from-red-600 hover:to-red-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"
+                          >
+                            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                            <span className="relative text-base font-semibold">Delete</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
                   </table>
                 </div>
               </>
@@ -722,527 +716,525 @@ const getStatusBadge = (status) => {
                 <div className="overflow-x-auto rounded-lg shadow">
                   <table className="min-w-full bg-white">
                   <thead>
-  <tr className="bg-green-100 text-gray-700 uppercase text-sm leading-normal">
-    <th className="py-3 px-6 text-left">First Name</th>
-    <th className="py-3 px-6 text-left">Last Name</th>
-    <th className="py-3 px-6 text-right">Actions</th> {/* ✨ Change text-center -> text-right */}
-  </tr>
-</thead>
-<tbody className="text-gray-600 text-sm font-light">
-  {admins.map((admin) => (
-    <tr key={admin.id} className="border-b hover:bg-gray-100 transition duration-300">
-      <td className="py-3 px-6 text-left">{admin.first_name}</td>
-      <td className="py-3 px-6 text-left">{admin.last_name}</td>
-      <td className="py-3 px-6 text-right space-x-2"> {/* ✨ Change text-center -> text-right */}
-        <button
-          onClick={() => handleViewAdminProfile(admin.id)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
-        >
-          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-          <span className="relative text-base font-semibold">View Profile</span>
-        </button>
+                    <tr className="bg-green-100 text-gray-700 uppercase text-sm leading-normal">
+                      <th className="py-3 px-6 text-left">First Name</th>
+                      <th className="py-3 px-6 text-left">Last Name</th>
+                      <th className="py-3 px-6 text-right">Actions</th> {/* ✨ Change text-center -> text-right */}
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-600 text-sm font-light">
+                    {admins.map((admin) => (
+                      <tr key={admin.id} className="border-b hover:bg-gray-100 transition duration-300">
+                        <td className="py-3 px-6 text-left">{admin.first_name}</td>
+                        <td className="py-3 px-6 text-left">{admin.last_name}</td>
+                        <td className="py-3 px-6 text-right space-x-2"> {/* ✨ Change text-center -> text-right */}
+                          <button
+                            onClick={() => handleViewAdminProfile(admin.id)}
+                            className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+                          >
+                            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                            <span className="relative text-base font-semibold">View Profile</span>
+                          </button>
 
-        <button
-          onClick={() => handleDeleteAdmin(admin.id)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
-        >
-          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-          <span className="relative text-base font-semibold">Delete</span>
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
+                          <button
+                            onClick={() => handleDeleteAdmin(admin.id)}
+                            className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+                          >
+                            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                            <span className="relative text-base font-semibold">Delete</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
                   </table>
                 </div>
               </>
             )}
 
-             {/* ✨ New Applications View ✨ */}
-{active === "Applications" && (
-  <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
-    <p className="mb-4">
-      Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.
-    </p>
+            {/* ✨ New Applications View ✨ */}
+            {active === "Applications" && (
+              <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
+                <p className="mb-4">
+                  Manage service applications easily. You can view complete profiles, approve qualified applicants, or reject if necessary.
+                </p>
 
-   {/* 🔍 Job Type Filter */}
-<div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
-  <label className="text-sm font-semibold text-gray-700">Filter by Job Type:</label>
-  <div className="flex gap-3 flex-wrap">
-    {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((job) => (
-      <button
-        key={job}
-        onClick={() => {
-          setSelectedJobTypeFilter(job);
-          setCurrentPage(1); // reset to page 1 when filter changes
-        }}
-        className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-          selectedJobTypeFilter === job
-            ? "bg-blue-600 text-white"
-            : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-        }`}
-      >
-        {job}
-      </button>
-    ))}
-  </div>
-</div>
-
-{/* 🔍 Status Filter */}
-<div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
-  <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
-  <div className="flex gap-3 flex-wrap">
-    {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => {
-  const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
-const colorMap = {
-  All: "bg-gray-400 text-white hover:bg-gray-300",
-  Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-  Approved: "bg-green-600 text-white hover:bg-green-500",
-  Rejected: "bg-red-500 text-white hover:bg-red-400",
-  Cancelled: "bg-gray-500 text-white hover:bg-gray-400", // ✅ NEW
-};
-  const isActive = selectedStatusFilter === status;
-  return (
-    <button
-      key={status}
-      onClick={() => {
-        setSelectedStatusFilter(status);
-        setCurrentPage?.(1); // Applications pagination
-        setCurrentServicePage?.(1); // ServiceRequests pagination
-      }}
-      className={`${baseClasses} ${
-        isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-      }`}
-    >
-      {status}
-    </button>
-  );
-})}
-  </div>
-</div>
-
-{/* ✨ Scrollable tasker cards with pagination */}
-<div className="flex flex-col gap-5 overflow-y-auto pr-2">
-  {taskers
-    .filter(tasker =>
-      (selectedJobTypeFilter === "All" ||
-        (Array.isArray(tasker.jobType) &&
-          tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
-      (selectedStatusFilter === "All" ||
-        tasker.status === selectedStatusFilter.toLowerCase())
-    )
-    .slice((currentPage - 1) * taskersPerPage, currentPage * taskersPerPage)
-    .map((tasker) => (
-      <div
-        key={tasker.id}
-        className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
-      >
-        {/* Left Info */}
-        <div className="flex items-start gap-5">
-          <img
-            src={`http://localhost:3000${tasker.profilePicture}`}
-            alt="Profile"
-            className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
-          />
-          <div className="space-y-1 text-sm text-gray-700">
-            <h3 className="text-xl font-bold text-gray-800">
-              {tasker.fullName}
-            </h3>
-            <p>
-              Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}
-            </p>
-            <p>
-              Job:{" "}
-              {Array.isArray(tasker.jobType) && tasker.jobType.length > 0
-                ? tasker.jobType
-                    .map(
-                      (job) =>
-                        job.charAt(0).toUpperCase() + job.slice(1)
-                    )
-                    .join(", ")
-                : "N/A"}
-            </p>
-            <p>
-              Category:{" "}
-              {tasker.serviceCategory &&
-              typeof tasker.serviceCategory === "object" &&
-              Object.keys(tasker.serviceCategory).length > 0
-                ? Object.values(tasker.serviceCategory).join(", ")
-                : "N/A"}
-            </p>
-            <p>
-              Experience:{" "}
-              {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
-            </p>
-            <p>
-              Rate:{" "}
-              {tasker.rate_per_hour
-                ? `₱${tasker.rate_per_hour}/hr`
-                : "N/A"}
-            </p>
-            <div className="mt-2">{getStatusBadge(tasker.status)}</div>
-          </div>
-        </div>
-
-        {/* Right Actions */}
-        <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
-          <button
-            onClick={() => handleViewTaskerProfile(tasker.id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">View</span>
-          </button>
-
-          <button
-            onClick={() => handleApproveTasker(tasker.id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Approve</span>
-          </button>
-
-          <button
-            onClick={() => handleRejectTasker(tasker.id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Reject</span>
-          </button>
-
-          <button
-            onClick={() => handleSetPendingTasker(tasker.id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Pending</span>
-          </button>
-        </div>
-      </div>
-    ))}
-</div>
-
-    {/* 🔄 Pagination Controls */}
-    <div className="mt-6 flex justify-center gap-2">
-     {Array.from({
-  length: Math.ceil(
-    taskers.filter(tasker =>
-      (selectedJobTypeFilter === "All" ||
-        (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
-      (selectedStatusFilter === "All" ||
-        tasker.status === selectedStatusFilter.toLowerCase())
-    ).length / taskersPerPage
-  )
-}, (_, index) => (
-        <button
-          key={index}
-          onClick={() => setCurrentPage(index + 1)}
-          className={`px-4 py-1 rounded-full text-sm font-semibold ${
-            currentPage === index + 1
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-800 hover:bg-blue-100"
-          }`}
-        >
-          {index + 1}
-        </button>
-      ))}
-    </div>
-  </div>
-)}
-
-{active === "ServiceRequests" && (
-  <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
-    <p className="mb-4">
-      Manage and review client service submissions. View their profiles, and decide to approve or reject based on qualifications.
-    </p>
-
-    {/* 🔍 Job Type Filter */}
-    <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
-      <label className="text-sm font-semibold text-gray-700">Filter by Job Type:</label>
-      <div className="flex gap-3 flex-wrap">
-        {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((type) => (
-          <button
-            key={type}
-            onClick={() => {
-              setSelectedJobTypeFilter(type);
-              setCurrentServicePage(1);
-            }}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-              selectedJobTypeFilter === type
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-            }`}
-          >
-            {type}
-          </button>
-        ))}
-      </div>
-    </div>
-
-    {/* 🔍 Status Filter */}
-    <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
-      <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
-      <div className="flex gap-3 flex-wrap">
-       {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => {
-  const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
-const colorMap = {
-  All: "bg-gray-400 text-white hover:bg-gray-300",
-  Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-  Approved: "bg-green-600 text-white hover:bg-green-500",
-  Rejected: "bg-red-500 text-white hover:bg-red-400",
-  Cancelled: "bg-gray-500 text-white hover:bg-gray-400", // ✅ NEW
-  };
-  const isActive = selectedStatusFilter === status;
-  return (
-    <button
-      key={status}
-      onClick={() => {
-        setSelectedStatusFilter(status);
-        setCurrentPage?.(1); // Applications pagination
-        setCurrentServicePage?.(1); // ServiceRequests pagination
-      }}
-      className={`${baseClasses} ${
-        isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-      }`}
-    >
-      {status}
-    </button>
-  );
-})}
-      </div>
-    </div>
-    
-       {/* ✨ Service Request Cards */}
-<div className="flex flex-col gap-5 overflow-y-auto pr-2">
-  {serviceRequests
-    .filter(req => {
-  const jobMatch =
-    selectedJobTypeFilter === "All" ||
-    req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
-
-const statusMatch =
-  selectedStatusFilter === "All" ||
-  (req.status
-    ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
-    : "pending" === selectedStatusFilter.toLowerCase());
-
-  return jobMatch && statusMatch;
-})
-    .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
-    .map((request) => (
-      <div
-        key={request.client_id}
-        className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
-      >
-        {/* Left Info */}
-        <div className="flex items-start gap-5">
-          <img
-            src={`http://localhost:3000${request.profile_picture}`}
-            alt="Profile"
-            className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
-          />
-
-<div className="space-y-1 text-sm text-gray-700">
-  <h3 className="text-xl font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
-  <p>
-    Address: {request.street}, {request.barangay}
-    {request.additional_address ? `, ${request.additional_address}` : ""}
-  </p>
-  <p>
-    Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
-  </p>
-  <p>
-    Preferred Date:{" "}
-    {request.preferred_date
-      ? new Date(request.preferred_date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })
-      : "N/A"}
-  </p>
-  <p>Preferred Time: {request.preferred_time || "N/A"}</p>
-  <p>Urgent: {request.urgent_request ? "Yes" : "No"}</p>
-
-  {request.expired && (
-    <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full">Expired</span>
-  )}
-  <div className="mt-2">{getStatusBadge(request.status)}</div>
-</div>
-        </div>
-
-        {/* Right Actions */}
-        <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
-          <button
-            onClick={() => handleViewServiceRequest(request)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">View</span>
-          </button>
-
-          {/* Approve Button */}
-<button
-  onClick={() => handleApproveServiceRequest(request.service_id)}
-  disabled={request.status?.toLowerCase() === "cancelled"}
-  className={`relative rounded px-5 py-2.5 overflow-hidden group 
-    ${request.status?.toLowerCase() === "cancelled" 
-      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-      : "bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"} 
-    transition-all ease-out duration-300`}
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Approve</span>
-</button>
-
-{/* Reject Button */}
-<button
-  onClick={() => handleRejectServiceRequest(request.service_id)}
-  disabled={request.status?.toLowerCase() === "cancelled"}
-  className={`relative rounded px-5 py-2.5 overflow-hidden group 
-    ${request.status?.toLowerCase() === "cancelled" 
-      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-      : "bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"} 
-    transition-all ease-out duration-300`}
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Reject</span>
-</button>
-
-{/* Pending Button */}
-<button
-  onClick={() => handleSetPendingServiceRequest(request.service_id)}
-  disabled={request.status?.toLowerCase() === "cancelled"}
-  className={`relative rounded px-5 py-2.5 overflow-hidden group 
-    ${request.status?.toLowerCase() === "cancelled" 
-      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-      : "bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400"} 
-    transition-all ease-out duration-300`}
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">Pending</span>
-</button>
-        </div>
-      </div>
-    ))}
-</div>
-
-    {/* 🔄 Pagination */}
-    <div className="mt-6 flex justify-center gap-2">
-      {Array.from({
-  length: Math.ceil(
-    serviceRequests.filter(req => {
-      const jobMatch =
-        selectedJobTypeFilter === "All" ||
-        req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
-
-      const statusMatch =
-        selectedStatusFilter === "All" ||
-        (req.status
-          ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
-          : selectedStatusFilter.toLowerCase() === "pending");
-
-      return jobMatch && statusMatch;
-    }).length / requestsPerPage
-  )
-}, (_, index) => (
-        <button
-          key={index}
-          onClick={() => setCurrentServicePage(index + 1)}
-          className={`px-4 py-1 rounded-full text-sm font-semibold ${
-            currentServicePage === index + 1
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-800 hover:bg-blue-100"
-          }`}
-        >
-          {index + 1}
-        </button>
-      ))}
-    </div>
-  
-{/* 🚀 THIS PART IS YOUR SERVICE REQUEST MODAL */}
-{requestModalOpen && selectedRequest && (
-  <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
-    <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-4xl relative border border-gray-200">
-      <button
-        onClick={() => setRequestModalOpen(false)}
-        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
-      >
-        &times;
-      </button>
-
-      <h2 className="text-3xl font-bold text-center mb-8 text-indigo-700 tracking-wide">
-        Service Request Details
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700">
-        {/* Left Column - Info */}
-        <div className="space-y-6">
-          {/* Client Info */}
-          <div>
-            <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
-              Client Information
-            </h3>
-            <div className="flex flex-col items-center mb-4">
-              <img
-                src={`http://localhost:3000${selectedRequest.profile_picture}`}
-                alt="Profile"
-                className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
-              />
-              <h3 className="text-lg font-bold mt-2">
-                {selectedRequest.first_name} {selectedRequest.last_name}
-              </h3>
+              {/* 🔍 Job Type Filter */}
+            <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+              <label className="text-sm font-semibold text-gray-700">Filter by Job Type:</label>
+              <div className="flex gap-3 flex-wrap">
+                {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((job) => (
+                  <button
+                    key={job}
+                    onClick={() => {
+                      setSelectedJobTypeFilter(job);
+                      setCurrentPage(1); // reset to page 1 when filter changes
+                    }}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+                      selectedJobTypeFilter === job
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+                    }`}
+                  >
+                    {job}
+                  </button>
+                ))}
+              </div>
             </div>
-            <p><strong>Contact Number:</strong> {selectedRequest.contact_number}</p>
-            <p><strong>Email:</strong> {selectedRequest.email}</p>
-            <p><strong>Address:</strong> {selectedRequest.street}, {selectedRequest.barangay}{selectedRequest.additional_address ? `, ${selectedRequest.additional_address}` : ""}</p>
-          </div>
 
-          {/* Service Info */}
-          <div>
-            <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
-              Service Information
-            </h3>
-            <p><strong>Service Type:</strong> {selectedRequest.service_type}</p>
-            <p><strong>Service Description:</strong> {selectedRequest.service_description}</p>
-            <p><strong>Preferred Date:</strong>{" "}
-              {new Date(selectedRequest.preferred_date).toLocaleDateString("en-US", {
-                year: "numeric", month: "long", day: "numeric",
-              })}
-            </p>
-          <p><strong>Preferred Time:</strong> {selectedRequest.preferred_time}</p>
-            <p><strong>Urgent Request:</strong> {selectedRequest.urgent_request ? "Yes" : "No"}</p>
-          </div>
-        </div>
+            {/* 🔍 Status Filter */}
+            <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+              <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
+              <div className="flex gap-3 flex-wrap">
+                {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => {
+              const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
+            const colorMap = {
+              All: "bg-gray-400 text-white hover:bg-gray-300",
+              Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+              Approved: "bg-green-600 text-white hover:bg-green-500",
+              Rejected: "bg-red-500 text-white hover:bg-red-400",
+              Cancelled: "bg-gray-500 text-white hover:bg-gray-400", // ✅ NEW
+            };
+              const isActive = selectedStatusFilter === status;
+              return (
+                <button
+                  key={status}
+                  onClick={() => {
+                    setSelectedStatusFilter(status);
+                    setCurrentPage?.(1); // Applications pagination
+                    setCurrentServicePage?.(1); // ServiceRequests pagination
+                  }}
+                  className={`${baseClasses} ${
+                    isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+                  }`}
+                >
+                  {status}
+                </button>
+              );
+            })}
+              </div>
+            </div>
 
-        {/* Right Column - Image */}
-        <div className="space-y-6">
-          <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1">Service Image</h3>
-          {selectedRequest.service_image ? (
-            <a
-              href={`http://localhost:3000${selectedRequest.service_image}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* ✨ Scrollable tasker cards with pagination */}
+            <div className="flex flex-col gap-5 overflow-y-auto pr-2">
+              {taskers
+                .filter(tasker =>
+                  (selectedJobTypeFilter === "All" ||
+                    (Array.isArray(tasker.jobType) &&
+                      tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
+                  (selectedStatusFilter === "All" ||
+                    tasker.status === selectedStatusFilter.toLowerCase())
+                )
+                .slice((currentPage - 1) * taskersPerPage, currentPage * taskersPerPage)
+                .map((tasker) => (
+                  <div
+                    key={tasker.id}
+                    className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
+                  >
+                    {/* Left Info */}
+                    <div className="flex items-start gap-5">
+                      <img
+                        src={`http://localhost:3000${tasker.profilePicture}`}
+                        alt="Profile"
+                        className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
+                      />
+                      <div className="space-y-1 text-sm text-gray-700">
+                        <h3 className="text-xl font-bold text-gray-800">
+                          {tasker.fullName}
+                        </h3>
+                        <p>
+                          Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}
+                        </p>
+                        <p>
+                          Job:{" "}
+                          {Array.isArray(tasker.jobType) && tasker.jobType.length > 0
+                            ? tasker.jobType
+                                .map(
+                                  (job) =>
+                                    job.charAt(0).toUpperCase() + job.slice(1)
+                                )
+                                .join(", ")
+                            : "N/A"}
+                        </p>
+                        <p>
+                          Category:{" "}
+                          {tasker.serviceCategory &&
+                          typeof tasker.serviceCategory === "object" &&
+                          Object.keys(tasker.serviceCategory).length > 0
+                            ? Object.values(tasker.serviceCategory).join(", ")
+                            : "N/A"}
+                        </p>
+                        <p>
+                          Experience:{" "}
+                          {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
+                        </p>
+                        <p>
+                          Rate:{" "}
+                          {tasker.rate_per_hour
+                            ? `₱${tasker.rate_per_hour}/hr`
+                            : "N/A"}
+                        </p>
+                        <div className="mt-2">{getStatusBadge(tasker.status)}</div>
+                      </div>
+                    </div>
+
+                    {/* Right Actions */}
+                    <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
+                      <button
+                        onClick={() => handleViewTaskerProfile(tasker.id)}
+                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+                      >
+                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                        <span className="relative text-base font-semibold">View</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleApproveTasker(tasker.id)}
+                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+                      >
+                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                        <span className="relative text-base font-semibold">Approve</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleRejectTasker(tasker.id)}
+                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+                      >
+                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                        <span className="relative text-base font-semibold">Reject</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSetPendingTasker(tasker.id)}
+                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+                      >
+                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                        <span className="relative text-base font-semibold">Pending</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+                {/* 🔄 Pagination Controls */}
+                <div className="mt-6 flex justify-center gap-2">
+                {Array.from({
+              length: Math.ceil(
+                taskers.filter(tasker =>
+                  (selectedJobTypeFilter === "All" ||
+                    (Array.isArray(tasker.jobType) && tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
+                  (selectedStatusFilter === "All" ||
+                    tasker.status === selectedStatusFilter.toLowerCase())
+                ).length / taskersPerPage
+              )
+            }, (_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentPage(index + 1)}
+                      className={`px-4 py-1 rounded-full text-sm font-semibold ${
+                        currentPage === index + 1
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800 hover:bg-blue-100"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {active === "ServiceRequests" && (
+              <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
+                <p className="mb-4">
+                  Manage and review client service submissions. View their profiles, and decide to approve or reject based on qualifications.
+                </p>
+
+                {/* 🔍 Job Type Filter */}
+                <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+                  <label className="text-sm font-semibold text-gray-700">Filter by Job Type:</label>
+                  <div className="flex gap-3 flex-wrap">
+                    {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => {
+                          setSelectedJobTypeFilter(type);
+                          setCurrentServicePage(1);
+                        }}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+                          selectedJobTypeFilter === type
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+                        }`}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 🔍 Status Filter */}
+                <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+                  <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
+                  <div className="flex gap-3 flex-wrap">
+                  {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => {
+              const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
+            const colorMap = {
+              All: "bg-gray-400 text-white hover:bg-gray-300",
+              Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+              Approved: "bg-green-600 text-white hover:bg-green-500",
+              Rejected: "bg-red-500 text-white hover:bg-red-400",
+              Cancelled: "bg-gray-500 text-white hover:bg-gray-400", // ✅ NEW
+              };
+              const isActive = selectedStatusFilter === status;
+              return (
+                <button
+                  key={status}
+                  onClick={() => {
+                    setSelectedStatusFilter(status);
+                    setCurrentPage?.(1); // Applications pagination
+                    setCurrentServicePage?.(1); // ServiceRequests pagination
+                  }}
+                  className={`${baseClasses} ${
+                    isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+                  }`}
+                >
+                  {status}
+                </button>
+              );
+            })}
+                  </div>
+                </div>
+                
+                  {/* ✨ Service Request Cards */}
+            <div className="flex flex-col gap-5 overflow-y-auto pr-2">
+              {serviceRequests
+                .filter(req => {
+              const jobMatch =
+                selectedJobTypeFilter === "All" ||
+                req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
+
+            const statusMatch =
+              selectedStatusFilter === "All" ||
+              (req.status
+                ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
+                : "pending" === selectedStatusFilter.toLowerCase());
+
+              return jobMatch && statusMatch;
+            })
+                .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
+                .map((request) => (
+                  <div
+                    key={request.client_id}
+                    className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
+                  >
+                    {/* Left Info */}
+                    <div className="flex items-start gap-5">
+                      <img
+                        src={`http://localhost:3000${request.profile_picture}`}
+                        alt="Profile"
+                        className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
+                      />
+
+            <div className="space-y-1 text-sm text-gray-700">
+              <h3 className="text-xl font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
+              <p>
+                Address: {request.street}, {request.barangay}
+                {request.additional_address ? `, ${request.additional_address}` : ""}
+              </p>
+              <p>
+                Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
+              </p>
+              <p>
+                Preferred Date:{" "}
+                {request.preferred_date
+                  ? new Date(request.preferred_date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : "N/A"}
+              </p>
+              <p>Preferred Time: {request.preferred_time || "N/A"}</p>
+              <p>Urgent: {request.urgent_request ? "Yes" : "No"}</p>
+
+              {request.expired && (
+                <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full">Expired</span>
+              )}
+              <div className="mt-2">{getStatusBadge(request.status)}</div>
+            </div>
+                    </div>
+
+                    {/* Right Actions */}
+                    <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
+                      <button
+                        onClick={() => handleViewServiceRequest(request)}
+                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+                      >
+                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                        <span className="relative text-base font-semibold">View</span>
+                      </button>
+
+            {/* Approve Button */}
+            <button
+              onClick={() => handleApproveServiceRequest(request.service_id)}
+              disabled={request.status?.toLowerCase() === "cancelled"}
+              className={`relative rounded px-5 py-2.5 overflow-hidden group 
+                ${request.status?.toLowerCase() === "cancelled" 
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                  : "bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"} 
+                transition-all ease-out duration-300`}
             >
-              <img
-                src={`http://localhost:3000${selectedRequest.service_image}`}
-                alt="Service"
-                className="w-full h-72 object-cover rounded-lg border cursor-pointer hover:opacity-90"
-              />
-            </a>
-          ) : (
-            <p className="text-sm text-gray-500">No image uploaded.</p>
-          )}
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-  </div>
-)}
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-base font-semibold">Approve</span>
+            </button>
 
-            {active === "Settings" && <p>Update admin preferences or system config.</p>}
+            {/* Reject Button */}
+            <button
+              onClick={() => handleRejectServiceRequest(request.service_id)}
+              disabled={request.status?.toLowerCase() === "cancelled"}
+              className={`relative rounded px-5 py-2.5 overflow-hidden group 
+                ${request.status?.toLowerCase() === "cancelled" 
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                  : "bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"} 
+                transition-all ease-out duration-300`}
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-base font-semibold">Reject</span>
+            </button>
+
+            {/* Pending Button */}
+            <button
+              onClick={() => handleSetPendingServiceRequest(request.service_id)}
+              disabled={request.status?.toLowerCase() === "cancelled"}
+              className={`relative rounded px-5 py-2.5 overflow-hidden group 
+                ${request.status?.toLowerCase() === "cancelled" 
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                  : "bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400"} 
+                transition-all ease-out duration-300`}
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-base font-semibold">Pending</span>
+            </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+                {/* 🔄 Pagination */}
+                <div className="mt-6 flex justify-center gap-2">
+                  {Array.from({
+              length: Math.ceil(
+                serviceRequests.filter(req => {
+                  const jobMatch =
+                    selectedJobTypeFilter === "All" ||
+                    req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
+
+                  const statusMatch =
+                    selectedStatusFilter === "All" ||
+                    (req.status
+                      ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
+                      : selectedStatusFilter.toLowerCase() === "pending");
+
+                  return jobMatch && statusMatch;
+                }).length / requestsPerPage
+              )
+              }, (_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentServicePage(index + 1)}
+                      className={`px-4 py-1 rounded-full text-sm font-semibold ${
+                        currentServicePage === index + 1
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800 hover:bg-blue-100"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+              
+            {/* 🚀 THIS PART IS YOUR SERVICE REQUEST MODAL */}
+            {requestModalOpen && selectedRequest && (
+              <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/10 z-50 overflow-y-auto p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-4xl relative border border-gray-200">
+                  <button
+                    onClick={() => setRequestModalOpen(false)}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+                  >
+                    &times;
+                  </button>
+
+                  <h2 className="text-3xl font-bold text-center mb-8 text-indigo-700 tracking-wide">
+                    Service Request Details
+                  </h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700">
+                    {/* Left Column - Info */}
+                    <div className="space-y-6">
+                      {/* Client Info */}
+                      <div>
+                        <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
+                          Client Information
+                        </h3>
+                        <div className="flex flex-col items-center mb-4">
+                          <img
+                            src={`http://localhost:3000${selectedRequest.profile_picture}`}
+                            alt="Profile"
+                            className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
+                          />
+                          <h3 className="text-lg font-bold mt-2">
+                            {selectedRequest.first_name} {selectedRequest.last_name}
+                          </h3>
+                        </div>
+                        <p><strong>Contact Number:</strong> {selectedRequest.contact_number}</p>
+                        <p><strong>Email:</strong> {selectedRequest.email}</p>
+                        <p><strong>Address:</strong> {selectedRequest.street}, {selectedRequest.barangay}{selectedRequest.additional_address ? `, ${selectedRequest.additional_address}` : ""}</p>
+                      </div>
+
+                      {/* Service Info */}
+                      <div>
+                        <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
+                          Service Information
+                        </h3>
+                        <p><strong>Service Type:</strong> {selectedRequest.service_type}</p>
+                        <p><strong>Service Description:</strong> {selectedRequest.service_description}</p>
+                        <p><strong>Preferred Date:</strong>{" "}
+                          {new Date(selectedRequest.preferred_date).toLocaleDateString("en-US", {
+                            year: "numeric", month: "long", day: "numeric",
+                          })}
+                        </p>
+                      <p><strong>Preferred Time:</strong> {selectedRequest.preferred_time}</p>
+                        <p><strong>Urgent Request:</strong> {selectedRequest.urgent_request ? "Yes" : "No"}</p>
+                      </div>
+                    </div>
+
+                    {/* Right Column - Image */}
+                    <div className="space-y-6">
+                      <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1">Service Image</h3>
+                      {selectedRequest.service_image ? (
+                        <a
+                          href={`http://localhost:3000${selectedRequest.service_image}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={`http://localhost:3000${selectedRequest.service_image}`}
+                            alt="Service"
+                            className="w-full h-72 object-cover rounded-lg border cursor-pointer hover:opacity-90"
+                          />
+                        </a>
+                      ) : (
+                        <p className="text-sm text-gray-500">No image uploaded.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+              </div>
+            )}
+              {active === "Settings" && <p>Update admin preferences or system config.</p>}
           </div>
         </main>
       </div>

@@ -183,8 +183,8 @@ const EditProfile = () => {
         }
     };
 
-    return (
-    <div className="bg-[#F3F4F6] min-h-screen font-sans">
+  return (
+  <div className="bg-[#F3F4F6] min-h-screen font-sans">
   <Navigation />
   <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-[256px_1fr] gap-8">
     {/* ✅ Sidebar container with sticky */}
@@ -196,7 +196,7 @@ const EditProfile = () => {
 
  <div className="flex flex-col">
   {/* Page Header */}
-<form className="form" onSubmit={handleUpdateInfo}>
+  <form className="form" onSubmit={handleUpdateInfo}>
   <section className="bg-white p-8 rounded-2xl shadow-md border border-gray-200 mb-5">
 
     {/* 🔵 Heading now inside card for alignment */}
@@ -280,11 +280,11 @@ const EditProfile = () => {
       </div>
     </form>
   </section>
-</div>
-</div>
-            <Footer />
-        </div>
+  </div>
+  </div>
+  <Footer />
+  </div>
     );
-};
+  };
 
 export default EditProfile;
