@@ -20,6 +20,8 @@ import ClientForm from "./pages/clientform/Clientform";
 import AvailableWorkers from "./pages/availableworkers/Workers";
 import UserAvailableServices from "./pages/servicerequest/Servicerequest";
 import Payment from "./pages/payment/Payment"; // ✅ import this
+import ServiceRequestTracker from "./pages/servicetracker/ServiceRequestTracker";
+import ApplicationOverview from "./pages/applicationoverview/ApplicationOverview";
 
 function App() {
   return (
@@ -44,6 +46,8 @@ function App() {
         <Route path="/availableworkers" element={<ProtectedRoute element={<AvailableWorkers />} />} />
         <Route path="/servicerequest" element={<ProtectedRoute element={<UserAvailableServices />} />} />
         <Route path="/payment" element={<ProtectedRoute element={<Payment />} />} /> 
+        <Route path="/tracker" element={<ProtectedRoute element={<ServiceRequestTracker />} />} />
+        <Route path="/application-status" element={<ProtectedRoute element={<ApplicationOverview />} />} />
       </Routes>
     </Router>
   );

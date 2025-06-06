@@ -13,7 +13,8 @@ const {
   getProofOfAddress,
   getMedicalCertificate,
   getOptionalCertificate,
-  getClearance
+  getClearance,
+  getTaskersByEmail
 } = require('../controllers/taskerController');
 
 const router = express.Router();
@@ -35,6 +36,8 @@ router.get('/:id/proof-of-address', getProofOfAddress);
 router.get('/:id/medical-certificate', getMedicalCertificate);
 router.get('/:id/optional-certificate', getOptionalCertificate);
 router.get('/:id/clearance', getClearance);
+
+router.get('/byemail/:email', getTaskersByEmail);
 
 
 module.exports = router;

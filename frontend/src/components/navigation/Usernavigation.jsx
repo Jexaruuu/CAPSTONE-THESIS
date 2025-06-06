@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
@@ -7,9 +9,11 @@ const UserNavigation = () => {
   const [user, setUser] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const navigate = useNavigate();
   const bellRef = useRef(null);
   const msgRef = useRef(null);
+  const profileRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -83,13 +87,13 @@ const UserNavigation = () => {
           </div>
 
           <div className="flex items-center space-x-4 mt-2">
-            <div className="relative flex items-center space-x-3 -mt-8">
+            <div className="relative flex items-center space-x-3">
               {/* 🔔 Notification Icon */}
               <div ref={bellRef} className="relative">
                 <button onClick={() => {
-  setShowNotifications((prev) => !prev);
-  setShowMessages(false); // 👈 Close messages if notifications is opened
-}}>
+                    setShowNotifications((prev) => !prev);
+                    setShowMessages(false); // 👈 Close messages if notifications is opened
+                  }}>
                   <FiBell className="text-xl text-gray-600 hover:text-indigo-600" />
                 </button>
                 {showNotifications && (
@@ -102,9 +106,9 @@ const UserNavigation = () => {
               {/* 💬 Message Icon */}
               <div ref={msgRef} className="relative">
                 <button onClick={() => {
-  setShowMessages((prev) => !prev);
-  setShowNotifications(false); // 👈 Close notifications if messages is opened
-}}>
+                    setShowMessages((prev) => !prev);
+                    setShowNotifications(false); // 👈 Close notifications if messages is opened
+                  }}>
                   <FiMessageSquare className="text-xl text-gray-600 hover:text-indigo-600" />
                 </button>
                 {showMessages && (
@@ -115,16 +119,53 @@ const UserNavigation = () => {
               </div>
             </div>
 
+            {/* User Profile Dropdown */}
             <div className="flex flex-col">
               {user ? (
-                <p className="text-gray-700 font-medium">{`${user.first_name} ${user.last_name}`}</p>
+                <p className="text-gray-700 font-medium text-right">{`${user.first_name} ${user.last_name}`}</p>
+              ) : (
+                <p className="text-gray-700 font-medium">Guest</p>
+              )}
+              </div>
+
+            <div className="relative" ref={profileRef}>
+              <div
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+              >
+                <img
+                  src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
+                  alt="User Profile"
+                  className="h-14 w-14 rounded-full border border-gray-400 object-cover"
+                />
+              </div>
+
+              {showProfileDropdown && user && (
+                
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+                  <Link to="/editprofile" className="block px-4 py-2 text-blue-500 hover:bg-gray-100">
+                    Edit Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
+                
+            {/* <div className="flex flex-col">
+              {user ? (
+                <p className="text-gray-700 font-medium text-right">{`${user.first_name} ${user.last_name}`}</p>
               ) : (
                 <p className="text-gray-700 font-medium">Guest</p>
               )}
 
               {user && (
                 <>
-                  <Link to="/editprofile" className="text-blue-500 hover:text-blue-700 text-sm cursor-pointer text-right">Edit Profile</Link>
+                  <Link to="/editprofile" className="text-blue-500 hover:text-blue-700 text-sm cursor-pointer text-right">Account Menu</Link>
                   <button onClick={handleLogout} className="text-red-500 hover:text-red-700 text-sm cursor-pointer text-right">Log out</button>
                 </>
               )}
@@ -132,11 +173,11 @@ const UserNavigation = () => {
 
             <div className="flex items-center space-x-2">
               <img
-                src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
+                src={user?.profile_picture ? http://localhost:3000${user.profile_picture} : "/profile.png"}
                 alt="User Profile"
                 className="h-14 w-14 rounded-full border border-gray-400 object-cover"
               />
-            </div>
+            </div> */}
           </div>
         </div>
 

@@ -145,11 +145,46 @@ const setPendingServiceRequest = async (req, res) => {
   }
 };
 
+// ✅ Fetch service requests for a specific user by email
+const getServiceRequestsByUser = async (req, res) => {
+  const { email } = req.params;
 
-module.exports = { 
-  bookService, 
-  getServiceRequests, 
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        c.id AS client_id, c.first_name, c.last_name, c.contact_number, c.email, 
+        c.barangay, c.street, c.additional_address, c.profile_picture,
+        s.id AS service_id, s.service_type, s.service_description, 
+        s.preferred_date, s.preferred_time, s.urgent_request, 
+        s.service_image, s.status
+      FROM client_information c
+      JOIN service_details s ON c.id = s.client_id
+      WHERE c.email = ?
+      ORDER BY s.preferred_date DESC
+    `, [email]);
+
+    const formatted = rows.map(req => ({
+      id: req.service_id,
+      service_category: req.service_type,
+      address: `${req.street}, ${req.barangay}, ${req.additional_address}`.trim(),
+      preferred_time: req.preferred_time,
+      urgency: req.urgent_request ? "Yes" : "No",
+      status: req.status,
+      service_image: req.service_image,
+    }));
+
+    res.json(formatted);
+  } catch (error) {
+    console.error('Error fetching user service requests:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = {
+  bookService,
+  getServiceRequests,
   deleteClientRequest,
   getApprovedServices,
-  setPendingServiceRequest // ✅ ADD THIS
+  setPendingServiceRequest,
+  getServiceRequestsByUser // 👈 add this here
 };

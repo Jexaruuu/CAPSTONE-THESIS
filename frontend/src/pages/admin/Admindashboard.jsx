@@ -21,24 +21,24 @@ const AdminDashboard = () => {
 
 
   // ✨ [NEW] After existing states
-const [serviceRequests, setServiceRequests] = useState([]);
-const [selectedRequest, setSelectedRequest] = useState(null); // For viewing service details
-const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const [serviceRequests, setServiceRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null); // For viewing service details
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
 
-const [pendingApplications, setPendingApplications] = useState(0);
-const [pendingServiceRequests, setPendingServiceRequests] = useState(0);
+  const [pendingApplications, setPendingApplications] = useState(0);
+  const [pendingServiceRequests, setPendingServiceRequests] = useState(0);
 
-const [selectedJobTypeFilter, setSelectedJobTypeFilter] = useState("All");
+  const [selectedJobTypeFilter, setSelectedJobTypeFilter] = useState("All");
 
-const [currentPage, setCurrentPage] = useState(1);
-const taskersPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const taskersPerPage = 5;
 
-const [currentServicePage, setCurrentServicePage] = useState(1);
-const requestsPerPage = 5;
+  const [currentServicePage, setCurrentServicePage] = useState(1);
+  const requestsPerPage = 5;
 
-const [selectedStatusFilter, setSelectedStatusFilter] = useState("All");
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState("All");
 
-const handleSetRate = async (taskerId) => {
+  const handleSetRate = async (taskerId) => {
   const rate = rateInputs[taskerId];
   if (!rate) return alert("Please enter a rate");
 
@@ -71,8 +71,10 @@ const fetchServiceRequests = async () => {
     setServiceRequests(updatedRequests);
 
     // Recalculate the number of pending requests
-    const pending = updatedRequests.filter(req => !req.status || req.status === "pending").length;
-    setPendingServiceRequests(pending);
+const pending = updatedRequests.filter(
+  req => !req.status || req.status.toLowerCase() === "pending"
+).length;
+setPendingServiceRequests(pending);
   } catch (error) {
     console.error('Error fetching service requests:', error);
   }
@@ -300,7 +302,6 @@ const handleViewServiceRequest = (request) => {
       }
     }
   };
-  
 
 // Approve Service Request
 const handleApproveServiceRequest = async (serviceId) => {
@@ -365,79 +366,81 @@ const getStatusBadge = (status) => {
   if (status === "rejected") {
     return <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>;
   }
+  if (status === "cancelled") {
+    return <span className="bg-gray-200 text-gray-800 text-xs font-bold px-2 py-1 rounded">Cancelled</span>;
+  }
   return <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>;
 };
-
 
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
       <div className="flex">
-      <aside className="w-72 h-screen bg-white text-black flex flex-col justify-between p-4 fixed top-0 left-0 z-40 shadow-md">
+      <aside className="w-70 h-screen bg-white text-black flex flex-col justify-between p-4 fixed top-0 left-0 z-40 shadow-md">
           <div>
-            <div className="flex items-center mb-10">
-              <img src="/logo.png" alt="Logo" className="w-66 h-66 mr-2" />
+            <div className="flex items-center">
+              <img src="/logo.png" alt="Logo" className="w-60 h-60 mr-2" />
             </div>
             <div className="text-center mb-6">
-  {admin.profile_picture ? (
-    <img
-      src={`http://localhost:3000${admin.profile_picture}`}
-      alt="Admin Profile"
-      className="w-24 h-24 mx-auto rounded-full object-cover border-4 border-blue-200 mb-2"
-    />
-  ) : (
-    <div className="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-2 flex items-center justify-center text-gray-500">
-      No Image
-    </div>
-  )}
-  <p className="text-lg font-semibold">{`${admin.first_name} ${admin.last_name}`}</p>
-  <p className="text-md text-gray-500">Admin</p>
-</div>
+              {admin.profile_picture ? (
+              <img
+                src={`http://localhost:3000${admin.profile_picture}`}
+                alt="Admin Profile"
+                className="w-24 h-24 mx-auto rounded-full object-cover border-4 border-blue-200 mb-2"
+              />
+              ) : (
+              <div className="w-24 h-24 mx-auto rounded-full bg-gray-200 mb-2 flex items-center justify-center text-gray-500">
+                No Image
+              </div>
+              )}
+              <p className="text-lg font-semibold">{`${admin.first_name} ${admin.last_name}`}</p>
+              <p className="text-md text-gray-500">Admin</p>
+          </div>
             <nav className="space-y-2">
             <button
-  onClick={() => { setActive("Dashboard"); setSubActive(""); }}
-  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
-    ${active === "Dashboard"
-      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
-      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
-  `}
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold"><HomeIcon className="mr-3 w-5 h-5" /> Dashboard</span>
-</button>
+              onClick={() => { setActive("Dashboard"); setSubActive(""); }}
+              className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+                ${active === "Dashboard"
+                ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+                : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+              `}
+              >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative flex items-center text-base font-semibold"><HomeIcon className="mr-3 w-5 h-5" /> Dashboard</span>
+            </button>
 
-<button
-  onClick={() => { setActive("Users"); setSubActive(""); }}
-  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
-    ${(active === "Users" || subActive === "Clients" || subActive === "Admins")
-      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
-      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
-  `}
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold"><UsersIcon className="mr-3 w-5 h-5" /> Manage Users</span>
-</button>
+            <button
+              onClick={() => { setActive("Users"); setSubActive(""); }}
+              className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+                ${(active === "Users" || subActive === "Clients" || subActive === "Admins")
+                  ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+                  : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+              `}
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative flex items-center text-base font-semibold"><UsersIcon className="mr-3 w-5 h-5" /> Manage Users</span>
+            </button>
 
-{/* Applications Button with Pending Badge */}
-<button
-  onClick={() => { setActive("Applications"); setSubActive(""); }}
-  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
-    ${active === "Applications"
-      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
-      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
-  `}
-  
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold">
-    <FileTextIcon className="mr-3 w-5 h-5" />
-    Applications
-    {pendingApplications > 0 && (
-      <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-        {pendingApplications}
-      </span>
-    )}
-  </span>
-</button>
+            {/* Applications Button with Pending Badge */}
+            <button
+              onClick={() => { setActive("Applications"); setSubActive(""); }}
+              className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+                ${active === "Applications"
+                  ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+                  : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+              `}
+              
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative flex items-center text-base font-semibold">
+                <FileTextIcon className="mr-3 w-5 h-5" />
+                Applications
+                {pendingApplications > 0 && (
+                  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {pendingApplications}
+                  </span>
+                )}
+              </span>
+            </button>
 
 {/* Service Requests Button with Pending Badge */}
 <button
@@ -449,15 +452,15 @@ const getStatusBadge = (status) => {
   `}
 >
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative flex items-center text-base font-semibold">
-    <ClipboardListIcon className="mr-3 w-5 h-5" />
-    Service Requests
-    {pendingServiceRequests > 0 && (
-  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-    {pendingServiceRequests}
-  </span>
-)}
-  </span>
+<span className="relative flex items-center text-base font-semibold">
+  <ClipboardListIcon className="mr-3 w-5 h-5" />
+  Service Requests
+  {pendingServiceRequests > 0 && (
+    <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+      {pendingServiceRequests}
+    </span>
+  )}
+</span>
 </button>
 
 <button
@@ -559,67 +562,67 @@ const getStatusBadge = (status) => {
         <p><strong>Rate Per Hour:</strong> {selectedProfile.professional?.rate_per_hour ? `₱${selectedProfile.professional.rate_per_hour}/hr` : "N/A"}</p>
       </div>
 
-      {/* Government Info */}
-      <div>
-        <h3 className="text-lg font-bold text-indigo-600 mb-2">Government Numbers</h3>
-        <p><strong>TIN Number:</strong> {selectedProfile.government?.tinNumber}</p>
-        <p><strong>SSS Number:</strong> {selectedProfile.government?.sssNumber}</p>
-        <p><strong>PhilHealth Number:</strong> {selectedProfile.government?.philHealthNumber}</p>
-        <p><strong>Pag-IBIG Number:</strong> {selectedProfile.government?.pagIbigNumber}</p>
-      </div>
-    </div>
+          {/* Government Info */}
+          <div>
+            <h3 className="text-lg font-bold text-indigo-600 mb-2">Government Numbers</h3>
+            <p><strong>TIN Number:</strong> {selectedProfile.government?.tinNumber}</p>
+            <p><strong>SSS Number:</strong> {selectedProfile.government?.sssNumber}</p>
+            <p><strong>PhilHealth Number:</strong> {selectedProfile.government?.philHealthNumber}</p>
+            <p><strong>Pag-IBIG Number:</strong> {selectedProfile.government?.pagIbigNumber}</p>
+          </div>
+          </div>
 
-    {/* Right Side - Documents */}
-    <div className="flex-1 space-y-4 overflow-y-auto max-h-[80vh]">
-      <h3 className="text-lg font-bold text-indigo-600 mb-2">Uploaded Documents</h3>
+          {/* Right Side - Documents */}
+          <div className="flex-1 space-y-4 overflow-y-auto max-h-[80vh]">
+            <h3 className="text-lg font-bold text-indigo-600 mb-2">Uploaded Documents</h3>
 
-      {[
-        { label: "Primary ID Front", key: "primaryIDFront" },
-        { label: "Primary ID Back", key: "primaryIDBack" },
-        { label: "Secondary ID", key: "secondaryID" },
-        { label: "Clearance", key: "clearance" },
-        { label: "Proof of Address", key: "proofOfAddress" },
-        { label: "Medical Certificate", key: "medicalCertificate" },
-        { label: "Certificates", key: "certificates" },
-      ].map(({ label, key }) => (
-        <div key={key}>
-          <p className="font-semibold">{label}:</p>
-          {selectedProfile.documents?.[key] ? (
-            <a href={`http://localhost:3000${selectedProfile.documents[key]}`} target="_blank" rel="noopener noreferrer">
-              <img
-                src={`http://localhost:3000${selectedProfile.documents[key]}`}
-                alt={label}
-                className="w-full h-40 object-cover rounded-lg border cursor-pointer"
-              />
-            </a>
-          ) : (
-            <p className="text-sm text-gray-500">No image uploaded</p>
+            {[
+              { label: "Primary ID Front", key: "primaryIDFront" },
+              { label: "Primary ID Back", key: "primaryIDBack" },
+              { label: "Secondary ID", key: "secondaryID" },
+              { label: "Clearance", key: "clearance" },
+              { label: "Proof of Address", key: "proofOfAddress" },
+              { label: "Medical Certificate", key: "medicalCertificate" },
+              { label: "Certificates", key: "certificates" },
+            ].map(({ label, key }) => (
+              <div key={key}>
+                <p className="font-semibold">{label}:</p>
+                {selectedProfile.documents?.[key] ? (
+                  <a href={`http://localhost:3000${selectedProfile.documents[key]}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={`http://localhost:3000${selectedProfile.documents[key]}`}
+                      alt={label}
+                      className="w-full h-40 object-cover rounded-lg border cursor-pointer"
+                    />
+                  </a>
+                ) : (
+                  <p className="text-sm text-gray-500">No image uploaded</p>
+                )}
+              </div>
+            ))}
+          </div>
+          </div>
           )}
-        </div>
-      ))}
-    </div>
-  </div>
-)}
 
-    </div>
-  </div>
-)}
+          </div>
+          </div>
+          )}
 
-{/* Sticky Header */}
-<div className="sticky top-0 z-30 bg-gray-100 py-4 px-6 shadow-sm border-b border-gray-200 flex items-center justify-between mb-6">
-  <h2 className="text-2xl font-semibold">
-    {active === "Dashboard" && "Dashboard Overview"}
-    {active === "Users" && "Manage Users"}
-    {active === "Applications" && "Applications"}
-    {active === "ServiceRequests" && "Service Requests"}
-    {active === "Settings" && "Admin Settings"}
-  </h2>
+          {/* Sticky Header */}
+          <div className="sticky top-0 z-30 bg-gray-100 py-4 px-6 shadow-sm border-b border-gray-200 flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold">
+              {active === "Dashboard" && "Dashboard Overview"}
+              {active === "Users" && "Manage Users"}
+              {active === "Applications" && "Applications"}
+              {active === "ServiceRequests" && "Service Requests"}
+              {active === "Settings" && "Admin Settings"}
+            </h2>
 
-  <div className="text-lg font-semibold text-gray-700 flex items-center space-x-4">
-    <div>🕒 {clock}</div>
-    <div>📅 {date}</div>
-  </div>
-</div>
+            <div className="text-lg font-semibold text-gray-700 flex items-center space-x-4">
+              <div>🕒 {clock}</div>
+              <div>📅 {date}</div>
+            </div>
+          </div>
 
           <div className="bg-white p-6 rounded-lg">
             {active === "Dashboard" && (
@@ -643,25 +646,25 @@ const getStatusBadge = (status) => {
                 <p className="mb-6">Manage the users and admins easily from here.</p>
                 <div className="flex space-x-4 mb-8">
                 <button
-  onClick={() => setSubActive("Clients")}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">
-    Users
-  </span>
-</button>
+                  onClick={() => setSubActive("Clients")}
+                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]  hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"
+                >
+                  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                  <span className="relative text-base font-semibold">
+                    Users
+                  </span>
+                </button>
 
-<button
-  onClick={() => setSubActive("Admins")}
-  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400
-"
->
-  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span className="relative text-base font-semibold">
-    Admins
-  </span>
-</button>
+                <button
+                  onClick={() => setSubActive("Admins")}
+                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400
+                "
+                >
+                  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                  <span className="relative text-base font-semibold">
+                    Admins
+                  </span>
+                </button>
 
                 </div>
               </>
@@ -787,14 +790,15 @@ const getStatusBadge = (status) => {
 <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
   <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
   <div className="flex gap-3 flex-wrap">
-    {["All", "Pending", "Approved", "Rejected"].map((status) => {
+    {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => {
   const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
-  const colorMap = {
-    All: "bg-gray-400 text-white hover:bg-gray-300",
-    Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-    Approved: "bg-green-600 text-white hover:bg-green-500",
-    Rejected: "bg-red-500 text-white hover:bg-red-400",
-  };
+const colorMap = {
+  All: "bg-gray-400 text-white hover:bg-gray-300",
+  Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+  Approved: "bg-green-600 text-white hover:bg-green-500",
+  Rejected: "bg-red-500 text-white hover:bg-red-400",
+  Cancelled: "bg-gray-500 text-white hover:bg-gray-400", // ✅ NEW
+};
   const isActive = selectedStatusFilter === status;
   return (
     <button
@@ -977,13 +981,14 @@ const getStatusBadge = (status) => {
     <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
       <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
       <div className="flex gap-3 flex-wrap">
-        {["All", "Pending", "Approved", "Rejected"].map((status) => {
+       {["All", "Pending", "Approved", "Rejected", "Cancelled"].map((status) => {
   const baseClasses = "px-4 py-2 rounded-full text-sm font-semibold transition";
-  const colorMap = {
-    All: "bg-gray-400 text-white hover:bg-gray-300",
-    Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-    Approved: "bg-green-600 text-white hover:bg-green-500",
-    Rejected: "bg-red-500 text-white hover:bg-red-400",
+const colorMap = {
+  All: "bg-gray-400 text-white hover:bg-gray-300",
+  Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+  Approved: "bg-green-600 text-white hover:bg-green-500",
+  Rejected: "bg-red-500 text-white hover:bg-red-400",
+  Cancelled: "bg-gray-500 text-white hover:bg-gray-400", // ✅ NEW
   };
   const isActive = selectedStatusFilter === status;
   return (
@@ -1013,9 +1018,11 @@ const getStatusBadge = (status) => {
     selectedJobTypeFilter === "All" ||
     req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
 
-  const statusMatch =
-    selectedStatusFilter === "All" ||
-    (req.status ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase() : "pending" === selectedStatusFilter.toLowerCase());
+const statusMatch =
+  selectedStatusFilter === "All" ||
+  (req.status
+    ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
+    : "pending" === selectedStatusFilter.toLowerCase());
 
   return jobMatch && statusMatch;
 })
@@ -1072,29 +1079,47 @@ const getStatusBadge = (status) => {
             <span className="relative text-base font-semibold">View</span>
           </button>
 
-          <button
-            onClick={() => handleApproveServiceRequest(request.service_id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Approve</span>
-          </button>
+          {/* Approve Button */}
+<button
+  onClick={() => handleApproveServiceRequest(request.service_id)}
+  disabled={request.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${request.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Approve</span>
+</button>
 
-          <button
-            onClick={() => handleRejectServiceRequest(request.service_id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Reject</span>
-          </button>
+{/* Reject Button */}
+<button
+  onClick={() => handleRejectServiceRequest(request.service_id)}
+  disabled={request.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${request.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Reject</span>
+</button>
 
-          <button
-            onClick={() => handleSetPendingServiceRequest(request.service_id)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-base font-semibold">Pending</span>
-          </button>
+{/* Pending Button */}
+<button
+  onClick={() => handleSetPendingServiceRequest(request.service_id)}
+  disabled={request.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${request.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">Pending</span>
+</button>
         </div>
       </div>
     ))}
@@ -1223,4 +1248,3 @@ const getStatusBadge = (status) => {
 };
 
 export default AdminDashboard;
-
