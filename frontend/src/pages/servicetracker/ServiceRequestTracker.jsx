@@ -71,7 +71,7 @@ const filteredRequests = requests.filter(
 );
 
   const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;   
   const currentRequests = filteredRequests.slice(
     indexOfFirstItem,
     indexOfLastItem
