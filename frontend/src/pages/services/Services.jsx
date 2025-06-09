@@ -115,7 +115,8 @@ const Services = () => {
       
         <section className="relative text-center flex flex-col justify-center items-center text-white w-full h-auto py-10 z-10">
           <div className="bg-opacity-50 px-6 py-4 rounded">
-            <h2 className="text-4xl font-bold">Book trusted home help today</h2>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">JD Homecare Services</h1>
+          <p className="text-xl mb-8 text-gray-200">We’re here to help you keep your home safe, clean, and cared for—because you deserve the best in home service.</p>
           </div>
         </section>
       </div>

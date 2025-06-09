@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import { Link } from "react-router-dom";
 
 const services = [
   {
@@ -115,13 +116,14 @@ const BookService = () => {
       
         <section className="relative text-center flex flex-col justify-center items-center text-white w-full h-auto py-10 z-10">
           <div className="bg-opacity-50 px-6 py-4 rounded">
-            <h2 className="text-4xl font-bold">Book trusted home help today</h2>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">JD Homecare Services</h1>
+          <p className="text-xl mb-8 text-gray-200">We’re here to help you keep your home safe, clean, and cared for—because you deserve the best in home service.</p>
           </div>
         </section>
       </div>
 
       <div className="py-10 px-5">
-  <h2 className="text-center text-[30px] font-bold mb-6">Hire Trusted Workers</h2>
+  <h2 className="text-center text-[30px] font-bold mb-6">Our Available Services</h2>
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center max-w-5xl mx-auto">
     {services.map((service, index) => (
       <div key={index} className="bg-white rounded-lg shadow-md p-5 flex flex-col">
@@ -134,15 +136,21 @@ const BookService = () => {
           ))}
         </ul>
         <div className="mt-auto">
-        <button
-  class="relative rounded px-4 py-2 overflow-hidden group  bg-[#000081] 
-             hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
-             text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300 w-full">
-  <span
-    class="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-  <span class="relative text-base font-semibold">Hire Now</span>
-</button>
-        </div>
+        <Link
+    to="/availableworkers"
+    className="relative rounded px-4 py-2 overflow-hidden group bg-[#000081] 
+               hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
+               text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 
+               transition-all ease-out duration-300 w-full block text-center"
+  >
+    <span
+      className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 
+                 transform translate-x-12 bg-white opacity-10 rotate-12 
+                 group-hover:-translate-x-40 ease"
+    ></span>
+    <span className="relative text-base font-semibold">Hire Now</span>
+  </Link>
+</div>
       </div>
     ))}
   </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import Navigation from "../../components/navigation/Navigation";
+import Navigation from "../../components/navigation/navigation";
 import Footer from "../../components/footer/Footer";
 
 const About = () => {
@@ -15,9 +15,7 @@ const About = () => {
           backgroundPosition: "center",
         }}
       >
-        <h1 className="text-4xl md:text-5xl font-bold drop-shadow-lg">
-         Quality Home Services You Can Trust
-        </h1>
+        <h1 className="text-4xl md:text-5xl font-bold drop-shadow-lg">Quality Home Services You Can Trust</h1>
       </div>
       
  
@@ -44,7 +42,7 @@ const infoCards = [
   {
     icon: "/professionals.png",
     title: "Our Workers",
-    description: "skilled and vetted workers ensuring reliable service every time."
+    description: "Skilled and vetted workers ensuring reliable service every time."
   },
   {
     icon: "/satisfaction.png",

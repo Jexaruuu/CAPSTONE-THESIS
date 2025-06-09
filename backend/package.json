@@ -4,11 +4,11 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "nodemon ./src/server.js",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "axios": "^1.8.4",
@@ -16,12 +16,15 @@
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "express-fileupload": "^1.5.1",
     "express-session": "^1.18.1",
     "mysql": "^2.18.1",
-    "mysql2": "^3.14.0"
+    "mysql2": "^3.14.0",
+    "nodemailer": "^6.10.1",
+    "otp-generator": "^4.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.10"
   },
   "type": "commonjs"
 }

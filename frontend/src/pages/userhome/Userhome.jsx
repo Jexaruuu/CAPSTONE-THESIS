@@ -5,6 +5,7 @@ import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Userheader";
 
 const UserHome = () => {
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
 
   useEffect(() => {

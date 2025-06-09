@@ -74,7 +74,8 @@ const Header = () => {
       <div className="relative h-96 bg-cover bg-center transition-opacity duration-1000 flex justify-center items-center" style={{ backgroundImage: `url(${heroImages[currentImageIndex]})`, opacity: fade ? 1 : 0 }}>
         <div className="absolute inset-0 bg-black opacity-60"></div>
         <section className="relative text-white w-full py-10 z-10 text-center flex flex-col items-center">
-          <h2 className="text-4xl font-bold">Book trusted home help today</h2>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">Welcome to JD Homecare</h1>
+          <p className="text-xl mb-8 text-gray-200">Where quality service and heartfelt care come together to make your home a better place.</p>
         </section>
       </div>
 
@@ -130,7 +131,7 @@ const Header = () => {
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#efefef] bg-opacity-70 text-black flex flex-col items-center">
                   <h3 className="font-bold text-lg mb-2">{proj.name}</h3>
                   <p className="text-[14px] font-semibold">Service Rate / Hour: {proj.rate}</p>
-                  <Link to="/bookservices">
+                  <Link to="/clientform">
   <button
     className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] text-white mt-2 
              hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] 
