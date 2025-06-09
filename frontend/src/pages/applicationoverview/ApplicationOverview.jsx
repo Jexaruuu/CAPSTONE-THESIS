@@ -21,16 +21,28 @@ const [showModal, setShowModal] = useState(false);
 useEffect(() => {
   const fetchApplications = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/taskers/byemail/${email}`);
-      console.log("Fetched Applications:", response.data); // ✅ Add this
+      const response = await axios.get(
+        `http://localhost:3000/api/taskers/byemail/${email}`
+      );
+
+      // ✅ Set fetched applications
       setApplications(response.data);
-    } catch (err) {
-      console.error("Error fetching applications:", err);
-      setError("Unable to load your application data.");
+      setError(""); // clear previous errors
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        // No data found, not a real error — just set empty
+        setApplications([]);
+        setError(""); // don't show red error box
+      } else {
+        console.error("Error fetching applications:", error);
+        setError("Unable to load your application data.");
+      }
     }
   };
 
-  if (email) fetchApplications();
+  if (email) {
+    fetchApplications();
+  }
 }, [email]);
 
   useEffect(() => {

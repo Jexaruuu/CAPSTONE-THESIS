@@ -353,9 +353,9 @@ const [rows] = await db.query(`
 `, [email]);
 
 
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "No tasker applications found for this email." });
-    }
+   if (rows.length === 0) {
+  return res.json([]); // No applications yet, return empty array
+}
 
     const parsed = rows.map(tasker => {
       let jobTypeParsed = [];
