@@ -244,12 +244,22 @@ const EditProfile = () => {
         <div className="flex flex-col">
           <form className="form" onSubmit={handleUpdateInfo}>
             <section className="bg-white p-8 rounded-2xl shadow-md border border-gray-200 mb-5">
-             <div className="relative flex justify-center mb-8">
+             
+
+              <div className="text-center mb-15">
+                <h2 className="text-3xl font-extrabold text-gray-800 mb-2">Update Your Profile</h2>
+                <p className="text-gray-600 text-sm">
+                  Edit your personal information below. Fields marked with <span className="text-red-500 font-bold">*</span> are required.
+                </p>
+                <div className="w-24 h-1 bg-blue-600 mx-auto mt-4 rounded-full"></div>
+              </div>
+
+              <div className="relative flex justify-center mb-8">
   {previewUrl ? (
     <img
       src={previewUrl}
       alt="Profile Preview"
-      className="w-32 h-32 rounded-full border object-cover shadow-md"
+      className="w-32 h-32 rounded-full border object-cover shadow-md -mt-10"
     />
   ) : (
     <div className="w-32 h-32 rounded-full border bg-gray-100 flex items-center justify-center text-gray-400 shadow-md">
@@ -278,19 +288,12 @@ const EditProfile = () => {
   <button
     type="button"
     onClick={handleUploadProfilePicture}
-    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-medium shadow transition duration-200"
+    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-medium shadow transition duration-200 mb-8"
   >
     Upload Profile Picture
   </button>
 </div>
-
-              <div className="text-center mb-15">
-                <h2 className="text-3xl font-extrabold text-gray-800 mb-2">Update Your Profile</h2>
-                <p className="text-gray-600 text-sm">
-                  Edit your personal information below. Fields marked with <span className="text-red-500 font-bold">*</span> are required.
-                </p>
-                <div className="w-24 h-1 bg-blue-600 mx-auto mt-4 rounded-full"></div>
-              </div>
+        
 
               {error && (
                 <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6 shadow">
