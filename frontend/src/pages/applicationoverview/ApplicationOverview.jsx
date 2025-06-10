@@ -49,20 +49,22 @@ useEffect(() => {
     setCurrentPage(1);
   }, [selectedJobType, selectedStatus]);
 
-  const handleCancel = async (id) => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel this application?");
-    if (!confirmCancel) return;
+const handleCancel = async (id) => {
+  const confirmCancel = window.confirm("Are you sure you want to cancel this application?");
+  if (!confirmCancel) return;
 
-    try {
-      await axios.put(`http://localhost:3000/api/taskers/cancel/${id}`);
-      setApplications((prev) =>
-        prev.map((app) => (app.id === id ? { ...app, status: "Cancelled" } : app))
-      );
-    } catch (err) {
-      console.error("Error cancelling application", err);
-      alert("Failed to cancel the application. Please try again.");
-    }
-  };
+  try {
+    await axios.put(`http://localhost:3000/api/taskers/cancel/${id}`);
+    setApplications((prev) =>
+      prev.map((app) =>
+        app.id === id ? { ...app, status: "Cancelled" } : app
+      )
+    );
+  } catch (err) {
+    console.error("Error cancelling application", err);
+    alert("Failed to cancel the application. Please try again.");
+  }
+};
 
   const filteredApps = applications.filter((app) => {
 const matchJobType =
@@ -238,14 +240,14 @@ const matchJobType =
             <div className="pt-5 mt-6 border-t border-dashed border-gray-300 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="flex flex-wrap gap-2">
             <span className={`text-xs font-bold px-3 py-1 rounded-full capitalize shadow-sm ${
-                app.status?.toLowerCase() === "approved"
-                ? "bg-green-100 text-green-800"
-                : app.status?.toLowerCase() === "rejected"
-                ? "bg-red-100 text-red-800"
-                : app.status?.toLowerCase() === "cancelled"
-                ? "bg-gray-200 text-gray-700"
-                : "bg-yellow-100 text-yellow-800"
-            }`}>
+         app.status?.toLowerCase() === "approved"
+    ? "bg-green-100 text-green-800"
+    : app.status?.toLowerCase() === "rejected"
+    ? "bg-red-100 text-red-800"
+    : app.status?.toLowerCase() === "cancelled"
+    ? "bg-gray-200 text-gray-700"
+    : "bg-yellow-100 text-yellow-800"
+}`}>
                 {app.status || "Pending"}
             </span>
 
@@ -264,15 +266,20 @@ const matchJobType =
 
             <div className="flex gap-2 mt-2">
             {/* 👇 View Documents Button */}
-            <button
-                onClick={() => {
-                setSelectedApplication(app);
-                setShowModal(true);
-                }}
-                className="text-xs font-medium px-6 py-2 rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 transition-all duration-200 ease-in-out"
-            >
-                View Documents
-            </button>
+   <button
+  onClick={() => {
+    setSelectedApplication(app);
+    setShowModal(true);
+  }}
+  disabled={app.status?.toLowerCase() === "cancelled"}
+  className={`text-xs font-medium px-6 py-2 rounded-full border transition-all duration-200 ease-in-out ${
+    app.status?.toLowerCase() === "cancelled"
+      ? "border-gray-300 text-gray-400 cursor-not-allowed bg-gray-100"
+      : "border-blue-500 text-blue-600 hover:bg-blue-50"
+  }`}
+>
+  View Documents
+</button>
 
             {/* 👇 Cancel Button */}
             <button

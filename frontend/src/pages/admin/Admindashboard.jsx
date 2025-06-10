@@ -163,18 +163,20 @@ const handleViewServiceRequest = (request) => {
     }
   };
 
-  const fetchTaskers = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/api/taskers/fullinfo');
-      setTaskers(response.data);
-  
-      // ✨ Count how many taskers are pending
-      const pending = response.data.filter(tasker => tasker.status === null || tasker.status === "pending").length;
-      setPendingApplications(pending);
-    } catch (error) {
-      console.error('Error fetching taskers:', error);
-    }
-  };
+const fetchTaskers = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/taskers/fullinfo');
+    const taskersData = response.data;
+
+    setTaskers(taskersData);
+
+    // ✅ Count pending applications
+    const pending = taskersData.filter(tasker => tasker.status?.toLowerCase() === "pending").length;
+    setPendingApplications(pending);
+  } catch (error) {
+    console.error('Error fetching taskers:', error);
+  }
+};
   
   useEffect(() => {
     fetchCounts();
@@ -273,16 +275,16 @@ const handleViewServiceRequest = (request) => {
   }
 };
 
-  const handleApproveTasker = async (id) => {
-    if (window.confirm("Approve this tasker?")) {
-      try {
-        await axios.put(`http://localhost:3000/api/taskers/approve/${id}`);
-        fetchTaskers(); // 🔥 Re-fetch from server to update status badge immediately
-      } catch (error) {
-        console.error("Error approving tasker:", error);
-      }
+const handleApproveTasker = async (id) => {
+  if (window.confirm("Approve this tasker?")) {
+    try {
+      await axios.put(`http://localhost:3000/api/taskers/approve/${id}`);
+      await fetchTaskers(); // ✅ Re-fetch to update sidebar badge
+    } catch (error) {
+      console.error("Error approving tasker:", error);
     }
-  };
+  }
+};
   
   const handleSetPendingTasker = async (id) => {
   if (window.confirm("Set this tasker to pending?")) {
@@ -295,33 +297,23 @@ const handleViewServiceRequest = (request) => {
   }
 }
   
-  const handleRejectTasker = async (id) => {
-    if (window.confirm("Reject this tasker?")) {
-      try {
-        await axios.put(`http://localhost:3000/api/taskers/reject/${id}`);
-        fetchTaskers(); // 🔥 Re-fetch from server to update status badge immediately
-      } catch (error) {
-        console.error("Error rejecting tasker:", error);
-      }
+const handleRejectTasker = async (id) => {
+  if (window.confirm("Reject this tasker?")) {
+    try {
+      await axios.put(`http://localhost:3000/api/taskers/reject/${id}`);
+      await fetchTaskers(); // ✅ Re-fetch to update sidebar badge
+    } catch (error) {
+      console.error("Error rejecting tasker:", error);
     }
-  };
+  }
+};
 
 // Approve Service Request
 const handleApproveServiceRequest = async (serviceId) => {
   if (window.confirm("Approve this service request?")) {
     try {
       await axios.put(`http://localhost:3000/api/clients/approve/${serviceId}`);
-      setServiceRequests((prevRequests) =>
-        prevRequests.map((req) => {
-          if (req.service_id === serviceId) {
-            if (req.status === "pending") {
-              setPendingServiceRequests(prev => Math.max(prev - 1, 0));
-            }
-            return { ...req, status: "approved" };
-          }
-          return req;
-        })
-      );
+      await fetchServiceRequests(); // ✅ Always refresh from backend
     } catch (error) {
       console.error('Error approving service request:', error);
     }
@@ -333,17 +325,7 @@ const handleRejectServiceRequest = async (serviceId) => {
   if (window.confirm("Reject this service request?")) {
     try {
       await axios.put(`http://localhost:3000/api/clients/reject/${serviceId}`);
-      setServiceRequests((prevRequests) =>
-        prevRequests.map((req) => {
-          if (req.service_id === serviceId) {
-            if (req.status === "pending") {
-              setPendingServiceRequests(prev => Math.max(prev - 1, 0));
-            }
-            return { ...req, status: "rejected" };
-          }
-          return req;
-        })
-      );
+      await fetchServiceRequests(); // ✅ Always refresh from backend
     } catch (error) {
       console.error('Error rejecting service request:', error);
     }
@@ -368,9 +350,9 @@ const getStatusBadge = (status) => {
   if (status === "rejected") {
     return <span className="bg-red-200 text-red-800 text-xs font-bold px-2 py-1 rounded">Rejected</span>;
   }
-  if (status === "cancelled") {
-    return <span className="bg-gray-200 text-gray-800 text-xs font-bold px-2 py-1 rounded">Cancelled</span>;
-  }
+if (status === "cancelled") {
+  return <span className="bg-gray-200 text-gray-800 text-xs font-bold px-2 py-1 rounded">Cancelled</span>;
+}
   return <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>;
 };
 
@@ -436,11 +418,11 @@ const getStatusBadge = (status) => {
               <span className="relative flex items-center text-base font-semibold">
                 <FileTextIcon className="mr-3 w-5 h-5" />
                 Applications
-                {pendingApplications > 0 && (
-                  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                    {pendingApplications}
-                  </span>
-                )}
+{pendingApplications > 0 && (
+  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+    {pendingApplications}
+  </span>
+)}
               </span>
             </button>
 
@@ -457,11 +439,11 @@ const getStatusBadge = (status) => {
             <span className="relative flex items-center text-base font-semibold">
               <ClipboardListIcon className="mr-3 w-5 h-5" />
               Service Requests
-              {pendingServiceRequests > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  {pendingServiceRequests}
-                </span>
-              )}
+       {pendingServiceRequests > 0 && (
+  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+    {pendingServiceRequests}
+  </span>
+)}
             </span>
             </button>
 
@@ -874,7 +856,7 @@ const getStatusBadge = (status) => {
                             ? `₱${tasker.rate_per_hour}/hr`
                             : "N/A"}
                         </p>
-                        <div className="mt-2">{getStatusBadge(tasker.status)}</div>
+                        <div className="mt-2">{getStatusBadge(tasker.status?.toLowerCase())}</div>
                       </div>
                     </div>
 
@@ -888,29 +870,41 @@ const getStatusBadge = (status) => {
                         <span className="relative text-base font-semibold">View</span>
                       </button>
 
-                      <button
-                        onClick={() => handleApproveTasker(tasker.id)}
-                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-                      >
-                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                        <span className="relative text-base font-semibold">Approve</span>
-                      </button>
+               <button
+  onClick={() => handleApproveTasker(tasker.id)}
+  disabled={tasker.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${tasker.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="relative text-base font-semibold">Approve</span>
+</button>
 
-                      <button
-                        onClick={() => handleRejectTasker(tasker.id)}
-                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
-                      >
-                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                        <span className="relative text-base font-semibold">Reject</span>
-                      </button>
+              <button
+  onClick={() => handleRejectTasker(tasker.id)}
+  disabled={tasker.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${tasker.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="relative text-base font-semibold">Reject</span>
+</button>
 
-                      <button
-                        onClick={() => handleSetPendingTasker(tasker.id)}
-                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-                      >
-                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                        <span className="relative text-base font-semibold">Pending</span>
-                      </button>
+      <button
+  onClick={() => handleSetPendingTasker(tasker.id)}
+  disabled={tasker.status?.toLowerCase() === "cancelled"}
+  className={`relative rounded px-5 py-2.5 overflow-hidden group 
+    ${tasker.status?.toLowerCase() === "cancelled" 
+      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+      : "bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400"} 
+    transition-all ease-out duration-300`}
+>
+  <span className="relative text-base font-semibold">Pending</span>
+</button>
                     </div>
                   </div>
                 ))}

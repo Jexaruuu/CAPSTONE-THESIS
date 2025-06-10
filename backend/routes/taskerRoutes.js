@@ -14,7 +14,8 @@ const {
   getMedicalCertificate,
   getOptionalCertificate,
   getClearance,
-  getTaskersByEmail
+  getTaskersByEmail,
+  cancelTaskerApplication
 } = require('../controllers/taskerController');
 
 const router = express.Router();
@@ -39,5 +40,6 @@ router.get('/:id/clearance', getClearance);
 
 router.get('/byemail/:email', getTaskersByEmail);
 
+router.put('/cancel/:id', cancelTaskerApplication);
 
 module.exports = router;

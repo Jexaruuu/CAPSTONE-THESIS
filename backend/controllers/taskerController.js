@@ -12,7 +12,14 @@ const saveFile = (file, folder) => {
   }
   const filename = `${Date.now()}_${file.name}`;
   const filePath = path.join(uploadPath, filename);
-  file.mv(filePath);
+
+  try {
+    file.mv(filePath); // No callback = async error won't be caught
+  } catch (err) {
+    console.error("Error saving file:", err);
+    return null;
+  }
+
   return `/uploads/${folder}/${filename}`;
 };
 
@@ -197,13 +204,12 @@ const getAllApprovedTaskers = async (req, res) => {
 
     const values = [];
 
-    // ✅ If email is provided, exclude user's own application
     if (currentUserEmail) {
       query += ` AND tp.email != ?`;
       values.push(currentUserEmail.trim().toLowerCase());
     }
 
-    const [taskers] = await db.query(query, values);
+     const [taskers] = await db.query(query, values);
 
     const taskersWithPrice = taskers.map(tasker => ({
       ...tasker,
@@ -334,6 +340,25 @@ const getClearance = async (req, res) => {
   }
 };
 
+const cancelTaskerApplication = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await db.query(
+      `UPDATE tasker_personal SET status = 'Cancelled' WHERE id = ?`,
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Tasker application not found" });
+    }
+
+    res.json({ message: "Tasker application cancelled successfully" });
+  } catch (error) {
+    console.error("Error cancelling tasker application:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // ✅ Get taskers by email (updated)
 const getTaskersByEmail = async (req, res) => {
   const { email } = req.params;
@@ -432,5 +457,6 @@ module.exports = {
   getMedicalCertificate,
   getOptionalCertificate,
   getClearance,
-  getTaskersByEmail
+  getTaskersByEmail,
+  cancelTaskerApplication
 };

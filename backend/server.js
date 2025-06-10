@@ -2,22 +2,14 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
+const fileUpload = require('express-fileupload'); // ✅ Added
 
 const db = require('./db');
 
-// Route imports
-const signupRoutes = require('./routes/signupRoutes');
-const loginRoutes = require('./routes/loginRoutes');
-const logoutRoutes = require('./routes/logoutRoutes');
-const userRoutes = require('./routes/userRoutes');
-const clientRoutes = require('./routes/clientRoutes');
-const adminsignupRoutes = require('./routes/adminsignupRoutes');
-const adminloginRoutes = require('./routes/adminloginRoutes');
-const adminlogoutRoutes = require("./routes/adminlogoutRoutes");
-const adminRoutes = require("./routes/adminRoutes");
-const taskerRoutes = require('./routes/taskerRoutes');
-
 const app = express();
+
+// ✅ Middleware for file uploads
+app.use(fileUpload({ createParentPath: true })); // ✅ Added
 
 // ✅ CORS Configuration
 app.use(cors({
@@ -46,23 +38,22 @@ app.use(session({
 }));
 
 // ✅ API Routes
-app.use('/api', signupRoutes);
-app.use('/api', loginRoutes);
-app.use('/api', logoutRoutes);
-app.use('/api', userRoutes);
-app.use('/api', adminsignupRoutes);
-app.use('/api', adminloginRoutes);
-app.use('/api', adminlogoutRoutes);
-app.use('/api', adminRoutes);
-app.use('/api/taskers', taskerRoutes);
-app.use('/api/clients', clientRoutes);
+app.use('/api', require('./routes/signupRoutes'));
+app.use('/api', require('./routes/loginRoutes'));
+app.use('/api', require('./routes/logoutRoutes'));
+app.use('/api', require('./routes/userRoutes'));
+app.use('/api', require('./routes/adminsignupRoutes'));
+app.use('/api', require('./routes/adminloginRoutes'));
+app.use('/api', require('./routes/adminlogoutRoutes'));
+app.use('/api', require('./routes/adminRoutes'));
+app.use('/api/taskers', require('./routes/taskerRoutes'));
+app.use('/api/clients', require('./routes/clientRoutes'));
 
 // ✅ Default Route
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');
 });
 
-// ✅ Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

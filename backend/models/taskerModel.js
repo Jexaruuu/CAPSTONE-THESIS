@@ -63,48 +63,53 @@ const createTasker = async (taskerData) => {
 
 // ✅ Fetch full tasker info including parsed jobType & serviceCategory
 const fetchTaskersWithFullInfo = async () => {
-  const [taskers] = await db.query(`
+  const [rows] = await db.query(`
     SELECT 
       tp.id,
       tp.fullName,
       tp.age,
       tp.gender,
+      tp.contactNumber,
+      tp.email,
+      tp.address,
+      tp.status,
       tp.profilePicture,
       tf.jobType,
       tf.serviceCategory,
       tf.experience,
-      tf.tools_equipment,
+      tf.skills,
       tf.rate_per_hour,
-      tp.status
+      tf.tools_equipment,
+      td.proofOfAddress,
+      td.medicalCertificate,
+      td.certificates AS additionalCertificate,
+      td.clearance
     FROM tasker_personal tp
-    LEFT JOIN tasker_professional tf ON tp.id = tf.id
+    JOIN tasker_professional tf ON tp.id = tf.id
+    LEFT JOIN tasker_documents td ON tp.id = td.id
+    WHERE tp.status IS NOT NULL
   `);
 
-  return taskers.map(tasker => {
-    let parsedJobType = [];
-    let parsedServiceCategory = {};
+  return rows.map(tasker => {
+    let jobTypeParsed = [];
+    let serviceCategoriesParsed = [];
 
     try {
-      parsedJobType = Array.isArray(tasker.jobType)
-        ? tasker.jobType
-        : JSON.parse(tasker.jobType || "[]");
+      jobTypeParsed = JSON.parse(tasker.jobType || "[]");
     } catch {
-      parsedJobType = [];
+      jobTypeParsed = [];
     }
 
     try {
-      parsedServiceCategory = typeof tasker.serviceCategory === "object"
-        ? tasker.serviceCategory
-        : JSON.parse(tasker.serviceCategory || "{}");
+      serviceCategoriesParsed = JSON.parse(tasker.serviceCategory || "{}");
     } catch {
-      parsedServiceCategory = {};
+      serviceCategoriesParsed = {};
     }
 
     return {
       ...tasker,
-      jobType: parsedJobType,
-      serviceCategory: parsedServiceCategory,
-      rate_per_hour: tasker.rate_per_hour ? parseFloat(tasker.rate_per_hour) : null
+      jobType: jobTypeParsed,
+      serviceCategory: serviceCategoriesParsed,
     };
   });
 };
