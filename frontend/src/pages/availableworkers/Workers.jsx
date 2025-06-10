@@ -22,14 +22,18 @@ const UserAvailableWorkers = () => {
 
   const categories = ["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"];
 
-  const fetchApprovedWorkers = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/api/taskers/approved");
-      setApprovedWorkers(response.data);
-    } catch (error) {
-      console.error("Error fetching approved workers:", error);
-    }
-  };
+const fetchApprovedWorkers = async () => {
+  try {
+    const response = await axios.get("http://localhost:3000/api/taskers/approved", {
+      params: {
+        excludeEmail: currentUser?.email
+      }
+    });
+    setApprovedWorkers(response.data);
+  } catch (error) {
+    console.error("Error fetching approved workers:", error);
+  }
+};
 
   useEffect(() => {
     fetchApprovedWorkers();
@@ -104,7 +108,7 @@ const handleHireNow = (worker) => {
       <div className="flex max-w-7xl mx-auto px-6 py-12 gap-8">
         {/* ✅ Sticky Sidebar */}
         <div className="w-full md:w-1/4 md:sticky top-24 self-start">
-          <h2 className="text-xl font-semibold mb-4">Categories</h2>
+          <h2 className="text-xl font-semibold mb-4">Workers Categories</h2>
           <ul className="space-y-2">
             {categories.map((cat) => (
               <li

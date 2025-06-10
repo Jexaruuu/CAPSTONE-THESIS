@@ -164,9 +164,12 @@ const getTaskerProfile = async (req, res) => {
 };
 
 // 🔥 Fetch only approved taskers
+// 🔥 Fetch only approved taskers (excluding current user if query param exists)
 const getAllApprovedTaskers = async (req, res) => {
+  const currentUserEmail = req.query.excludeEmail;
+
   try {
-    const [taskers] = await db.query(`
+    let query = `
       SELECT 
         tp.id,
         tp.fullName,
@@ -190,7 +193,17 @@ const getAllApprovedTaskers = async (req, res) => {
       JOIN tasker_professional tf ON tp.id = tf.id
       LEFT JOIN tasker_documents td ON tp.id = td.id
       WHERE tp.status = 'approved'
-    `);
+    `;
+
+    const values = [];
+
+    // ✅ If email is provided, exclude user's own application
+    if (currentUserEmail) {
+      query += ` AND tp.email != ?`;
+      values.push(currentUserEmail.trim().toLowerCase());
+    }
+
+    const [taskers] = await db.query(query, values);
 
     const taskersWithPrice = taskers.map(tasker => ({
       ...tasker,
