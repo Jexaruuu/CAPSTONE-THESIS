@@ -23,7 +23,9 @@ const UserAvailableServices = () => {
   useEffect(() => {
     const fetchApprovedServices = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/clients/approved");
+       const response = await axios.get("http://localhost:3000/api/clients/approved", {
+  params: { email: currentUser?.email }
+});
         setApprovedServices(response.data);
       } catch (error) {
         console.error("Error fetching approved services:", error);

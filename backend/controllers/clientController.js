@@ -108,7 +108,9 @@ const deleteClientRequest = async (req, res) => {
 // ✅ Fetch approved only (for servicerequest.jsx frontend)
 const getApprovedServices = async (req, res) => {
   try {
-    const [rows] = await db.query(`
+    const currentUserEmail = req.query.email;
+
+    let query = `
       SELECT 
         c.first_name, c.last_name, c.contact_number, c.email,
         c.street, c.barangay, c.additional_address, c.profile_picture,
@@ -119,7 +121,17 @@ const getApprovedServices = async (req, res) => {
       FROM client_information c
       JOIN service_details s ON c.id = s.client_id
       WHERE s.status = 'approved'
-    `);
+    `;
+
+    const params = [];
+
+    // 🛑 Exclude current user's services if email is provided
+    if (currentUserEmail) {
+      query += ` AND c.email != ?`;
+      params.push(currentUserEmail);
+    }
+
+    const [rows] = await db.query(query, params);
 
     const services = rows.map(service => ({
       ...service,

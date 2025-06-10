@@ -239,7 +239,7 @@ const EditProfile = () => {
     </div>
 
     {/* 🔘 Actions */}
-    <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8 shadow-md">
+    <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8">
       <button type="submit" disabled={loading} className={`bg-[#000081] hover:bg-[#0d05d2] text-white px-6 py-3 rounded-lg transition duration-200 w-full md:w-auto ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
           {loading ? "Updating..." : "Update Profile"}
       </button>
