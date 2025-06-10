@@ -14,22 +14,32 @@ const UserNavigation = () => {
   const profileRef = useRef(null);
   const location = useLocation();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      let parsedUser = JSON.parse(storedUser);
-
-      if (parsedUser.firstName || parsedUser.lastName) {
-        parsedUser.first_name = parsedUser.first_name || parsedUser.firstName;
-        parsedUser.last_name = parsedUser.last_name || parsedUser.lastName;
-        delete parsedUser.firstName;
-        delete parsedUser.lastName;
-        localStorage.setItem("user", JSON.stringify(parsedUser));
-      }
-
-      setUser(parsedUser);
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    const parsedUser = JSON.parse(storedUser);
+    if (parsedUser.firstName || parsedUser.lastName) {
+      parsedUser.first_name = parsedUser.first_name || parsedUser.firstName;
+      parsedUser.last_name = parsedUser.last_name || parsedUser.lastName;
+      delete parsedUser.firstName;
+      delete parsedUser.lastName;
+      localStorage.setItem("user", JSON.stringify(parsedUser));
     }
-  }, []);
+    setUser(parsedUser);
+  }
+
+  // 🔁 Listen for profile picture updates
+  const handleProfilePictureChange = () => {
+    const updatedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(updatedUser);
+  };
+
+  window.addEventListener("profilePictureUpdated", handleProfilePictureChange);
+
+  return () => {
+    window.removeEventListener("profilePictureUpdated", handleProfilePictureChange);
+  };
+}, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
