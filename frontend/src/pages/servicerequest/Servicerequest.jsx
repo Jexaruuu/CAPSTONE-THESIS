@@ -167,11 +167,16 @@ const totalPages = Math.ceil(nonExpiredServices.length / itemsPerPage);
 
         {/* Cards Grid */}
         <div className="w-full md:w-3/4 flex flex-col space-y-6">
-          {paginatedServices.map((service, index) => (
-  <div
-    key={index}
-    className="bg-white shadow-xl rounded-2xl p-6 flex flex-col sm:flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
-  >
+          {paginatedServices.length === 0 ? (
+<div className="text-center py-16 text-gray-600 text-lg font-semibold">
+  🚧 No {selectedCategory === "All" ? "" : selectedCategory + " "}service requests available right now.
+</div>
+) : (
+  paginatedServices.map((service, index) => (
+    <div
+      key={index}
+      className="bg-white shadow-xl rounded-2xl p-6 flex flex-col sm:flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
+    >
     <div className="flex-shrink-0 flex flex-col items-center">
       <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-2">
         <img
@@ -240,7 +245,8 @@ const totalPages = Math.ceil(nonExpiredServices.length / itemsPerPage);
       </div>
     </div>
   </div>
-))}
+  ))
+)}
 
           {/* ✅ Pagination Controls */}
           {totalPages > 1 && (

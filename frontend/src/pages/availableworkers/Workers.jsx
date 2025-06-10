@@ -150,9 +150,15 @@ const handleHireNow = (worker) => {
             const startIndex = (currentPage - 1) * itemsPerPage;
             const paginatedWorkers = filtered.slice(startIndex, startIndex + itemsPerPage);
 
-            return (
-              <>
-                {paginatedWorkers.map((worker, index) => (
+           return (
+  <>
+    {paginatedWorkers.length === 0 ? (
+  <div className="text-center py-16 text-gray-600 text-lg font-semibold">
+  🚧 No {selectedCategory === "All" ? "" : selectedCategory + " "}workers available right now.
+</div>
+    ) : (
+      <>
+        {paginatedWorkers.map((worker, index) => (
                   <div
                     key={index}
                     className="bg-white shadow-xl rounded-2xl p-6 flex flex-col sm:flex-row-reverse items-center gap-6 min-h-[300px] transition-transform duration-300 hover:scale-[1.01] hover:shadow-2xl"
@@ -281,25 +287,28 @@ const handleHireNow = (worker) => {
                 ))}
 
                 {/* Pagination Buttons */}
-                {totalPages > 1 && (
-                  <div className="flex justify-center mt-6 gap-2">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                      <button
-                        key={pageNum}
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`px-4 py-2 rounded-full border ${
-                          pageNum === currentPage
-                            ? "bg-[#000081] text-white"
-                            : "bg-white text-[#000081] border-[#000081]"
-                        } hover:bg-[#000081] hover:text-white transition`}
-                      >
-                        {pageNum}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            );
+                  {/* Pagination Buttons */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6 gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`px-4 py-2 rounded-full border ${
+                  pageNum === currentPage
+                    ? "bg-[#000081] text-white"
+                    : "bg-white text-[#000081] border-[#000081]"
+                } hover:bg-[#000081] hover:text-white transition`}
+              >
+                {pageNum}
+              </button>
+            ))}
+          </div>
+        )}
+      </>
+    )}
+  </>
+);
           })()}
         </div>
       </div>
