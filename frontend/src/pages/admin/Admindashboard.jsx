@@ -800,13 +800,13 @@ if (status === "cancelled") {
             {/* ✨ Scrollable tasker cards with pagination */}
             <div className="flex flex-col gap-5 overflow-y-auto pr-2">
               {taskers
-                .filter(tasker =>
-                  (selectedJobTypeFilter === "All" ||
-                    (Array.isArray(tasker.jobType) &&
-                      tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
-                  (selectedStatusFilter === "All" ||
-                    tasker.status === selectedStatusFilter.toLowerCase())
-                )
+  .filter(tasker =>
+    (selectedJobTypeFilter === "All" ||
+      (Array.isArray(tasker.jobType) &&
+        tasker.jobType.includes(selectedJobTypeFilter.toLowerCase()))) &&
+    (selectedStatusFilter === "All" ||
+      tasker.status === selectedStatusFilter.toLowerCase())
+  )
                 .slice((currentPage - 1) * taskersPerPage, currentPage * taskersPerPage)
                 .map((tasker) => (
                   <div

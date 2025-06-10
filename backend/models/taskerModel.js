@@ -87,12 +87,11 @@ const fetchTaskersWithFullInfo = async () => {
     FROM tasker_personal tp
     JOIN tasker_professional tf ON tp.id = tf.id
     LEFT JOIN tasker_documents td ON tp.id = td.id
-    WHERE tp.status IS NOT NULL
-  `);
+  `); // 🟢 removed status filtering
 
   return rows.map(tasker => {
     let jobTypeParsed = [];
-    let serviceCategoriesParsed = [];
+    let serviceCategoriesParsed = {};
 
     try {
       jobTypeParsed = JSON.parse(tasker.jobType || "[]");
@@ -108,6 +107,7 @@ const fetchTaskersWithFullInfo = async () => {
 
     return {
       ...tasker,
+      status: tasker.status?.toLowerCase(), // ✅ Normalize here
       jobType: jobTypeParsed,
       serviceCategory: serviceCategoriesParsed,
     };
