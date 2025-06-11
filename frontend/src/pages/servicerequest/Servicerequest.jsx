@@ -20,6 +20,15 @@ const UserAvailableServices = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
+const [applicationService, setApplicationService] = useState(null);
+const [applicationForm, setApplicationForm] = useState({
+  fullName: `${currentUser?.first_name || ""} ${currentUser?.last_name || ""}`,
+  email: currentUser?.email || "",
+  profilePicture: currentUser?.profile_picture || "",
+  message: ""
+});
+
   useEffect(() => {
     const fetchApprovedServices = async () => {
       try {
@@ -77,11 +86,28 @@ const UserAvailableServices = () => {
     return cleaned.startsWith("63") ? `+${cleaned}` : `+63${cleaned}`;
   };
 
-  const handleApply = async (service) => {
+const handleApply = async (service) => {
   if (String(service.user_id) === String(userId)) {
-  alert("You cannot apply to your own service request.");
-  return;
+    alert("You cannot apply to your own service request.");
+    return;
+  }
+  setApplicationService(service);
+  setShowApplicationModal(true);
+};
+
+const handleApplicationSubmit = async () => {
+try {
+  const userId = localStorage.getItem("userId");
+  const response = await axios.post("http://localhost:3000/api/applications", {
+    userId,
+    serviceId: service.id
+  });
+  alert("Application submitted successfully!");
+} catch (error) {
+  console.error("Error applying for service:", error);
+  alert("Failed to apply for this job.");
 }
+
 
     try {
       const userId = localStorage.getItem("userId");
@@ -337,6 +363,61 @@ const totalPages = Math.ceil(nonExpiredServices.length / itemsPerPage);
           </div>
         </div>
       )}
+    </div>
+  </div>
+)}
+
+{showApplicationModal && applicationService && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
+    <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl p-6 relative overflow-y-auto max-h-[90vh]">
+      <button
+        onClick={() => {
+          setShowApplicationModal(false);
+          setApplicationForm((prev) => ({ ...prev, message: "" }));
+        }}
+        className="absolute top-3 right-4 text-2xl font-bold text-gray-600 hover:text-red-600"
+      >
+        &times;
+      </button>
+
+      <h2 className="text-2xl font-bold text-[#000081] mb-6 text-center">Application for Service Request</h2>
+
+      {/* User Info */}
+      <div className="flex flex-col items-center text-center mb-6">
+        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-2">
+          <img
+            src={`http://localhost:3000${applicationForm.profilePicture}`}
+            alt="User"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <h3 className="text-lg font-bold text-[#000081]">{applicationForm.fullName}</h3>
+        <p className="text-sm text-gray-600">{applicationForm.email}</p>
+      </div>
+
+      {/* Application Message */}
+      <div className="mb-6">
+        <label className="block text-gray-700 font-semibold mb-2">Message to Client (Optional):</label>
+        <textarea
+          rows="4"
+          className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          value={applicationForm.message}
+          onChange={(e) =>
+            setApplicationForm((prev) => ({ ...prev, message: e.target.value }))
+          }
+          placeholder="Write a short message..."
+        ></textarea>
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={handleApplicationSubmit}
+          className="bg-[#000081] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#0d05d2] transition"
+        >
+          Submit Application
+        </button>
+      </div>
     </div>
   </div>
 )}
