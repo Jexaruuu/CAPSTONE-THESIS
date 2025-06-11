@@ -23,6 +23,8 @@ exports.submitApplication = async (req, res) => {
       backgroundCheckConsent,
       termsConsent,
       dataPrivacyConsent,
+      homeAddress,               // 🆕 New Field
+      yearsExperience            // 🆕 New Field
     } = req.body;
 
     const uploadDir = path.join(__dirname, "../uploads/applications");
@@ -46,20 +48,25 @@ exports.submitApplication = async (req, res) => {
     const medicalCertificate = saveFile(req.files?.medicalCertificate, "med-cert");
     const tesdaCertificate = saveFile(req.files?.tesdaCertificate, "tesda");
 
+    // ✅ Insert into applicant_information (now includes home_address)
     const [infoResult] = await db.query(
       `INSERT INTO applicant_information 
-        (fullName, email, birthDate, age, sex, contactNumber, social_media, profile_picture)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [fullName, email, birthDate, age, sex, contactNumber, socialMedia, profilePicture]
+        (fullName, email, birthDate, age, sex, contactNumber, social_media, home_address, profile_picture)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [fullName, email, birthDate, age, sex, contactNumber, socialMedia, homeAddress, profilePicture]
     );
 
     const applicantId = infoResult.insertId;
 
+    // ✅ Insert into applicant_workinfo (now includes years_experience)
     await db.query(
-      `INSERT INTO applicant_workinfo (applicant_id, job_type, tools_equipment) VALUES (?, ?, ?)`,
-      [applicantId, jobType, toolsEquipment]
+      `INSERT INTO applicant_workinfo 
+        (applicant_id, job_type, tools_equipment, years_experience) 
+        VALUES (?, ?, ?, ?)`,
+      [applicantId, jobType, toolsEquipment, yearsExperience]
     );
 
+    // ✅ Insert into applicant_documents
     await db.query(
       `INSERT INTO applicant_documents 
         (applicant_id, primary_id_front, primary_id_back, secondary_id, proof_of_address, medical_certificate, tesda_certificate)
@@ -75,6 +82,7 @@ exports.submitApplication = async (req, res) => {
       ]
     );
 
+    // ✅ Insert into applicant_agreement
     await db.query(
       `INSERT INTO applicant_agreement 
         (applicant_id, background_check_consent, terms_consent, data_privacy_consent)

@@ -31,8 +31,10 @@ const UserAvailableServices = () => {
     birthDate: "",
     sex: "",
     contactNumber: "",
+    homeAddress: "",
     socialMedia: "",
     jobType: "",
+    yearsExperience: "",
     toolsEquipment: "",
     backgroundCheckConsent: false,
     termsConsent: false,
@@ -147,6 +149,8 @@ const handleApplicationSubmit = async () => {
         formData.append("backgroundCheckConsent", applicationForm.backgroundCheckConsent);
         formData.append("termsConsent", applicationForm.termsConsent);
         formData.append("dataPrivacyConsent", applicationForm.dataPrivacyConsent);
+        formData.append("homeAddress", applicationForm.homeAddress);
+        formData.append("yearsExperience", applicationForm.yearsExperience);
 
         // Add files to FormData only if they exist
         if (applicationForm.profilePicture) formData.append("profilePicture", applicationForm.profilePicture);
@@ -447,6 +451,17 @@ const handleApplicationSubmit = async () => {
               </div>
 
               <div>
+  <label className="block text-gray-700 font-medium mb-2">Home Address</label>
+  <input
+    type="text"
+    className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+    value={applicationForm.homeAddress}
+    onChange={(e) => setApplicationForm({ ...applicationForm, homeAddress: e.target.value })}
+    placeholder="Enter your home address"
+  />
+</div>
+
+              <div>
                 <label className="block text-gray-700 font-medium mb-2">Social Media Account</label>
                 <input
                   type="text"
@@ -460,6 +475,17 @@ const handleApplicationSubmit = async () => {
 
             {/* Work Information Section */}
             <div className="space-y-6">
+<div>
+  <label className="block text-gray-700 font-medium mb-2">Years of Experience</label>
+  <input
+    type="number"
+    className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+    value={applicationForm.yearsExperience}
+    onChange={(e) => setApplicationForm({ ...applicationForm, yearsExperience: e.target.value })}
+    placeholder="Enter number of years"
+  />
+</div>
+
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Job Type</label>
                 <input
