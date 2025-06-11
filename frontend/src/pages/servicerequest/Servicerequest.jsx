@@ -60,6 +60,25 @@ const UserAvailableServices = () => {
   }, []);
 
   useEffect(() => {
+  const fetchExistingProfilePicture = async () => {
+    const profilePath = currentUser?.profile_picture;
+    if (profilePath && !(applicationForm.profilePicture instanceof File)) {
+      try {
+        const response = await fetch(`http://localhost:3000${profilePath}`);
+        const blob = await response.blob();
+        const fileName = profilePath.split('/').pop();
+        const file = new File([blob], fileName, { type: blob.type });
+        setApplicationForm((prev) => ({ ...prev, profilePicture: file }));
+      } catch (error) {
+        console.error("Error fetching existing profile picture:", error);
+      }
+    }
+  };
+
+  fetchExistingProfilePicture();
+}, [currentUser?.profile_picture]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setFade(false);
       setTimeout(() => {
@@ -150,7 +169,7 @@ const handleApplicationSubmit = async () => {
         }
 
         // Send the data to backend
-        const response = await axios.post("http://localhost:3000/api/submit-application", formData, {
+    const response = await axios.post("http://localhost:3000/api/applicants/submit-application", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -364,11 +383,15 @@ const handleApplicationSubmit = async () => {
             {/* User Info: Profile Picture and Email */}
             <div className="flex flex-col items-center text-center mb-8">
               <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow-lg mb-3">
-                <img
-                  src={`http://localhost:3000${applicationForm.profilePicture}`} // Profile picture
-                  alt="User"
-                  className="w-full h-full object-cover"
-                />
+            <img
+  src={
+    applicationForm.profilePicture instanceof File
+      ? URL.createObjectURL(applicationForm.profilePicture)
+      : `http://localhost:3000${applicationForm.profilePicture}`
+  }
+  alt="User"
+  className="w-full h-full object-cover"
+/>
               </div>
               <h3 className="text-xl font-bold text-[#000081]">{applicationForm.fullName}</h3>
               <p className="text-sm text-gray-600">{applicationForm.email}</p> {/* Display email address */}
