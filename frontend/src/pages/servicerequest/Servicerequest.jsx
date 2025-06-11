@@ -568,6 +568,71 @@ const handleApplicationSubmit = async () => {
   </div>
 )}
 
+{/* Service Request Details Modal */}
+{showModal && selectedService && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
+    <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh] relative">
+      <button
+        onClick={closeModal}
+        className="absolute top-4 right-4 text-2xl font-bold text-gray-600 hover:text-red-600 transition"
+      >
+        &times;
+      </button>
+
+      {/* Header Image */}
+      <div className="rounded-t-2xl overflow-hidden h-56 w-full">
+        <img
+          src={`http://localhost:3000${selectedService.service_image}`}
+          alt="Service"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      <div className="p-8 bg-gray-50">
+        <h2 className="text-3xl font-semibold text-[#000081] text-center mb-6">Service Request Details</h2>
+
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+          {/* Profile Picture and Name */}
+          <div className="flex flex-col items-center w-full md:w-1/3">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-3">
+              <img
+                src={`http://localhost:3000${selectedService.profile_picture}`}
+                alt="Client"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h3 className="text-xl font-bold text-[#000081] text-center">{`${selectedService.first_name} ${selectedService.last_name}`}</h3>
+            <p className="text-sm text-gray-600">{selectedService.email || "N/A"}</p>
+          </div>
+
+          {/* Details */}
+          <div className="w-full md:w-2/3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm md:text-base text-gray-700">
+              <p><strong className="text-blue-800">Contact:</strong> {formatPhone(selectedService.contact_number)}</p>
+              <p><strong className="text-blue-800">Address:</strong> {selectedService.address || "N/A"}</p>
+              <p><strong className="text-blue-800">Date:</strong> {formatDate(selectedService.preferred_date)}</p>
+              <p><strong className="text-blue-800">Time:</strong> {formatTime(selectedService.preferred_time)}</p>
+              <p><strong className="text-blue-800">Urgent:</strong>{" "}
+                <span className={selectedService.urgent_request === "Yes" ? "text-red-600 font-bold" : "text-green-600"}>
+                  {selectedService.urgent_request === "Yes" ? "Yes" : "No"}
+                </span>
+              </p>
+              <p><strong className="text-blue-800">Service Type:</strong> {selectedService.service_type || "N/A"}</p>
+            </div>
+
+            <div className="mt-6">
+              <p className="text-blue-800 font-semibold mb-2">Service Description:</p>
+              <p className="text-gray-700 bg-white border border-gray-200 rounded-lg p-4 shadow-sm whitespace-pre-line">
+                {selectedService.service_description || "No description provided."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
       {/* ✅ Footer */}
       <Footer />
     </div>
