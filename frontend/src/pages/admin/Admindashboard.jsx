@@ -417,7 +417,7 @@ if (status === "cancelled") {
               <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative flex items-center text-base font-semibold">
                 <FileTextIcon className="mr-3 w-5 h-5" />
-                Applications
+                Worker Applications
 {pendingApplications > 0 && (
   <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
     {pendingApplications}
@@ -426,26 +426,55 @@ if (status === "cancelled") {
               </span>
             </button>
 
-            {/* Service Requests Button with Pending Badge */}
-            <button
-              onClick={() => { setActive("ServiceRequests"); setSubActive(""); }}
-              className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
-                ${active === "ServiceRequests"
-                  ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
-                  : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
-              `}
-            >
-              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative flex items-center text-base font-semibold">
-              <ClipboardListIcon className="mr-3 w-5 h-5" />
-              Service Requests
-       {pendingServiceRequests > 0 && (
-  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-    {pendingServiceRequests}
+            {/* Service Requests Button with Submenu */}
+<button
+onClick={() => {
+  setActive("ServiceRequests");
+  setSubActive("ServiceRequests"); // 👈 highlight default submenu
+}}
+  className={`relative w-full rounded px-5 py-2.5 overflow-hidden group transition-all ease-out duration-300
+    ${active === "ServiceRequests"
+      ? "bg-[#000081] text-white hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2]"
+      : "text-black hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#0d05d2] hover:text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400"}
+  `}
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative flex items-center text-base font-semibold">
+    <ClipboardListIcon className="mr-3 w-5 h-5" />
+    Service Requests
+    {pendingServiceRequests > 0 && (
+      <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+        {pendingServiceRequests}
+      </span>
+    )}
   </span>
+</button>
+
+{/* Submenu for Service Requests */}
+{active === "ServiceRequests" && (
+  <div className="ml-8 mt-2 space-y-1">
+    <button
+      onClick={() => setSubActive("ServiceRequests")}
+      className={`w-full text-left px-4 py-2 rounded text-sm ${
+        subActive === "ServiceRequests"
+          ? "bg-blue-100 text-blue-800 font-semibold"
+          : "text-gray-700 hover:bg-gray-100"
+      }`}
+    >
+      All Service Requests
+    </button>
+    <button
+      onClick={() => setSubActive("ServiceRequestApplicants")}
+      className={`w-full text-left px-4 py-2 rounded text-sm ${
+        subActive === "ServiceRequestApplicants"
+          ? "bg-blue-100 text-blue-800 font-semibold"
+          : "text-gray-700 hover:bg-gray-100"
+      }`}
+    >
+      Service Request Applicants
+    </button>
+  </div>
 )}
-            </span>
-            </button>
 
             <button
               onClick={() => { setActive("Settings"); setSubActive(""); }}
@@ -591,13 +620,17 @@ if (status === "cancelled") {
 
           {/* Sticky Header */}
           <div className="sticky top-0 z-30 bg-gray-100 py-4 px-6 shadow-sm border-b border-gray-200 flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold">
-              {active === "Dashboard" && "Dashboard Overview"}
-              {active === "Users" && "Manage Users"}
-              {active === "Applications" && "Applications"}
-              {active === "ServiceRequests" && "Service Requests"}
-              {active === "Settings" && "Admin Settings"}
-            </h2>
+      <h2 className="text-2xl font-semibold">
+  {active === "Dashboard" && "Dashboard Overview"}
+  {active === "Users" && "Manage Users"}
+  {active === "Applications" && "Applications"}
+  {active === "ServiceRequests" && (
+    subActive === "ServiceRequestApplicants"
+      ? "Service Request Applicants"
+      : "Service Requests"
+  )}
+  {active === "Settings" && "Admin Settings"}
+</h2>
 
             <div className="text-lg font-semibold text-gray-700 flex items-center space-x-4">
               <div>🕒 {clock}</div>
@@ -938,8 +971,8 @@ if (status === "cancelled") {
               </div>
             )}
 
-            {active === "ServiceRequests" && (
-              <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
+         {active === "ServiceRequests" && subActive !== "ServiceRequestApplicants" && (
+  <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
                 <p className="mb-4">
                   Manage and review client service submissions. View their profiles, and decide to approve or reject based on qualifications.
                 </p>

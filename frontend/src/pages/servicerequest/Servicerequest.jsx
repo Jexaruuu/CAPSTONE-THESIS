@@ -107,8 +107,6 @@ try {
   console.error("Error applying for service:", error);
   alert("Failed to apply for this job.");
 }
-
-
     try {
       const userId = localStorage.getItem("userId");
       const response = await axios.post("http://localhost:3000/api/applications", {
