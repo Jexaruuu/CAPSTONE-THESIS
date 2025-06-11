@@ -133,58 +133,77 @@ const UserAvailableServices = () => {
   };
 
 const handleApplicationSubmit = async () => {
-    try {
-        const formData = new FormData();
+  try {
+    // Validate required fields
+    const {
+      fullName,
+      email,
+      age,
+      birthDate,
+      sex,
+      contactNumber,
+      homeAddress,
+      socialMedia,
+      yearsExperience,
+      jobType,
+      toolsEquipment,
+      backgroundCheckConsent,
+      termsConsent,
+      dataPrivacyConsent,
+      profilePicture,
+      primaryIdFront,
+      primaryIdBack,
+      secondaryId,
+      proofOfAddress,
+      medicalCertificate,
+    } = applicationForm;
 
-        // Add form fields to FormData
-        formData.append("fullName", applicationForm.fullName);
-        formData.append("email", applicationForm.email);
-        formData.append("age", applicationForm.age);
-        formData.append("birthDate", applicationForm.birthDate);
-        formData.append("sex", applicationForm.sex);
-        formData.append("contactNumber", applicationForm.contactNumber);
-        formData.append("socialMedia", applicationForm.socialMedia);
-        formData.append("jobType", applicationForm.jobType);
-        formData.append("toolsEquipment", applicationForm.toolsEquipment);
-        formData.append("backgroundCheckConsent", applicationForm.backgroundCheckConsent);
-        formData.append("termsConsent", applicationForm.termsConsent);
-        formData.append("dataPrivacyConsent", applicationForm.dataPrivacyConsent);
-        formData.append("homeAddress", applicationForm.homeAddress);
-        formData.append("yearsExperience", applicationForm.yearsExperience);
+    const missingFields = [];
 
-        // Add files to FormData only if they exist
-        if (applicationForm.profilePicture) formData.append("profilePicture", applicationForm.profilePicture);
-        if (applicationForm.primaryIdFront) formData.append("primaryIdFront", applicationForm.primaryIdFront);
-        if (applicationForm.primaryIdBack) formData.append("primaryIdBack", applicationForm.primaryIdBack);
-        if (applicationForm.secondaryId) formData.append("secondaryId", applicationForm.secondaryId);
-        if (applicationForm.proofOfAddress) formData.append("proofOfAddress", applicationForm.proofOfAddress);
-        if (applicationForm.medicalCertificate) formData.append("medicalCertificate", applicationForm.medicalCertificate);
-        if (applicationForm.tesdaCertificate) formData.append("tesdaCertificate", applicationForm.tesdaCertificate);
+    if (!fullName) missingFields.push("Full Name");
+    if (!email) missingFields.push("Email");
+    if (!age) missingFields.push("Age");
+    if (!birthDate) missingFields.push("Birthdate");
+    if (!sex) missingFields.push("Sex");
+    if (!contactNumber) missingFields.push("Contact Number");
+    if (!homeAddress) missingFields.push("Home Address");
+    if (!socialMedia) missingFields.push("Social Media");
+    if (!yearsExperience) missingFields.push("Years of Experience");
+    if (!jobType) missingFields.push("Job Type");
+    if (!toolsEquipment) missingFields.push("Tools/Equipment Info");
+    if (!backgroundCheckConsent) missingFields.push("Background Check Consent");
+    if (!termsConsent) missingFields.push("Terms Consent");
+    if (!dataPrivacyConsent) missingFields.push("Data Privacy Consent");
+    if (!profilePicture) missingFields.push("Profile Picture");
+    if (!primaryIdFront) missingFields.push("Primary ID (Front)");
+    if (!primaryIdBack) missingFields.push("Primary ID (Back)");
+    if (!secondaryId) missingFields.push("Secondary ID");
+    if (!proofOfAddress) missingFields.push("Proof of Address");
+    if (!medicalCertificate) missingFields.push("Medical Certificate");
 
-        // Log FormData
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
-        }
-
-        // Check if all necessary fields are filled before submitting
-        if (!applicationForm.fullName || !applicationForm.email || !applicationForm.profilePicture) {
-            alert("Please fill all required fields and upload all required documents.");
-            return;
-        }
-
-        // Send the data to backend
-    const response = await axios.post("http://localhost:3000/api/applicants/submit-application", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-
-        alert(response.data.message);
-        setShowApplicationModal(false); // Close the modal after successful submission
-    } catch (error) {
-        console.error("Error applying for service:", error);
-        alert("Failed to apply for this job.");
+    if (missingFields.length > 0) {
+      alert(`Please fill in or upload the following required fields:\n\n• ${missingFields.join("\n• ")}`);
+      return;
     }
+
+    // Proceed to submit if all required fields are filled
+    const formData = new FormData();
+    Object.entries(applicationForm).forEach(([key, value]) => {
+      if (value) formData.append(key, value);
+    });
+
+    const response = await axios.post("http://localhost:3000/api/applicants/submit-application", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    alert(response.data.message);
+    setShowApplicationModal(false);
+  } catch (error) {
+    console.error("Error applying for service:", error);
+    alert("Failed to apply for this job.");
+  }
 };
 
   const filteredServices =
@@ -368,269 +387,186 @@ const handleApplicationSubmit = async () => {
         </div>
       </div>
 
-      {/* Application Modal */}
-      {showApplicationModal && applicationService && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
-          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-8 relative overflow-y-auto max-h-[90vh]">
-            <button
-              onClick={() => {
-                setShowApplicationModal(false);
-                setApplicationForm((prev) => ({ ...prev, message: "" }));
-              }}
-              className="absolute top-4 right-4 text-2xl font-bold text-gray-600 hover:text-red-600 transition-all"
-            >
-              &times;
-            </button>
+{/* Application Modal */}
+{showApplicationModal && applicationService && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
+    <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-8 relative overflow-y-auto max-h-[90vh]">
+      <button
+        onClick={() => {
+          setShowApplicationModal(false);
+          setApplicationForm((prev) => ({ ...prev, message: "" }));
+        }}
+        className="absolute top-4 right-4 text-2xl font-bold text-gray-600 hover:text-red-600 transition-all"
+      >
+        &times;
+      </button>
 
-            <h2 className="text-3xl font-semibold text-[#000081] mb-8 text-center">Application for Service Request</h2>
+      <h2 className="text-3xl font-semibold text-[#000081] mb-8 text-center">Application for Service Request</h2>
 
-            {/* User Info: Profile Picture and Email */}
-            <div className="flex flex-col items-center text-center mb-8">
-              <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow-lg mb-3">
-            <img
-  src={
-    applicationForm.profilePicture instanceof File
-      ? URL.createObjectURL(applicationForm.profilePicture)
-      : `http://localhost:3000${applicationForm.profilePicture}`
-  }
-  alt="User"
-  className="w-full h-full object-cover"
-/>
-              </div>
-              <h3 className="text-xl font-bold text-[#000081]">{applicationForm.fullName}</h3>
-              <p className="text-sm text-gray-600">{applicationForm.email}</p> {/* Display email address */}
-            </div>
+      {/* User Info: Profile Picture and Email */}
+      <div className="flex flex-col items-center text-center mb-8">
+        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow-lg mb-3">
+          <img
+            src={
+              applicationForm.profilePicture instanceof File
+                ? URL.createObjectURL(applicationForm.profilePicture)
+                : `http://localhost:3000${applicationForm.profilePicture}`
+            }
+            alt="User"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <h3 className="text-xl font-bold text-[#000081]">{applicationForm.fullName}</h3>
+        <p className="text-sm text-gray-600">{applicationForm.email}</p>
+      </div>
 
-            {/* Personal Information Section */}
-            <div className="space-y-6">
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Age</label>
-                <input
-                  type="number"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  value={applicationForm.age}
-                  onChange={(e) => setApplicationForm({ ...applicationForm, age: e.target.value })}
-                  placeholder="Enter your age"
-                />
-              </div>
+      {/* Personal Information Section */}
+      <div className="border border-gray-200 rounded-xl p-6 mb-8 shadow-sm bg-gray-50">
+        <h3 className="text-lg font-semibold text-[#000081] mb-4 border-b pb-2">Personal Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Age</label>
+            <input type="number" value={applicationForm.age} onChange={(e) => setApplicationForm({ ...applicationForm, age: e.target.value })} placeholder="Enter your age" className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+          </div>
 
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Birthdate</label>
-                <input
-                  type="date"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  value={applicationForm.birthDate}
-                  onChange={(e) => setApplicationForm({ ...applicationForm, birthDate: e.target.value })}
-                />
-              </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Birthdate</label>
+            <input type="date" value={applicationForm.birthDate} onChange={(e) => setApplicationForm({ ...applicationForm, birthDate: e.target.value })} className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+          </div>
 
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Sex</label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  value={applicationForm.sex}
-                  onChange={(e) => setApplicationForm({ ...applicationForm, sex: e.target.value })}
-                >
-                  <option value="">Select Sex</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Sex</label>
+            <select value={applicationForm.sex} onChange={(e) => setApplicationForm({ ...applicationForm, sex: e.target.value })} className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+              <option value="">Select Sex</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
 
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Contact Number</label>
-                <input
-                  type="tel"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  value={applicationForm.contactNumber}
-                  onChange={(e) =>
-                    setApplicationForm({ ...applicationForm, contactNumber: formatPhone(e.target.value) })
-                  }
-                  placeholder="Enter your contact number"
-                />
-              </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Contact Number</label>
+            <input type="tel" value={applicationForm.contactNumber} onChange={(e) => setApplicationForm({ ...applicationForm, contactNumber: formatPhone(e.target.value) })} placeholder="Enter your contact number" className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+          </div>
 
-              <div>
-  <label className="block text-gray-700 font-medium mb-2">Home Address</label>
-  <input
-    type="text"
-    className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-    value={applicationForm.homeAddress}
-    onChange={(e) => setApplicationForm({ ...applicationForm, homeAddress: e.target.value })}
-    placeholder="Enter your home address"
-  />
-</div>
+          <div className="md:col-span-2">
+            <label className="block text-gray-700 font-medium mb-2">Home Address</label>
+            <input type="text" value={applicationForm.homeAddress} onChange={(e) => setApplicationForm({ ...applicationForm, homeAddress: e.target.value })} placeholder="Enter your home address" className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+          </div>
 
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Social Media Account</label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  value={applicationForm.socialMedia}
-                  onChange={(e) => setApplicationForm({ ...applicationForm, socialMedia: e.target.value })}
-                  placeholder="Enter your social media account link"
-                />
-              </div>
-            </div>
-
-            {/* Work Information Section */}
-            <div className="space-y-6">
-<div>
-  <label className="block text-gray-700 font-medium mb-2">Years of Experience</label>
-  <input
-    type="number"
-    className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-    value={applicationForm.yearsExperience}
-    onChange={(e) => setApplicationForm({ ...applicationForm, yearsExperience: e.target.value })}
-    placeholder="Enter number of years"
-  />
-</div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Job Type</label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  value={applicationForm.jobType || (applicationService?.service_type.charAt(0).toUpperCase() + applicationService?.service_type.slice(1).toLowerCase())} // Capitalize only the first letter
-                  readOnly
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Do you have your own tools or equipment?</label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  value={applicationForm.toolsEquipment}
-                  onChange={(e) => setApplicationForm({ ...applicationForm, toolsEquipment: e.target.value })}
-                >
-                  <option value="">Select Yes or No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Document Upload Section */}
-            <div className="space-y-6">
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Primary ID (Front)</label>
-                <input
-                  type="file"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  onChange={(e) => setApplicationForm({ ...applicationForm, primaryIdFront: e.target.files[0] })}
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Primary ID (Back)</label>
-                <input
-                  type="file"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  onChange={(e) => setApplicationForm({ ...applicationForm, primaryIdBack: e.target.files[0] })}
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Secondary ID</label>
-                <input
-                  type="file"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  onChange={(e) => setApplicationForm({ ...applicationForm, secondaryId: e.target.files[0] })}
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Proof of Address</label>
-                <input
-                  type="file"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  onChange={(e) => setApplicationForm({ ...applicationForm, proofOfAddress: e.target.files[0] })}
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Medical Certificate</label>
-                <input
-                  type="file"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                  onChange={(e) => setApplicationForm({ ...applicationForm, medicalCertificate: e.target.files[0] })}
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">TESDA/Training Certificate (Optional)</label>
-                <input
-                  type="file"
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition mb-8"
-                  onChange={(e) => setApplicationForm({ ...applicationForm, tesdaCertificate: e.target.files[0] })}
-                />
-              </div>
-            </div>
-
-            {/* Agreement Section */}
-            <div className="space-y-6">
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  <input
-                    type="checkbox"
-                    checked={applicationForm.backgroundCheckConsent}
-                    onChange={() =>
-                      setApplicationForm({
-                        ...applicationForm,
-                        backgroundCheckConsent: !applicationForm.backgroundCheckConsent,
-                      })
-                    }
-                  />{" "}
-                  I consent to background checks and verify my documents. *
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-">
-                  <input
-                    type="checkbox"
-                    checked={applicationForm.termsConsent}
-                    onChange={() => setApplicationForm({ ...applicationForm, termsConsent: !applicationForm.termsConsent })}
-                  />{" "}
-                  I agree to JD HOMECARE's Terms of Service and Privacy Policy. *
-                  <a href="#" className="text-blue-600">
-                    View Terms of Service and Privacy Policy
-                  </a>
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  <input
-                    type="checkbox"
-                    checked={applicationForm.dataPrivacyConsent}
-                    onChange={() =>
-                      setApplicationForm({
-                        ...applicationForm,
-                        dataPrivacyConsent: !applicationForm.dataPrivacyConsent,
-                      })
-                    }
-                  />{" "}
-                  I consent to the collection and processing of my personal data in accordance with the Data Privacy Act (RA 10173).
-                  <p className="text-sm text-gray-500 mt-1">
-                    Your data will be protected and processed in compliance with Philippine law.
-                  </p>
-                </label>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-center mt-8">
-              <button
-                onClick={handleApplicationSubmit}
-                className="bg-[#000081] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#0d05d2] transition duration-300"
-              >
-                Submit Application
-              </button>
-            </div>
+          <div className="md:col-span-2">
+            <label className="block text-gray-700 font-medium mb-2">Social Media Account</label>
+            <input type="text" value={applicationForm.socialMedia} onChange={(e) => setApplicationForm({ ...applicationForm, socialMedia: e.target.value })} placeholder="Enter your social media account link" className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Work Information Section */}
+      <div className="border border-gray-200 rounded-xl p-6 mb-8 shadow-sm bg-gray-50">
+        <h3 className="text-lg font-semibold text-[#000081] mb-4 border-b pb-2">Work Information</h3>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Years of Experience</label>
+            <input type="number" value={applicationForm.yearsExperience} onChange={(e) => setApplicationForm({ ...applicationForm, yearsExperience: e.target.value })} placeholder="Enter number of years" className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Job Type</label>
+            <input type="text" readOnly value={applicationForm.jobType || (applicationService?.service_type.charAt(0).toUpperCase() + applicationService?.service_type.slice(1).toLowerCase())} className="w-full border border-gray-300 rounded-lg p-3 bg-gray-100" />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Do you have your own tools or equipment?</label>
+            <select value={applicationForm.toolsEquipment} onChange={(e) => setApplicationForm({ ...applicationForm, toolsEquipment: e.target.value })} className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+              <option value="">Select Yes or No</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Document Upload Section */}
+<div className="border border-gray-200 rounded-xl p-6 mb-8 shadow-sm bg-gray-50">
+  <h3 className="text-lg font-semibold text-[#000081] mb-4 border-b pb-2">Document Uploads</h3>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {[
+      { label: "Primary ID (Front)", field: "primaryIdFront" },
+      { label: "Primary ID (Back)", field: "primaryIdBack" },
+      { label: "Secondary ID", field: "secondaryId" },
+      { label: "Proof of Address", field: "proofOfAddress" },
+      { label: "Medical Certificate", field: "medicalCertificate" },
+      { label: "TESDA/Training Certificate (Optional)", field: "tesdaCertificate" },
+    ].map(({ label, field }) => (
+      <div key={field}>
+        <label className="block text-gray-700 font-medium mb-2">{label}</label>
+        <div className="flex items-center gap-4">
+          <label className="cursor-pointer bg-[#000081] hover:bg-[#0d05d2] text-white py-2 px-4 rounded-lg text-sm transition duration-200">
+            Choose File
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={(e) => setApplicationForm({ ...applicationForm, [field]: e.target.files[0] })}
+            />
+          </label>
+          {applicationForm[field] && (
+            <div className="text-sm text-gray-600">
+              {applicationForm[field].type?.startsWith("image/") ? (
+                <img
+                  src={URL.createObjectURL(applicationForm[field])}
+                  alt="Uploaded preview"
+                  className="h-20 rounded shadow"
+                />
+              ) : (
+                <a
+                  href={URL.createObjectURL(applicationForm[field])}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-blue-600"
+                >
+                  {applicationForm[field].name || "View Document"}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+      {/* Agreement Section */}
+      <div className="border border-gray-200 rounded-xl p-6 mb-8 shadow-sm bg-gray-50 space-y-4">
+        <h3 className="text-lg font-semibold text-[#000081] mb-2">Consent and Agreement</h3>
+        <label className="block text-gray-700 font-medium">
+          <input type="checkbox" checked={applicationForm.backgroundCheckConsent} onChange={() => setApplicationForm({ ...applicationForm, backgroundCheckConsent: !applicationForm.backgroundCheckConsent })} className="mr-2" />
+          I consent to background checks and verify my documents. *
+        </label>
+        <label className="block text-gray-700 font-medium">
+          <input type="checkbox" checked={applicationForm.termsConsent} onChange={() => setApplicationForm({ ...applicationForm, termsConsent: !applicationForm.termsConsent })} className="mr-2" />
+          I agree to JD HOMECARE's Terms of Service and Privacy Policy. *
+        </label>
+        <label className="block text-gray-700 font-medium">
+          <input type="checkbox" checked={applicationForm.dataPrivacyConsent} onChange={() => setApplicationForm({ ...applicationForm, dataPrivacyConsent: !applicationForm.dataPrivacyConsent })} className="mr-2" />
+          I consent to the collection and processing of my personal data in accordance with the Data Privacy Act (RA 10173).
+          <p className="text-sm text-gray-500 mt-1">
+            Your data will be protected and processed in compliance with Philippine law.
+          </p>
+        </label>
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex justify-center mt-8">
+        <button
+          onClick={handleApplicationSubmit}
+          className="bg-[#000081] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#0d05d2] transition duration-300"
+        >
+          Submit Application
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* ✅ Footer */}
       <Footer />
