@@ -367,51 +367,225 @@ const totalPages = Math.ceil(nonExpiredServices.length / itemsPerPage);
 
 {showApplicationModal && applicationService && (
   <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
-    <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl p-6 relative overflow-y-auto max-h-[90vh]">
+    <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-8 relative overflow-y-auto max-h-[90vh]">
       <button
         onClick={() => {
           setShowApplicationModal(false);
           setApplicationForm((prev) => ({ ...prev, message: "" }));
         }}
-        className="absolute top-3 right-4 text-2xl font-bold text-gray-600 hover:text-red-600"
+        className="absolute top-4 right-4 text-2xl font-bold text-gray-600 hover:text-red-600 transition-all"
       >
         &times;
       </button>
 
-      <h2 className="text-2xl font-bold text-[#000081] mb-6 text-center">Application for Service Request</h2>
+      <h2 className="text-3xl font-semibold text-[#000081] mb-8 text-center">Application for Service Request</h2>
 
-      {/* User Info */}
-      <div className="flex flex-col items-center text-center mb-6">
-        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow mb-2">
+      {/* User Info: Profile Picture and Email */}
+      <div className="flex flex-col items-center text-center mb-8">
+        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-200 shadow-lg mb-3">
           <img
-            src={`http://localhost:3000${applicationForm.profilePicture}`}
+            src={`http://localhost:3000${applicationForm.profilePicture}`} // Profile picture
             alt="User"
             className="w-full h-full object-cover"
           />
         </div>
-        <h3 className="text-lg font-bold text-[#000081]">{applicationForm.fullName}</h3>
-        <p className="text-sm text-gray-600">{applicationForm.email}</p>
+        <h3 className="text-xl font-bold text-[#000081]">{applicationForm.fullName}</h3>
+        <p className="text-sm text-gray-600">{applicationForm.email}</p> {/* Display email address */}
       </div>
 
-      {/* Application Message */}
-      <div className="mb-6">
-        <label className="block text-gray-700 font-semibold mb-2">Message to Client (Optional):</label>
-        <textarea
-          rows="4"
-          className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          value={applicationForm.message}
-          onChange={(e) =>
-            setApplicationForm((prev) => ({ ...prev, message: e.target.value }))
-          }
-          placeholder="Write a short message..."
-        ></textarea>
+      {/* Personal Information Section */}
+      <div className="space-y-6">
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Age</label>
+          <input
+            type="number"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            value={applicationForm.age}
+            onChange={(e) => setApplicationForm({ ...applicationForm, age: e.target.value })}
+            placeholder="Enter your age"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Birthdate</label>
+          <input
+            type="date"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            value={applicationForm.birthDate}
+            onChange={(e) => setApplicationForm({ ...applicationForm, birthDate: e.target.value })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Sex</label>
+          <select
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            value={applicationForm.sex}
+            onChange={(e) => setApplicationForm({ ...applicationForm, sex: e.target.value })}
+          >
+            <option value="">Select Sex</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Contact Number</label>
+          <input
+            type="tel"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            value={applicationForm.contactNumber}
+            onChange={(e) =>
+              setApplicationForm({ ...applicationForm, contactNumber: formatPhone(e.target.value) })
+            }
+            placeholder="Enter your contact number"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Social Media Account</label>
+          <input
+            type="text"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            value={applicationForm.socialMedia}
+            onChange={(e) => setApplicationForm({ ...applicationForm, socialMedia: e.target.value })}
+            placeholder="Enter your social media account link"
+          />
+        </div>
+      </div>
+
+      {/* Work Information Section */}
+      <div className="space-y-6">
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Job Type</label>
+          <input
+            type="text"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            value={applicationForm.jobType || (applicationService?.service_type.charAt(0).toUpperCase() + applicationService?.service_type.slice(1).toLowerCase())} // Capitalize only the first letter
+            readOnly
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Do you have your own tools or equipment?</label>
+          <select
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            value={applicationForm.toolsEquipment}
+            onChange={(e) => setApplicationForm({ ...applicationForm, toolsEquipment: e.target.value })}
+          >
+            <option value="">Select Yes or No</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Document Upload Section */}
+      <div className="space-y-6">
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Primary ID (Front)</label>
+          <input
+            type="file"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            onChange={(e) => setApplicationForm({ ...applicationForm, primaryIdFront: e.target.files[0] })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Primary ID (Back)</label>
+          <input
+            type="file"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            onChange={(e) => setApplicationForm({ ...applicationForm, primaryIdBack: e.target.files[0] })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Secondary ID</label>
+          <input
+            type="file"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            onChange={(e) => setApplicationForm({ ...applicationForm, secondaryId: e.target.files[0] })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Proof of Address</label>
+          <input
+            type="file"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            onChange={(e) => setApplicationForm({ ...applicationForm, proofOfAddress: e.target.files[0] })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">Medical Certificate</label>
+          <input
+            type="file"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            onChange={(e) => setApplicationForm({ ...applicationForm, medicalCertificate: e.target.files[0] })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">TESDA/Training Certificate (Optional)</label>
+          <input
+            type="file"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 transition mb-8"
+            onChange={(e) => setApplicationForm({ ...applicationForm, tesdaCertificate: e.target.files[0] })}
+          />
+        </div>
+      </div>
+
+      {/* Agreement Section */}
+      <div className="space-y-6">
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">
+            <input
+              type="checkbox"
+              checked={applicationForm.backgroundCheckConsent}
+              onChange={() =>
+                setApplicationForm({ ...applicationForm, backgroundCheckConsent: !applicationForm.backgroundCheckConsent })
+              }
+            />{" "}
+            I consent to background checks and verify my documents. *
+          </label>
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-">
+            <input
+              type="checkbox"
+              checked={applicationForm.termsConsent}
+              onChange={() => setApplicationForm({ ...applicationForm, termsConsent: !applicationForm.termsConsent })}
+            />{" "}
+            I agree to JD HOMECARE's Terms of Service and Privacy Policy. *
+            <a href="#" className="text-blue-600">View Terms of Service and Privacy Policy</a>
+          </label>
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">
+            <input
+              type="checkbox"
+              checked={applicationForm.dataPrivacyConsent}
+              onChange={() =>
+                setApplicationForm({ ...applicationForm, dataPrivacyConsent: !applicationForm.dataPrivacyConsent })
+              }
+            />{" "}
+            I consent to the collection and processing of my personal data in accordance with the Data Privacy Act (RA 10173).
+            <p className="text-sm text-gray-500 mt-1">
+              Your data will be protected and processed in compliance with Philippine law.
+            </p>
+          </label>
+        </div>
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-8">
         <button
           onClick={handleApplicationSubmit}
-          className="bg-[#000081] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#0d05d2] transition"
+          className="bg-[#000081] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#0d05d2] transition duration-300"
         >
           Submit Application
         </button>
