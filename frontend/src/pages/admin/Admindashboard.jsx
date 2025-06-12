@@ -21,6 +21,7 @@ const AdminDashboard = () => {
   // eslint-disable-next-line no-unused-vars
   const [rateInputs, setRateInputs] = useState({});
 
+  const [applicants, setApplicants] = useState([]);
 
   // ✨ [NEW] After existing states
   const [serviceRequests, setServiceRequests] = useState([]);
@@ -39,6 +40,13 @@ const AdminDashboard = () => {
   const requestsPerPage = 5;
 
   const [selectedStatusFilter, setSelectedStatusFilter] = useState("All");
+
+  const [pendingServiceRequestApplicants, setPendingServiceRequestApplicants] = useState(0);
+  const [pendingServiceNotifications, setPendingServiceNotifications] = useState(0);
+
+  const [currentApplicantPage, setCurrentApplicantPage] = useState(1);
+const applicantsPerPage = 5;
+
 
   // eslint-disable-next-line no-unused-vars
   const handleSetRate = async (taskerId) => {
@@ -60,26 +68,28 @@ const AdminDashboard = () => {
 // ✨ [NEW] fetchServiceRequests
 const fetchServiceRequests = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/clients/requests');
+    const response = await axios.get("http://localhost:3000/api/clients/requests");
+
     const updatedRequests = response.data.map(req => {
       const preferredDateTime = new Date(`${req.preferred_date} ${req.preferred_time}`);
       const currentDateTime = new Date();
-
-      // Check if the service request has expired (is the preferred date/time less than now?)
       const expired = preferredDateTime < currentDateTime;
-
-      return { ...req, expired }; // Add expired flag to the request
+      return { ...req, expired };
     });
 
     setServiceRequests(updatedRequests);
 
-    // Recalculate the number of pending requests
-const pending = updatedRequests.filter(
-  req => !req.status || req.status.toLowerCase() === "pending"
-).length;
-setPendingServiceRequests(pending);
+    // ✅ Define pending before using it
+    const pending = updatedRequests.filter(
+      req => !req.status || req.status.toLowerCase() === "pending"
+    ).length;
+
+    setPendingServiceRequests(pending);
+
+    // ✅ Safe usage after declaration
+    setPendingServiceNotifications(pending + pendingServiceRequestApplicants);
   } catch (error) {
-    console.error('Error fetching service requests:', error);
+    console.error("Error fetching service requests:", error);
   }
 };
 
@@ -89,7 +99,8 @@ useEffect(() => {
   fetchUsers();
   fetchAdmins();
   fetchTaskers();
-  fetchServiceRequests(); // <-- ✨ Add this
+  fetchServiceRequests();
+  countPendingServiceApplicants(); // 👈 Add this here
 }, []);
 
 // ✨ [NEW] Handle Delete Service Request
@@ -285,6 +296,16 @@ const handleApproveTasker = async (id) => {
     }
   }
 };
+
+const updateApplicantStatus = async (id, status) => {
+  try {
+    await axios.put(`http://localhost:3000/api/applicants/service-request-applicants/${id}/status`, { status });
+    fetchApplicants(); // Refresh applicant list
+    countPendingServiceApplicants(); // 🔄 Recalculate badge count in real-time
+  } catch (error) {
+    console.error("Error updating applicant status:", error);
+  }
+};
   
   const handleSetPendingTasker = async (id) => {
   if (window.confirm("Set this tasker to pending?")) {
@@ -355,6 +376,38 @@ if (status === "cancelled") {
 }
   return <span className="bg-yellow-200 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Pending</span>;
 };
+
+const fetchApplicants = async () => {
+  try {
+    const res = await axios.get("http://localhost:3000/api/applicants/service-request-applicants");
+    setApplicants(res.data);
+  } catch (error) {
+    console.error("Error fetching applicants:", error);
+  }
+};
+
+useEffect(() => {
+  if (subActive === "ServiceRequestApplicants") {
+    fetchApplicants();
+    countPendingServiceApplicants(); // 👈 Optional: refresh count when menu is opened
+  }
+}, [subActive]);
+
+// Below fetchTaskers
+const countPendingServiceApplicants = async () => {
+  try {
+    const response = await axios.get("http://localhost:3000/api/applicants/service-request-applicants");
+    const pendingCount = response.data.filter(app => (app.status || "pending") === "pending").length;
+    setPendingServiceRequestApplicants(pendingCount);
+  } catch (error) {
+    console.error("Failed to count pending applicants:", error);
+  }
+};
+
+useEffect(() => {
+  const totalPending = pendingServiceRequests + pendingServiceRequestApplicants;
+  setPendingServiceNotifications(totalPending);
+}, [pendingServiceRequests, pendingServiceRequestApplicants]);
 
   return (
     <div className="min-h-screen bg-gray-100 font-[Poppins]">
@@ -441,12 +494,12 @@ onClick={() => {
   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
   <span className="relative flex items-center text-base font-semibold">
     <ClipboardListIcon className="mr-3 w-5 h-5" />
-    Service Requests
-    {pendingServiceRequests > 0 && (
-      <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-        {pendingServiceRequests}
-      </span>
-    )}
+Service Requests
+{pendingServiceNotifications > 0 && (
+  <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+    {pendingServiceNotifications}
+  </span>
+)}
   </span>
 </button>
 
@@ -463,16 +516,16 @@ onClick={() => {
     >
       All Service Requests
     </button>
-    <button
-      onClick={() => setSubActive("ServiceRequestApplicants")}
-      className={`w-full text-left px-4 py-2 rounded text-sm ${
-        subActive === "ServiceRequestApplicants"
-          ? "bg-blue-100 text-blue-800 font-semibold"
-          : "text-gray-700 hover:bg-gray-100"
-      }`}
-    >
-      Service Request Applicants
-    </button>
+<button
+  onClick={() => setSubActive("ServiceRequestApplicants")}
+  className={`w-full text-left px-4 py-2 rounded text-sm flex justify-between items-center ${
+    subActive === "ServiceRequestApplicants"
+      ? "bg-blue-100 text-blue-800 font-semibold"
+      : "text-gray-700 hover:bg-gray-100"
+  }`}
+>
+      <span>Service Request Applicants</span>
+</button>
   </div>
 )}
 
@@ -971,7 +1024,7 @@ onClick={() => {
               </div>
             )}
 
-            {active === "ServiceRequests" && subActive === "ServiceRequestApplicants" && (
+{active === "ServiceRequests" && subActive === "ServiceRequestApplicants" && (
   <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
     <p className="mb-4">
       View and manage the applicants who applied to service requests. Filter by job type or status to narrow down.
@@ -986,7 +1039,7 @@ onClick={() => {
             key={type}
             onClick={() => {
               setSelectedJobTypeFilter(type);
-              setCurrentServicePage(1);
+              setCurrentApplicantPage(1);
             }}
             className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
               selectedJobTypeFilter === type
@@ -1005,35 +1058,131 @@ onClick={() => {
       <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
       <div className="flex gap-3 flex-wrap">
         {["All", "Pending", "Approved", "Rejected"].map((status) => {
-  const colorMap = {
-    All: "bg-gray-400 text-white hover:bg-gray-300",
-    Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
-    Approved: "bg-green-600 text-white hover:bg-green-500",
-    Rejected: "bg-red-500 text-white hover:bg-red-400",
-  };
-  const isActive = selectedStatusFilter === status;
-  return (
-    <button
-      key={status}
-      onClick={() => {
-        setSelectedStatusFilter(status);
-        setCurrentServicePage(1);
-      }}
-      className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-        isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-      }`}
-    >
-      {status}
-    </button>
-  );
-})}
+          const colorMap = {
+            All: "bg-gray-400 text-white hover:bg-gray-300",
+            Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+            Approved: "bg-green-600 text-white hover:bg-green-500",
+            Rejected: "bg-red-500 text-white hover:bg-red-400",
+          };
+          const isActive = selectedStatusFilter === status;
+          return (
+            <button
+              key={status}
+              onClick={() => {
+                setSelectedStatusFilter(status);
+                setCurrentApplicantPage(1);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+                isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+              }`}
+            >
+              {status}
+            </button>
+          );
+        })}
       </div>
     </div>
 
-    {/* 🔽 Placeholder where filtered applicant cards will be rendered */}
-       <div className="text-center text-gray-500 mt-10 italic">
-      No applicants yet or list goes here.
+    {/* 🧾 Applicant Cards */}
+    <div className="flex flex-col gap-5 overflow-y-auto pr-2">
+      {(() => {
+        const filteredApplicants = applicants
+          .filter(app => selectedJobTypeFilter === "All" || app.job_type?.toLowerCase() === selectedJobTypeFilter.toLowerCase())
+          .filter(app => selectedStatusFilter === "All" || (app.status || "pending") === selectedStatusFilter.toLowerCase());
+
+        if (filteredApplicants.length === 0) {
+          return (
+            <div className="text-center text-gray-500 mt-10 italic">
+              No applicants found for the selected filters.
+            </div>
+          );
+        }
+
+        return filteredApplicants
+          .slice((currentApplicantPage - 1) * applicantsPerPage, currentApplicantPage * applicantsPerPage)
+          .map(applicant => (
+            <div
+              key={applicant.id}
+              className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300 mb-4"
+            >
+              {/* Left Info */}
+              <div className="flex items-start gap-5">
+                <img
+                  src={`http://localhost:3000${applicant.profile_picture}`}
+                  alt="Applicant"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
+                />
+                <div className="space-y-1 text-sm text-gray-700 text-left">
+                  <h3 className="text-xl font-bold text-gray-800">{applicant.fullName}</h3>
+                  <p>Address: {applicant.address}</p>
+                  <p>Job Type: {applicant.job_type}</p>
+                  <p>Experience: {applicant.years_experience} yrs</p>
+                  <p>Tools/Equipment: {applicant.tools_equipment}</p>
+                  <div className="mt-2">{getStatusBadge(applicant.status)}</div>
+                </div>
+              </div>
+
+              {/* Right Buttons */}
+              <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
+                <button
+                  onClick={() => setSelectedProfile(applicant)}
+                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+                >
+                  <span className="relative text-base font-semibold">View</span>
+                </button>
+
+                <button
+                  onClick={() => updateApplicantStatus(applicant.id, "approved")}
+                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+                >
+                  <span className="relative text-base font-semibold">Approve</span>
+                </button>
+
+                <button
+                  onClick={() => updateApplicantStatus(applicant.id, "rejected")}
+                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+                >
+                  <span className="relative text-base font-semibold">Reject</span>
+                </button>
+
+                <button
+                  onClick={() => updateApplicantStatus(applicant.id, "pending")}
+                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+                >
+                  <span className="relative text-base font-semibold">Pending</span>
+                </button>
+              </div>
+            </div>
+          ));
+      })()}
     </div>
+
+    {/* 🔄 Pagination */}
+    {(() => {
+      const filteredLength = applicants.filter(app =>
+        (selectedJobTypeFilter === "All" || app.job_type?.toLowerCase() === selectedJobTypeFilter.toLowerCase()) &&
+        (selectedStatusFilter === "All" || (app.status || "pending") === selectedStatusFilter.toLowerCase())
+      ).length;
+
+      const totalPages = Math.ceil(filteredLength / applicantsPerPage);
+      return totalPages > 1 ? (
+        <div className="mt-6 flex justify-center gap-2">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentApplicantPage(index + 1)}
+              className={`px-4 py-1 rounded-full text-sm font-semibold ${
+                currentApplicantPage === index + 1
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-800 hover:bg-blue-100"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      ) : null;
+    })()}
   </div>
 )}
 
@@ -1205,7 +1354,7 @@ onClick={() => {
   })()}
 </div>
 
-                {/* 🔄 Pagination */}
+  {/* 🔄 Pagination */}
                 <div className="mt-6 flex justify-center gap-2">
                   {Array.from({
               length: Math.ceil(

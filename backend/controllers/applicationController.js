@@ -107,3 +107,57 @@ exports.getAllApplicants = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch applicants" });
   }
 };
+
+// ✅ GET SERVICE REQUEST APPLICANTS WITH FULL INFO
+// ✅ SAFE GET ALL APPLICANTS WITH FULL JOIN
+exports.getServiceRequestApplicants = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        ai.id, ai.fullName, ai.email, ai.age, ai.birthDate, ai.sex, ai.contactNumber,
+        ai.social_media, ai.home_address, ai.profile_picture, ai.status,
+
+        aw.job_type,
+        aw.years_experience,
+        aw.tools_equipment,
+
+        ad.primary_id_front,
+        ad.primary_id_back,
+        ad.secondary_id,
+        ad.proof_of_address,
+        ad.medical_certificate,
+        ad.tesda_certificate,
+
+        aa.background_check_consent,
+        aa.terms_consent,
+        aa.data_privacy_consent
+
+      FROM applicant_information ai
+      LEFT JOIN applicant_workinfo aw ON aw.applicant_id = ai.id
+      LEFT JOIN applicant_documents ad ON ad.applicant_id = ai.id
+      LEFT JOIN applicant_agreement aa ON aa.applicant_id = ai.id
+      ORDER BY ai.id DESC
+    `);
+
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ BACKEND SQL ERROR:", err.message);
+    console.error("📌 FULL ERROR:", err);
+    res.status(500).json({ message: "Internal server error", error: err.message });
+  }
+};
+
+// ✅ UPDATE STATUS (APPROVE / REJECT / PENDING)
+exports.updateApplicantStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    await db.query("UPDATE applicant_information SET status = ? WHERE id = ?", [status, id]);
+    res.json({ message: "Applicant status updated successfully." });
+  } catch (error) {
+    console.error("❌ Failed to update applicant status:", error);
+    res.status(500).json({ message: "Error updating status" });
+  }
+};
+
