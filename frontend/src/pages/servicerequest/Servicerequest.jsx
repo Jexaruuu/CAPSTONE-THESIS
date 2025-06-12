@@ -61,7 +61,7 @@ const UserAvailableServices = () => {
     fetchApprovedServices();
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
   const fetchExistingProfilePicture = async () => {
     const profilePath = currentUser?.profile_picture;
     if (profilePath && !(applicationForm.profilePicture instanceof File)) {
@@ -70,7 +70,10 @@ const UserAvailableServices = () => {
         const blob = await response.blob();
         const fileName = profilePath.split('/').pop();
         const file = new File([blob], fileName, { type: blob.type });
-        setApplicationForm((prev) => ({ ...prev, profilePicture: file }));
+        setApplicationForm((prev) => ({
+          ...prev,
+          profilePicture: file,
+        }));
       } catch (error) {
         console.error("Error fetching existing profile picture:", error);
       }
@@ -123,14 +126,25 @@ const UserAvailableServices = () => {
     return cleaned.startsWith("63") ? `+${cleaned}` : `+63${cleaned}`;
   };
 
-  const handleApply = async (service) => {
-    if (String(service.user_id) === String(userId)) {
-      alert("You cannot apply to your own service request.");
-      return;
-    }
-    setApplicationService(service);
-    setShowApplicationModal(true);
-  };
+const handleApply = async (service) => {
+  if (String(service.user_id) === String(userId)) {
+    alert("You cannot apply to your own service request.");
+    return;
+  }
+
+  // ✅ Fix: Set job type based on selected service
+if (service && service.service_type) {
+  setApplicationForm((prev) => ({
+    ...prev,
+    jobType:
+      service.service_type.charAt(0).toUpperCase() +
+      service.service_type.slice(1).toLowerCase(),
+  }));
+}
+
+  setApplicationService(service);
+  setShowApplicationModal(true);
+};
 
 const handleApplicationSubmit = async () => {
   try {
@@ -312,36 +326,36 @@ const handleApplicationSubmit = async () => {
                   )}
                 </div>
 
-                {/* Left: Details */}
-                <div className="flex-grow text-[15px] md:text-base text-gray-700">
-                  <h3 className="text-xl font-bold text-[#000081] mb-2">
-                    {`${service.first_name || ""} ${service.last_name || ""}`.trim() || "Client"}
-                  </h3>
-                  <p>
-                    <span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(service.contact_number)}
-                  </p>
-                  <p>
-                    <span className="text-blue-800 font-semibold">Address:</span> {service.address || "N/A"}
-                  </p>
-                  <p>
-                    <span className="text-blue-800 font-semibold">Date:</span> {formatDate(service.preferred_date)}
-                  </p>
-                  <p>
-                    <span className="text-blue-800 font-semibold">Time:</span> {formatTime(service.preferred_time)}
-                  </p>
-                  <p>
-                    <span className="text-blue-800 font-semibold">Urgent:</span>{" "}
-                    <span className={service.urgent_request === "Yes" ? "text-red-600 font-bold" : "text-green-600"}>
-                      {service.urgent_request === "Yes" ? "Yes" : "No"}
-                    </span>
-                  </p>
-                  <p className="text-[15px] md:text-base text-gray-700">
-                    <span className="text-blue-800 font-semibold">Service Description:</span>{" "}
-                    {service.service_description?.length > 60
-                      ? service.service_description.substring(0, 60) + "..."
-                      : service.service_description || "No description available."}
-                  </p>
-
+               <div className="flex-grow text-[15px] md:text-base text-gray-700">
+  <p>
+    <span className="text-blue-800 font-semibold">Client Name:</span>{" "}
+    {`${service.first_name || ""} ${service.last_name || ""}`.trim() || "Client"}
+  </p>
+  <p>
+    <span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(service.contact_number)}
+  </p>
+  <p>
+    <span className="text-blue-800 font-semibold">Address:</span> {service.address || "N/A"}
+  </p>
+  <p>
+    <span className="text-blue-800 font-semibold">Date:</span> {formatDate(service.preferred_date)}
+  </p>
+  <p>
+    <span className="text-blue-800 font-semibold">Time:</span> {formatTime(service.preferred_time)}
+  </p>
+  <p>
+    <span className="text-blue-800 font-semibold">Urgent:</span>{" "}
+    <span className={service.urgent_request === "Yes" ? "text-red-600 font-bold" : "text-green-600"}>
+      {service.urgent_request === "Yes" ? "Yes" : "No"}
+    </span>
+  </p>
+  <p className="text-[15px] md:text-base text-gray-700">
+    <span className="text-blue-800 font-semibold">Service Description:</span>{" "}
+    {service.service_description?.length > 60
+      ? service.service_description.substring(0, 60) + "..."
+      : service.service_description || "No description available."}
+  </p>
+  
                   <div className="flex flex-wrap gap-4 mt-4">
                     <button
                       onClick={() => openModal(service)}
