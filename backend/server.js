@@ -52,6 +52,9 @@ app.use('/api/clients', require('./routes/clientRoutes'));
 // ✅ ✅ Applicant routes (ADDED but not replacing any existing route)
 app.use('/api/applicants', require('./routes/applicationRoutes'));
 
+// ✅ ✅ Payment Routes
+app.use('/api/payment', require('./routes/paymentRoutes'));
+
 // ✅ Default Route
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');
