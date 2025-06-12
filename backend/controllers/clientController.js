@@ -10,7 +10,7 @@ const bookService = async (req, res) => {
       street, barangay, additionalAddress,
       serviceType, serviceDescription,
       preferredDate, preferredTime, urgentRequest,
-      socialMedia = "N/A" // ✅ ensure it's never undefined
+      socialMedia = "N/A"
     } = req.body;
 
     if (!firstName || !lastName || !contactNumber) {
@@ -79,7 +79,7 @@ const getServiceRequests = async (req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT c.id AS client_id, c.first_name, c.last_name, c.contact_number, c.email, 
-             c.barangay, c.street, c.additional_address, c.profile_picture,
+             c.barangay, c.street, c.additional_address, c.profile_picture, c.social_media,
              s.id AS service_id, s.service_type, s.service_description, 
              s.preferred_date, s.preferred_time, s.urgent_request, s.service_image, s.status
       FROM client_information c
@@ -92,7 +92,7 @@ const getServiceRequests = async (req, res) => {
   }
 };
 
-// ✅ Delete service request completely (used when rejecting)
+// ✅ Delete service request completely
 const deleteClientRequest = async (req, res) => {
   const { id } = req.params;
   try {
@@ -105,7 +105,7 @@ const deleteClientRequest = async (req, res) => {
   }
 };
 
-// ✅ Fetch approved only (for servicerequest.jsx frontend)
+// ✅ Fetch approved services (for client view)
 const getApprovedServices = async (req, res) => {
   try {
     const currentUserEmail = req.query.email;
@@ -113,7 +113,7 @@ const getApprovedServices = async (req, res) => {
     let query = `
       SELECT 
         c.first_name, c.last_name, c.contact_number, c.email,
-        c.street, c.barangay, c.additional_address, c.profile_picture,
+        c.street, c.barangay, c.additional_address, c.profile_picture, c.social_media,
         s.id AS service_id, s.service_type, s.service_description,
         s.preferred_date, s.preferred_time, 
         IF(s.urgent_request = 1, 'Yes', 'No') AS urgent_request,
@@ -124,8 +124,6 @@ const getApprovedServices = async (req, res) => {
     `;
 
     const params = [];
-
-    // 🛑 Exclude current user's services if email is provided
     if (currentUserEmail) {
       query += ` AND c.email != ?`;
       params.push(currentUserEmail);
@@ -145,7 +143,7 @@ const getApprovedServices = async (req, res) => {
   }
 };
 
-// ✅ Set service request status to pending
+// ✅ Set service request to pending
 const setPendingServiceRequest = async (req, res) => {
   const { serviceId } = req.params;
   try {
@@ -165,7 +163,7 @@ const getServiceRequestsByUser = async (req, res) => {
     const [rows] = await db.query(`
       SELECT 
         c.id AS client_id, c.first_name, c.last_name, c.contact_number, c.email, 
-        c.barangay, c.street, c.additional_address, c.profile_picture,
+        c.barangay, c.street, c.additional_address, c.profile_picture, c.social_media,
         s.id AS service_id, s.service_type, s.service_description, 
         s.preferred_date, s.preferred_time, s.urgent_request, 
         s.service_image, s.status
@@ -183,6 +181,7 @@ const getServiceRequestsByUser = async (req, res) => {
       urgency: req.urgent_request ? "Yes" : "No",
       status: req.status,
       service_image: req.service_image,
+      social_media: req.social_media
     }));
 
     res.json(formatted);
@@ -198,5 +197,5 @@ module.exports = {
   deleteClientRequest,
   getApprovedServices,
   setPendingServiceRequest,
-  getServiceRequestsByUser // 👈 add this here
+  getServiceRequestsByUser
 };

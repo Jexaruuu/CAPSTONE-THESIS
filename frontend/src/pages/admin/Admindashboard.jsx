@@ -1256,41 +1256,42 @@ onClick={() => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-700">
                     {/* Left Column - Info */}
                     <div className="space-y-6">
-                      {/* Client Info */}
-                      <div>
-                        <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
-                          Client Information
-                        </h3>
-                        <div className="flex flex-col items-center mb-4">
-                          <img
-                            src={`http://localhost:3000${selectedRequest.profile_picture}`}
-                            alt="Profile"
-                            className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
-                          />
-                          <h3 className="text-lg font-bold mt-2">
-                            {selectedRequest.first_name} {selectedRequest.last_name}
-                          </h3>
-                        </div>
-                        <p><strong>Contact Number:</strong> {selectedRequest.contact_number}</p>
-                        <p><strong>Email:</strong> {selectedRequest.email}</p>
-                        <p><strong>Address:</strong> {selectedRequest.street}, {selectedRequest.barangay}{selectedRequest.additional_address ? `, ${selectedRequest.additional_address}` : ""}</p>
-                      </div>
+            {/* Client Info */}
+<div>
+  <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
+    Client Information
+  </h3>
+  <div className="flex flex-col items-center mb-4">
+    <img
+      src={`http://localhost:3000${selectedRequest.profile_picture}`}
+      alt="Profile"
+      className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 shadow"
+    />
+    <h3 className="text-lg font-bold mt-2">
+      {selectedRequest.first_name} {selectedRequest.last_name}
+    </h3>
+  </div>
+  <p><strong>Contact Number:</strong> {selectedRequest.contact_number}</p>
+  <p><strong>Email:</strong> {selectedRequest.email}</p>
+  <p><strong>Social Media:</strong> {selectedRequest.social_media || "N/A"}</p>
+  <p><strong>Address:</strong> {selectedRequest.street}, {selectedRequest.barangay}{selectedRequest.additional_address ? `, ${selectedRequest.additional_address}` : ""}</p>
+</div>
 
-                      {/* Service Info */}
-                      <div>
-                        <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
-                          Service Information
-                        </h3>
-                        <p><strong>Service Type:</strong> {selectedRequest.service_type}</p>
-                        <p><strong>Service Description:</strong> {selectedRequest.service_description}</p>
-                        <p><strong>Preferred Date:</strong>{" "}
-                          {new Date(selectedRequest.preferred_date).toLocaleDateString("en-US", {
-                            year: "numeric", month: "long", day: "numeric",
-                          })}
-                        </p>
-                      <p><strong>Preferred Time:</strong> {selectedRequest.preferred_time}</p>
-                        <p><strong>Urgent Request:</strong> {selectedRequest.urgent_request ? "Yes" : "No"}</p>
-                      </div>
+{/* Service Info */}
+<div>
+  <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 mb-4">
+    Service Information
+  </h3>
+  <p><strong>Service Type:</strong> {selectedRequest.service_type.charAt(0).toUpperCase() + selectedRequest.service_type.slice(1)}</p>
+  <p><strong>Service Description:</strong> {selectedRequest.service_description}</p>
+  <p><strong>Preferred Date:</strong>{" "}
+    {new Date(selectedRequest.preferred_date).toLocaleDateString("en-US", {
+      year: "numeric", month: "long", day: "numeric",
+    })}
+  </p>
+  <p><strong>Preferred Time:</strong> {selectedRequest.preferred_time}</p>
+  <p><strong>Urgent Request:</strong> {selectedRequest.urgent_request ? "Yes" : "No"}</p>
+</div>
                     </div>
 
                     {/* Right Column - Image */}
