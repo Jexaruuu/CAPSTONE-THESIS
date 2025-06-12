@@ -34,34 +34,34 @@ const Payment = () => {
     );
   }
 
-  // const handlePayment = (method) => {
-  //   alert(`Payment via ${method} has been initiated.`);
-  //   navigate("/userhome");
-  // };
+  const handlePayment = (method) => {
+    alert(`Payment via ${method} has been initiated.`);
+    navigate("/userhome");
+  };
 
-  const handlePayment = async (method) => {
-  try {
-    const response = await fetch("http://localhost:3000/api/payment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        method,
-        amount: 500,
-        customer: { firstName: "Juan", lastName: "Dela Cruz", phone: "09123456789" }
-      }),
-    });
+//   const handlePayment = async (method) => {
+//   try {
+//     const response = await fetch("http://localhost:3000/api/payment", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         method,
+//         amount: 500,
+//         customer: { firstName: "Juan", lastName: "Dela Cruz", phone: "09123456789" }
+//       }),
+//     });
 
-    const data = await response.json();
-    if (data.redirectUrl) {
-      window.location.href = data.redirectUrl;
-    } else {
-      alert("Failed to initiate payment.");
-    }
-  } catch (error) {
-    console.error("Payment error:", error);
-    alert("An error occurred while processing the payment.");
-  }
-};
+//     const data = await response.json();
+//     if (data.redirectUrl) {
+//       window.location.href = data.redirectUrl;
+//     } else {
+//       alert("Failed to initiate payment.");
+//     }
+//   } catch (error) {
+//     console.error("Payment error:", error);
+//     alert("An error occurred while processing the payment.");
+//   }
+// };
 
   const capitalize = (text) => text?.charAt(0).toUpperCase() + text?.slice(1).toLowerCase();
 
@@ -202,7 +202,7 @@ const Payment = () => {
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 transition-all hover:shadow-xl">
           <h3 className="text-xl font-bold text-gray-800 border-b pb-3 mb-6">Choose Your Payment Method</h3>
 
-          {/* <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {["GCash", "PayMaya", "Credit Card"].map((method) => (
               <button
                 key={method}
@@ -217,24 +217,7 @@ const Payment = () => {
                 <span className="text-lg font-semibold text-gray-800">{method}</span>
               </button>
             ))}
-          </div> */}
-
-          <div className="grid grid-cols-1 gap-6">
-          {["GCash", "PayMaya", "Credit Card"].map((method) => (
-            <button
-              key={method}
-              onClick={() => handlePayment(method)}
-              className="flex items-center gap-6 border border-gray-200 rounded-xl p-4 shadow-sm bg-gradient-to-br from-white to-gray-50 hover:from-blue-50 hover:to-blue-100 transition-all duration-300 ease-in-out group hover:shadow-lg"
-            >
-              <img
-                src={`/${method.toLowerCase().replace(" ", "")}.png`}
-                alt={method}
-                className="w-16 h-16 object-contain group-hover:scale-110 transition-transform"
-              />
-              <span className="text-lg font-semibold text-gray-800">{method}</span>
-            </button>
-          ))}
-        </div>
+          </div>
 
         {/* 🔙 Back Button */}
         <div className="pt-10 text-center">
