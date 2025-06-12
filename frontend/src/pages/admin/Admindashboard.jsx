@@ -971,6 +971,72 @@ onClick={() => {
               </div>
             )}
 
+            {active === "ServiceRequests" && subActive === "ServiceRequestApplicants" && (
+  <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
+    <p className="mb-4">
+      View and manage the applicants who applied to service requests. Filter by job type or status to narrow down.
+    </p>
+
+    {/* 🔍 Job Type Filter */}
+    <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+      <label className="text-sm font-semibold text-gray-700">Filter by Job Type:</label>
+      <div className="flex gap-3 flex-wrap">
+        {["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"].map((type) => (
+          <button
+            key={type}
+            onClick={() => {
+              setSelectedJobTypeFilter(type);
+              setCurrentServicePage(1);
+            }}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+              selectedJobTypeFilter === type
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+            }`}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* 🔍 Status Filter */}
+    <div className="flex flex-col gap-2 mb-4 sticky top-[72px] bg-white z-10 py-2">
+      <label className="text-sm font-semibold text-gray-700">Filter by Status:</label>
+      <div className="flex gap-3 flex-wrap">
+        {["All", "Pending", "Approved", "Rejected"].map((status) => {
+  const colorMap = {
+    All: "bg-gray-400 text-white hover:bg-gray-300",
+    Pending: "bg-yellow-500 text-white hover:bg-yellow-400",
+    Approved: "bg-green-600 text-white hover:bg-green-500",
+    Rejected: "bg-red-500 text-white hover:bg-red-400",
+  };
+  const isActive = selectedStatusFilter === status;
+  return (
+    <button
+      key={status}
+      onClick={() => {
+        setSelectedStatusFilter(status);
+        setCurrentServicePage(1);
+      }}
+      className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+        isActive ? colorMap[status] : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+      }`}
+    >
+      {status}
+    </button>
+  );
+})}
+      </div>
+    </div>
+
+    {/* 🔽 Placeholder where filtered applicant cards will be rendered */}
+       <div className="text-center text-gray-500 mt-10 italic">
+      No applicants yet or list goes here.
+    </div>
+  </div>
+)}
+
          {active === "ServiceRequests" && subActive !== "ServiceRequestApplicants" && (
   <div className="h-full flex flex-col max-h-[calc(100vh-200px)]">
                 <p className="mb-4">
@@ -1033,120 +1099,111 @@ onClick={() => {
                   </div>
                 </div>
                 
-                  {/* ✨ Service Request Cards */}
-            <div className="flex flex-col gap-5 overflow-y-auto pr-2">
-              {serviceRequests
-                .filter(req => {
-              const jobMatch =
-                selectedJobTypeFilter === "All" ||
-                req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
+{/* ✨ Service Request Cards */}
+<div className="flex flex-col gap-5 overflow-y-auto pr-2">
+  {(() => {
+    const filteredRequests = serviceRequests.filter(req => {
+      const jobMatch =
+        selectedJobTypeFilter === "All" ||
+        req.service_type?.toLowerCase().includes(selectedJobTypeFilter.toLowerCase());
 
-            const statusMatch =
-              selectedStatusFilter === "All" ||
-              (req.status
-                ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
-                : "pending" === selectedStatusFilter.toLowerCase());
+      const statusMatch =
+        selectedStatusFilter === "All" ||
+        (req.status
+          ? req.status.toLowerCase() === selectedStatusFilter.toLowerCase()
+          : selectedStatusFilter.toLowerCase() === "pending");
 
-              return jobMatch && statusMatch;
-            })
-                .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
-                .map((request) => (
-                  <div
-                    key={request.client_id}
-                    className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
-                  >
-                    {/* Left Info */}
-                    <div className="flex items-start gap-5">
-                      <img
-                        src={`http://localhost:3000${request.profile_picture}`}
-                        alt="Profile"
-                        className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
-                      />
+      return jobMatch && statusMatch;
+    });
+
+    if (filteredRequests.length === 0) {
+      return (
+        <div className="text-center text-gray-500 mt-10 italic">
+          No service requests available for the selected filters.
+        </div>
+      );
+    }
+
+    return filteredRequests
+      .slice((currentServicePage - 1) * requestsPerPage, currentServicePage * requestsPerPage)
+      .map((request) => (
+        <div
+          key={request.client_id}
+          className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
+        >
+          {/* Your full request rendering block stays here */}
+          {/* Left Info */}
+          <div className="flex items-start gap-5">
+            <img
+              src={`http://localhost:3000${request.profile_picture}`}
+              alt="Profile"
+              className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
+            />
 
             <div className="space-y-1 text-sm text-gray-700">
               <h3 className="text-xl font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
-              <p>
-                Address: {request.street}, {request.barangay}
-                {request.additional_address ? `, ${request.additional_address}` : ""}
-              </p>
-              <p>
-                Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
-              </p>
-              <p>
-                Preferred Date:{" "}
-                {request.preferred_date
-                  ? new Date(request.preferred_date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })
-                  : "N/A"}
-              </p>
+              <p>Address: {request.street}, {request.barangay}{request.additional_address ? `, ${request.additional_address}` : ""}</p>
+              <p>Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}</p>
+              <p>Preferred Date: {request.preferred_date ? new Date(request.preferred_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "N/A"}</p>
               <p>Preferred Time: {request.preferred_time || "N/A"}</p>
               <p>Urgent: {request.urgent_request ? "Yes" : "No"}</p>
-
               {request.expired && (
                 <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full">Expired</span>
               )}
               <div className="mt-2">{getStatusBadge(request.status)}</div>
             </div>
-                    </div>
+          </div>
 
-                    {/* Right Actions */}
-                    <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
-                      <button
-                        onClick={() => handleViewServiceRequest(request)}
-                        className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
-                      >
-                        <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                        <span className="relative text-base font-semibold">View</span>
-                      </button>
+          {/* Right Actions */}
+          <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
+            <button
+              onClick={() => handleViewServiceRequest(request)}
+              className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-base font-semibold">View</span>
+            </button>
 
-            {/* Approve Button */}
             <button
               onClick={() => handleApproveServiceRequest(request.service_id)}
               disabled={request.status?.toLowerCase() === "cancelled"}
-              className={`relative rounded px-5 py-2.5 overflow-hidden group 
-                ${request.status?.toLowerCase() === "cancelled" 
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-                  : "bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"} 
-                transition-all ease-out duration-300`}
+              className={`relative rounded px-5 py-2.5 overflow-hidden group ${
+                request.status?.toLowerCase() === "cancelled"
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400"
+              } transition-all ease-out duration-300`}
             >
-              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative text-base font-semibold">Approve</span>
             </button>
 
-            {/* Reject Button */}
             <button
               onClick={() => handleRejectServiceRequest(request.service_id)}
               disabled={request.status?.toLowerCase() === "cancelled"}
-              className={`relative rounded px-5 py-2.5 overflow-hidden group 
-                ${request.status?.toLowerCase() === "cancelled" 
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-                  : "bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"} 
-                transition-all ease-out duration-300`}
+              className={`relative rounded px-5 py-2.5 overflow-hidden group ${
+                request.status?.toLowerCase() === "cancelled"
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400"
+              } transition-all ease-out duration-300`}
             >
-              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative text-base font-semibold">Reject</span>
             </button>
 
-            {/* Pending Button */}
             <button
               onClick={() => handleSetPendingServiceRequest(request.service_id)}
               disabled={request.status?.toLowerCase() === "cancelled"}
-              className={`relative rounded px-5 py-2.5 overflow-hidden group 
-                ${request.status?.toLowerCase() === "cancelled" 
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-                  : "bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400"} 
-                transition-all ease-out duration-300`}
+              className={`relative rounded px-5 py-2.5 overflow-hidden group ${
+                request.status?.toLowerCase() === "cancelled"
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400"
+              } transition-all ease-out duration-300`}
             >
-              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative text-base font-semibold">Pending</span>
             </button>
-                    </div>
-                  </div>
-                ))}
-            </div>
+          </div>
+        </div>
+      ));
+  })()}
+</div>
 
                 {/* 🔄 Pagination */}
                 <div className="mt-6 flex justify-center gap-2">
