@@ -6,6 +6,7 @@ import { FiBell, FiMessageSquare } from "react-icons/fi";
 const UserNavigation = () => {
   const [user, setUser] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [showMessages, setShowMessages] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const navigate = useNavigate();
@@ -87,6 +88,15 @@ if (
     localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
+  // eslint-disable-next-line no-unused-vars
+  const [messages, setMessages] = useState([
+    { id: 1, sender: "Alice", text: "Hey! How are you?", timestamp: "10:30 AM" },
+    { id: 2, sender: "Bob", text: "I'm good! How about you?", timestamp: "10:32 AM" },
+  ]);
+  
+  // eslint-disable-next-line no-unused-vars
+  const [selectedChat, setSelectedChat] = useState(null);
+
   return (
     <header className="bg-[#F3F4F6] shadow-sm p-4">
       <div className="max-w-6xl mx-auto flex flex-col">
@@ -116,7 +126,7 @@ if (
               </div>
 
               {/* 💬 Message Icon */}
-              <div ref={msgRef} className="relative">
+              {/* <div ref={msgRef} className="relative">
                 <button onClick={() => {
                     setShowMessages((prev) => !prev);
                     setShowNotifications(false); // 👈 Close notifications if messages is opened
@@ -126,6 +136,45 @@ if (
                 {showMessages && (
                   <div className="absolute right-0 mt-2 w-60 bg-white shadow-lg border rounded-md z-50">
                     <div className="p-3 text-sm text-gray-700">No new messages</div>
+                  </div>
+                )}
+              </div> */}
+
+              <div ref={msgRef} className="relative">
+                <button onClick={() => {
+                    setShowMessages((prev) => !prev);
+                    setShowNotifications(false);
+                  }}>
+                  <FiMessageSquare className="text-xl text-gray-600 hover:text-indigo-600" />
+                </button>
+
+                {showMessages && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white shadow-lg border rounded-md z-50">
+                    {selectedChat ? (
+                      // Full chat window when a conversation is clicked
+                      <div className="p-3 text-sm text-gray-700 flex flex-col">
+                        {messages.filter(msg => msg.sender === selectedChat).map(msg => (
+                          <div key={msg.id} className="mb-2">
+                            <strong>{msg.sender}: </strong> {msg.text}
+                            <div className="text-xs text-gray-500">{msg.timestamp}</div>
+                          </div>
+                        ))}
+                        <button className="text-blue-500 text-xs mt-2" onClick={() => setSelectedChat(null)}>Back to chats</button>
+                      </div>
+                    ) : (
+                      // Show chat previews before selecting a conversation
+                      <div className="p-3 text-sm text-gray-700 flex flex-col">
+                        {Array.from(new Set(messages.map(msg => msg.sender))).map(sender => (
+                          <button
+                            key={sender}
+                            className="p-2 text-left hover:bg-gray-100 transition-all"
+                            onClick={() => setSelectedChat(sender)}
+                          >
+                            <strong>{sender}</strong>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -142,59 +191,58 @@ if (
 
             <div className="relative" ref={profileRef}>
               <div
-  className="flex items-center space-x-3 cursor-pointer"
-  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
->
-  {/* 👤 User name on the left */}
-  {user && (
-    <div className="flex flex-col items-end">
-      <span className="text-sm font-semibold text-gray-800">
-        {`${user.first_name} ${user.last_name}`}
-      </span>
-      <span className="text-xs text-gray-500">{user.email}</span>
-    </div>
-  )}
+              className="flex items-center space-x-3 cursor-pointer"
+              onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+              >
+              {/* 👤 User name on the left */}
+              {user && (
+                <div className="flex flex-col items-end">
+                  <span className="text-sm font-semibold text-gray-800">
+                    {`${user.first_name} ${user.last_name}`}
+                  </span>
+                  <span className="text-xs text-gray-500">{user.email}</span>
+                </div>
+              )}
 
-  {/* 🖼️ Profile picture on the right */}
-  <img
-    src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
-    alt="User Profile"
-    className="h-14 w-14 rounded-full border border-gray-400 object-cover"
-  />
-</div>
+              {/* 🖼️ Profile picture on the right */}
+              <img
+                src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
+                alt="User Profile"
+                className="h-14 w-14 rounded-full border border-gray-400 object-cover"
+              />
+            </div>
 
-              {showProfileDropdown && user && (
-  <div className="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-50 p-4">
-    <div className="flex items-center space-x-3">
-      <img
-        src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
-        alt="User Profile"
-        className="h-12 w-12 rounded-full border border-gray-300 object-cover"
-      />
-      <div className="flex flex-col">
-        <p className="text-sm font-semibold text-gray-800">{`${user.first_name} ${user.last_name}`}</p>
-        <p className="text-xs text-gray-500">{user.email}</p>
-      </div>
-    </div>
+                          {showProfileDropdown && user && (
+              <div className="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-50 p-4">
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={user?.profile_picture ? `http://localhost:3000${user.profile_picture}` : "/profile.png"}
+                    alt="User Profile"
+                    className="h-12 w-12 rounded-full border border-gray-300 object-cover"
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-sm font-semibold text-gray-800">{`${user.first_name} ${user.last_name}`}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
+                </div>
 
-    <div className="flex flex-col mt-4">
-      <button
-        onClick={() => navigate('/editprofile')}
-        className="w-full rounded px-4 py-2 text-sm bg-blue-600 text-white font-medium hover:bg-blue-500 transition-all"
-      >
-        Account Menu
-      </button>
+                <div className="flex flex-col mt-4">
+                  <button
+                    onClick={() => navigate('/editprofile')}
+                    className="w-full rounded px-4 py-2 text-sm bg-blue-600 text-white font-medium hover:bg-blue-500 transition-all"
+                  >
+                    Account Menu
+                  </button>
 
-      <button
-        onClick={handleLogout}
-        className="mt-2 w-full rounded px-4 py-2 text-sm bg-red-600 text-white font-medium hover:bg-red-500 transition-all"
-      >
-        Log out
-      </button>
-    </div>
-  </div>
-)}
-
+                  <button
+                    onClick={handleLogout}
+                    className="mt-2 w-full rounded px-4 py-2 text-sm bg-red-600 text-white font-medium hover:bg-red-500 transition-all"
+                  >
+                    Log out
+                  </button>
+                </div>
+              </div>
+            )}
             </div>
                 
             {/* <div className="flex flex-col">
