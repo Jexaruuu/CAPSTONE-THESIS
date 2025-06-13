@@ -7,28 +7,23 @@ const ApplicantsResponse = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedGender, setSelectedGender] = useState("All");
   const [applicants, setApplicants] = useState([]);
+  
+useEffect(() => {
+  const fetchApplicants = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/applicants/approved", {
+        credentials: "include"
+      });
 
-  useEffect(() => {
-    // Replace with real API call
-    setApplicants([
-      {
-        id: 1,
-        name: "Juan Dela Cruz",
-        gender: "Male",
-        jobType: "Electrician",
-        address: "Bacolod City, Negros Occidental",
-        profileImage: "/electrician.jpg",
-      },
-      {
-        id: 2,
-        name: "Maria Clara",
-        gender: "Female",
-        jobType: "Carpenter",
-        address: "Bago City, Negros Occidental",
-        profileImage: "/carpenter.jpg",
-      },
-    ]);
-  }, []);
+      const data = await res.json();
+      setApplicants(data);
+    } catch (err) {
+      console.error("Failed to fetch applicants:", err);
+    }
+  };
+
+  fetchApplicants();
+}, []);
 
   const jobTypes = ["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"];
   const genders = ["All", "Male", "Female"];
