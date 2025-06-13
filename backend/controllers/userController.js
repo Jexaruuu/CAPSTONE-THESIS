@@ -166,22 +166,34 @@ exports.deleteUser = async (req, res) => {
 // ✅ Update profile picture
 exports.updateProfilePicture = async (req, res) => {
   const { id } = req.params;
-  const profilePicture = req.file ? `/uploads/profilePictures/${req.file.filename}` : null;
-
-  if (!profilePicture) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
 
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const profilePicture = `/uploads/profilePictures/${req.file.filename}`;
+
     const [user] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
-    if (user.length === 0) return res.status(404).json({ message: "User not found" });
+    if (user.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Optionally remove old profile picture from the server
+    const oldPicture = user[0].profile_picture;
+    if (oldPicture && fs.existsSync(`.${oldPicture}`)) {
+      fs.unlinkSync(`.${oldPicture}`);
+    }
 
     await db.query("UPDATE users SET profile_picture = ? WHERE id = ?", [profilePicture, id]);
 
-    res.status(200).json({ message: "Profile picture updated", profilePicture });
+    res.status(200).json({
+      message: "Profile picture updated successfully",
+      profilePicture
+    });
   } catch (err) {
     console.error("Profile picture upload error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Error updating profile picture", error: err.message });
   }
 };
 

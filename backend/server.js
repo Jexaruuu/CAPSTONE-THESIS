@@ -2,14 +2,14 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
-const fileUpload = require('express-fileupload'); // ✅ Added
 
 const db = require('./db');
 
 const app = express();
 
-// ✅ Middleware for file uploads
-app.use(fileUpload({ createParentPath: true })); // ✅ Added
+// ❌ REMOVE express-fileupload because you're using multer instead
+// const fileUpload = require('express-fileupload');
+// app.use(fileUpload({ createParentPath: true })); // ❌ REMOVE this line
 
 // ✅ CORS Configuration
 app.use(cors({
