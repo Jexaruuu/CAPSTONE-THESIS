@@ -41,7 +41,6 @@ app.use('/api', require('./routes/adminRoutes'));
 app.use('/api/taskers', require('./routes/taskerRoutes'));
 app.use('/api/clients', require('./routes/clientRoutes'));
 app.use('/api/applicants', require('./routes/applicationRoutes'));
-app.use('/api/payment', require('./routes/paymentRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');

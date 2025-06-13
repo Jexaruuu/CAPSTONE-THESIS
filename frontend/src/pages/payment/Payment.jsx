@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navigation from "../../components/navigation/Usernavigation";
 import Footer from "../../components/footer/Footer";
+import gcashQR from "../../assets/gcash-qr.jpg";
+import paymayaQR from "../../assets/paymaya-qr.jpg";
 
 const Payment = () => {
   const location = useLocation();
@@ -12,6 +14,10 @@ const Payment = () => {
   const [fade, setFade] = useState(true);
   const heroImages = ["/carpenter.jpg", "/electrician.jpg", "/plumber.jpg"];
 
+  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [showCardForm, setShowCardForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [showDocModal, setShowDocModal] = useState(false);
   const [currentDoc, setCurrentDoc] = useState({ label: "", url: "" });
 
@@ -34,36 +40,28 @@ const Payment = () => {
     );
   }
 
-  const handlePayment = (method) => {
-    alert(`Payment via ${method} has been initiated.`);
-    navigate("/userhome");
-  };
+  // const handlePayment = (method) => {
+  //   alert(`Payment via ${method} has been initiated.`);
+  //   navigate("/userhome");
+  // };
 
-//   const handlePayment = async (method) => {
-//   try {
-//     const response = await fetch("http://localhost:3000/api/payment", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({
-//         method,
-//         amount: 500,
-//         customer: { firstName: "Juan", lastName: "Dela Cruz", phone: "09123456789" }
-//       }),
-//     });
+    const handlePayment = (method) => {
+        setSelectedMethod(method);
+        setShowModal(true);
 
-//     const data = await response.json();
-//     if (data.redirectUrl) {
-//       window.location.href = data.redirectUrl;
-//     } else {
-//       alert("Failed to initiate payment.");
-//     }
-//   } catch (error) {
-//     console.error("Payment error:", error);
-//     alert("An error occurred while processing the payment.");
-//   }
-// };
+        if (method === "GCash") {
+          setQrCodeUrl(gcashQR);
+          setShowCardForm(false);
+        } else if (method === "PayMaya") {
+          setQrCodeUrl(paymayaQR);
+          setShowCardForm(false);
+        } else if (method === "Credit Card") {
+          setQrCodeUrl("");
+          setShowCardForm(true);
+        }
+      };
 
-  const capitalize = (text) => text?.charAt(0).toUpperCase() + text?.slice(1).toLowerCase();
+      const capitalize = (text) => text?.charAt(0).toUpperCase() + text?.slice(1).toLowerCase();
 
   return (
     <div className="bg-[#F3F4F6] font-sans min-h-screen">
@@ -199,7 +197,7 @@ const Payment = () => {
         </div>
 
         {/* 💳 Payment Method */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 transition-all hover:shadow-xl">
+        {/* <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 transition-all hover:shadow-xl">
           <h3 className="text-xl font-bold text-gray-800 border-b pb-3 mb-6">Choose Your Payment Method</h3>
 
           <div className="grid grid-cols-1 gap-6">
@@ -217,45 +215,138 @@ const Payment = () => {
                 <span className="text-lg font-semibold text-gray-800">{method}</span>
               </button>
             ))}
+          </div> */}
+
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 transition-all hover:shadow-xl">
+            <h3 className="text-xl font-bold text-gray-800 border-b pb-3 mb-6">Choose Your Payment Method</h3>
+
+            <div className="grid grid-cols-1 gap-6">
+              {["GCash", "PayMaya", "Credit Card"].map((method) => (
+                <button
+                  key={method}
+                  onClick={() => handlePayment(method)}
+                  className="flex items-center gap-6 border border-gray-200 rounded-xl p-4 shadow-sm bg-gradient-to-br from-white to-gray-50 hover:from-blue-50 hover:to-blue-100 transition-all duration-300 ease-in-out group hover:shadow-lg"
+                >
+                  <img
+                    src={`/${method.toLowerCase().replace(" ", "")}.png`}
+                    alt={method}
+                    className="w-16 h-16 object-contain group-hover:scale-110 transition-transform"
+                  />
+                  <span className="text-lg font-semibold text-gray-800">{method}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Payment Modal */}
+            {showModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+                <div className="bg-white p-6 rounded-xl shadow-2xl max-w-2xl w-full relative">
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
+                  >
+                    &times;
+                  </button>
+                  <h3 className="text-xl font-bold text-[#000081] mb-4 text-center">{selectedMethod} Payment</h3>
+
+                  {/* QR Code for GCash & PayMaya */}
+                  {qrCodeUrl && (
+                    <div className="flex justify-center">
+                      <img src={qrCodeUrl} alt={`${selectedMethod} QR Code`} className="w-40 h-40 border rounded-md" />
+                    </div>
+                  )}
+
+                  {/* Credit Card Payment Form */}
+                  {showCardForm && (
+                  <div className="mt-4">
+                    {/* Card Type */}
+                    <div>
+                      <label className="text-gray-700 text-sm font-semibold mb-1 block">Card Type</label>
+                      <input type="text" placeholder="Card Type" className="w-full p-2 border rounded-md mb-2" />
+                    </div>
+
+                    {/* Card Number */}
+                    <div>
+                      <label className="text-gray-700 text-sm font-semibold mb-1 block">Card Number</label>
+                      <input type="text" placeholder="Card Number" className="w-full p-2 border rounded-md mb-2" />
+                    </div>
+
+                    {/* Expiry Date & CVV */}
+                    <div className="flex gap-4">
+                      <div className="w-1/2">
+                        <label className="text-gray-700 text-sm font-semibold mb-1 block">Expiration Date</label>
+                        <input type="month" className="w-full p-2 border rounded-md mb-2" placeholder="MM/YYYY" />
+                      </div>
+                      <div className="w-1/2">
+                        <label className="text-gray-700 text-sm font-semibold mb-1 block">CVV</label>
+                        <input type="text" placeholder="CVV" className="w-full p-2 border rounded-md mb-2" />
+                      </div>
+                    </div>
+
+                    {/* Cardholder's Name */}
+                    <div>
+                      <label className="text-gray-700 text-sm font-semibold mb-1 block">Cardholder's Name</label>
+                      <input type="text" placeholder="Cardholder's Name" className="w-full p-2 border rounded-md mb-2" />
+                    </div>
+
+                    {/* Submit Payment Button */}
+                    <button
+                      onClick={() => {
+                        alert(`Payment via ${selectedMethod} has been initiated.`);
+                        navigate("/userhome"); // Redirects user after payment confirmation
+                      }}
+                      className="relative rounded-lg px-5 py-2.5 overflow-hidden group bg-[#000081] hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#1c1cb8] text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300 shadow-lg w-full flex justify-center items-center"
+                    >
+                      <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-20 rotate-12 group-hover:-translate-x-40 ease"></span>
+                      <span className="relative text-center text-base font-semibold flex items-center gap-3">
+                        <i className="fas fa-credit-card"></i>
+                        Submit Payment
+                      </span>
+                    </button>
+                  </div>
+                )}
+
+                </div>
+              </div>
+            )}
+
+            {/* 🔙 Back Button */}
+            <div className="pt-10 text-center">
+              <button
+                onClick={() => navigate(-1)}
+                className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#1c1cb8] text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
+              >
+                <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                <span className="relative flex items-center gap-2 text-base font-semibold">
+                  <i className="fas fa-arrow-left"></i>
+                  Back to Previous
+                </span>
+              </button>
+              <p className="text-gray-500 mt-4 text-sm">Go back to the previous page.</p>
+            </div>
+          </div>
           </div>
 
-        {/* 🔙 Back Button */}
-        <div className="pt-10 text-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="relative rounded px-5 py-2.5 overflow-hidden group bg-[#000081] hover:bg-gradient-to-r hover:from-[#000081] hover:to-[#1c1cb8] text-white hover:ring-2 hover:ring-offset-2 hover:ring-indigo-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative flex items-center gap-2 text-base font-semibold">
-              <i className="fas fa-arrow-left"></i>
-              Back to Previous
-            </span>
-          </button>
-          <p className="text-gray-500 mt-4 text-sm">Go back to the previous page.</p>
-        </div>
-      </div>
-      </div>
-
-{showDocModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-    <div className="bg-white p-6 rounded-xl shadow-2xl max-w-2xl w-full relative">
-      <button
-        onClick={() => setShowDocModal(false)}
-        className="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
-      >
-        &times;
-      </button>
-      <h3 className="text-xl font-bold text-[#000081] mb-4 text-center">{currentDoc.label}</h3>
-      <div className="max-h-[70vh] overflow-auto rounded border">
-        <img
-          src={currentDoc.url}
-          alt={currentDoc.label}
-          className="w-full h-auto object-contain rounded"
-        />
-      </div>
-    </div>
-  </div>
-)}
+          {showDocModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+              <div className="bg-white p-6 rounded-xl shadow-2xl max-w-2xl w-full relative">
+                <button
+                  onClick={() => setShowDocModal(false)}
+                  className="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold"
+                >
+                  &times;
+                </button>
+                <h3 className="text-xl font-bold text-[#000081] mb-4 text-center">{currentDoc.label}</h3>
+                <div className="max-h-[70vh] overflow-auto rounded border">
+                  <img
+                    src={currentDoc.url}
+                    alt={currentDoc.label}
+                    className="w-full h-auto object-contain rounded"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
       <Footer />
     </div>
