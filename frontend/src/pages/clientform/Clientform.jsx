@@ -103,59 +103,64 @@ const ClientForm = () => {
 
   const [showReviewNotice, setShowReviewNotice] = useState(false);
 
-  const onSubmit = async (data) => {
+ const onSubmit = async (data) => {
   try {
     const formData = new FormData();
 
-    if (data.profilePicture?.length > 0) {
-      formData.append("profilePicture", data.profilePicture[0]);
-    } else {
-      toast.error("Please upload a profile picture before submitting.");
+    // Validate required image
+    if (!data.profilePicture || data.profilePicture.length === 0) {
+      toast.error("Profile picture is required.");
       return;
     }
+    formData.append("profilePicture", data.profilePicture[0]);
 
-    if (data.serviceImage?.length > 0) {
+    // Optional image
+    if (data.serviceImage && data.serviceImage.length > 0) {
       formData.append("serviceImage", data.serviceImage[0]);
     }
 
-    formData.append("firstName", data.firstName);
-    formData.append("lastName", data.lastName);
-    formData.append("contactNumber", data.contactNumber);
-    formData.append("email", data.email);
-    formData.append("street", data.street);
-    formData.append("barangay", data.barangay);
-    formData.append("additionalAddress", data.additionalAddress);
-    formData.append("serviceType", data.serviceType);
-    formData.append("serviceDescription", data.serviceDescription);
-    formData.append("preferredDate", data.preferredDate);
+    // Required fields
+    formData.append("firstName", data.firstName?.trim() || "");
+    formData.append("lastName", data.lastName?.trim() || "");
+    formData.append("contactNumber", data.contactNumber?.trim() || "");
+    formData.append("email", data.email?.trim() || "");
+    formData.append("street", data.street?.trim() || "");
+    formData.append("barangay", data.barangay?.trim() || "");
+    formData.append("additionalAddress", data.additionalAddress?.trim() || "");
+    formData.append("serviceType", data.serviceType?.trim() || "");
+    formData.append("serviceDescription", data.serviceDescription?.trim() || "");
+    formData.append("preferredDate", data.preferredDate || "");
 
+    // Convert preferredTimeRaw into preferredTime
     const rawTime = data.preferredTimeRaw;
-const [hour, minute] = rawTime.split(":");
-let hourNum = parseInt(hour, 10);
-const ampm = hourNum >= 12 ? "PM" : "AM";
-hourNum = hourNum % 12 || 12;
-const formattedTime = `${hourNum}:${minute} ${ampm}`;
+    if (!rawTime) {
+      toast.error("Preferred time is required.");
+      return;
+    }
+    const [hour, minute] = rawTime.split(":");
+    let hourNum = parseInt(hour, 10);
+    const ampm = hourNum >= 12 ? "PM" : "AM";
+    hourNum = hourNum % 12 || 12;
+    const formattedTime = `${hourNum}:${minute} ${ampm}`;
+    formData.append("preferredTime", formattedTime);
 
-formData.append("preferredTime", formattedTime);
+    // Optional but expected fields
+    formData.append("urgentRequest", data.urgentRequest ? "Yes" : "No");
+    formData.append("socialMedia", data.socialMedia?.trim() || "N/A");
 
-    formData.append("urgentRequest", data.urgentRequest ? "on" : "");
-    formData.append("socialMedia", data.socialMedia || "N/A");
-
+    // Submit request
     const response = await axios.post("http://localhost:3000/api/clients/bookservice", formData, {
       headers: { "Content-Type": "multipart/form-data" },
       withCredentials: true,
     });
 
-    toast.success("Service booked successfully. Your form has been reset.");
-
-    // ✅ Show blurred center notification
+    toast.success("Service booked successfully!");
     setShowReviewNotice(true);
-    setTimeout(() => setShowReviewNotice(false), 5000); // Auto-dismiss after 10s
-
+    setTimeout(() => setShowReviewNotice(false), 5000);
     reset();
   } catch (error) {
     console.error(error.response?.data || error.message);
-    toast.error("Failed to book service. Please try again.");
+    toast.error(error.response?.data?.message || "Failed to book service.");
   }
 };
 
