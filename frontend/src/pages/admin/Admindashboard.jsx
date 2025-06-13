@@ -1121,7 +1121,7 @@ Service Requests
   .map(applicant => (
     <div
       key={applicant.id}
-      className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
+      className="bg-white rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:bg-blue-50 transition-all duration-300"
     >
       {/* Left Info */}
       <div className="flex items-start gap-5">
@@ -1482,7 +1482,7 @@ Service Requests
       .map((request) => (
         <div
           key={request.client_id}
-          className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
+         className="bg-white rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:bg-blue-50 transition-all duration-300"
         >
           {/* Left Info */}
           <div className="flex items-start gap-5">
