@@ -47,6 +47,8 @@ const AdminDashboard = () => {
   const [currentApplicantPage, setCurrentApplicantPage] = useState(1);
 const applicantsPerPage = 5;
 
+const [selectedApplicant, setSelectedApplicant] = useState(null);
+const [showApplicantModal, setShowApplicantModal] = useState(false);
 
   // eslint-disable-next-line no-unused-vars
   const handleSetRate = async (taskerId) => {
@@ -470,7 +472,7 @@ useEffect(() => {
               <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative flex items-center text-base font-semibold">
                 <FileTextIcon className="mr-3 w-5 h-5" />
-                Worker Applications
+                Work Applications
 {pendingApplications > 0 && (
   <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
     {pendingApplications}
@@ -906,44 +908,58 @@ Service Requests
                         alt="Profile"
                         className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
                       />
-                      <div className="space-y-1 text-sm text-gray-700">
-                        <h3 className="text-xl font-bold text-gray-800">
-                          {tasker.fullName}
-                        </h3>
-                        <p>
-                          Age: {tasker.age || "N/A"} | Gender: {tasker.gender || "N/A"}
-                        </p>
-                        <p>
-                          Job:{" "}
-                          {Array.isArray(tasker.jobType) && tasker.jobType.length > 0
-                            ? tasker.jobType
-                                .map(
-                                  (job) =>
-                                    job.charAt(0).toUpperCase() + job.slice(1)
-                                )
-                                .join(", ")
-                            : "N/A"}
-                        </p>
-                        <p>
-                          Category:{" "}
-                          {tasker.serviceCategory &&
-                          typeof tasker.serviceCategory === "object" &&
-                          Object.keys(tasker.serviceCategory).length > 0
-                            ? Object.values(tasker.serviceCategory).join(", ")
-                            : "N/A"}
-                        </p>
-                        <p>
-                          Experience:{" "}
-                          {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
-                        </p>
-                        <p>
-                          Rate:{" "}
-                          {tasker.rate_per_hour
-                            ? `₱${tasker.rate_per_hour}/hr`
-                            : "N/A"}
-                        </p>
-                        <div className="mt-2">{getStatusBadge(tasker.status?.toLowerCase())}</div>
-                      </div>
+    <div className="space-y-1 text-sm text-gray-700">
+  <h3 className="text-xl font-bold text-gray-800">
+    <span className="text-gray-600">Worker Name:</span>{' '}
+    <span className="text-blue-600">{tasker.fullName}</span>
+  </h3>
+
+  <p>
+    <span className="font-semibold text-gray-700">Age:</span>{' '}
+    <span className="text-blue-600">{tasker.age || "N/A"}</span>{' '}
+    |{' '}
+    <span className="font-semibold text-gray-700">Gender:</span>{' '}
+    <span className="text-blue-600">{tasker.gender || "N/A"}</span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Job:</span>{' '}
+    <span className="text-blue-600">
+      {Array.isArray(tasker.jobType) && tasker.jobType.length > 0
+        ? tasker.jobType.map(
+            (job) => job.charAt(0).toUpperCase() + job.slice(1)
+          ).join(", ")
+        : "N/A"}
+    </span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Category:</span>{' '}
+    <span className="text-blue-600">
+      {tasker.serviceCategory &&
+      typeof tasker.serviceCategory === "object" &&
+      Object.keys(tasker.serviceCategory).length > 0
+        ? Object.values(tasker.serviceCategory).join(", ")
+        : "N/A"}
+    </span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Experience:</span>{' '}
+    <span className="text-blue-600">
+      {tasker.experience ? `${tasker.experience} yrs` : "N/A"}
+    </span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Rate:</span>{' '}
+    <span className="text-blue-600">
+      {tasker.rate_per_hour ? `₱${tasker.rate_per_hour}/hr` : "N/A"}
+    </span>
+  </p>
+
+  <div className="mt-2">{getStatusBadge(tasker.status?.toLowerCase())}</div>
+</div>
                     </div>
 
                     {/* Right Actions */}
@@ -1115,32 +1131,68 @@ Service Requests
           className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
         />
 
-<div className="space-y-2 text-[15px] text-gray-700">
-  <h3 className="text-[17px] font-semibold">
+<div className="space-y-1 text-sm text-gray-700">
+  <h3 className="text-xl font-bold text-gray-800">
     <span className="text-gray-600">Applicant Name:</span>{' '}
-    <span className="text-blue-600 text-[18px] font-bold">{applicant.fullName}</span>
+    <span className="text-blue-600">{applicant.fullName}</span>
   </h3>
 
   <p>
-    <span className="font-semibold text-gray-600">Address:</span>{' '}
-    <span className="text-blue-600 font-medium">
+    <span className="font-semibold text-gray-700">Age:</span>{' '}
+    <span className="text-blue-600">{applicant.age || 'N/A'}</span>{' '}
+    |{' '}
+    <span className="font-semibold text-gray-700">Sex:</span>{' '}
+    <span className="text-blue-600">{applicant.sex || 'N/A'}</span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Birthdate:</span>{' '}
+    <span className="text-blue-600">
+      {applicant.birthDate
+        ? new Date(applicant.birthDate).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : 'N/A'}
+    </span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Contact:</span>{' '}
+    <span className="text-blue-600">{applicant.contactNumber || 'N/A'}</span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Address:</span>{' '}
+    <span className="text-blue-600">
       {applicant.address || applicant.home_address || applicant.personal_address || 'N/A'}
     </span>
   </p>
 
   <p>
-    <span className="font-semibold text-gray-600">Job Type:</span>{' '}
-    <span className="text-blue-600 font-medium">{applicant.job_type}</span>
+    <span className="font-semibold text-gray-700">Home Address:</span>{' '}
+    <span className="text-blue-600">{applicant.home_address || 'N/A'}</span>
   </p>
 
   <p>
-    <span className="font-semibold text-gray-600">Experience:</span>{' '}
-    <span className="text-blue-600 font-medium">{applicant.years_experience} yrs</span>
+    <span className="font-semibold text-gray-700">Social Media:</span>{' '}
+    <span className="text-blue-600">{applicant.social_media || 'N/A'}</span>
   </p>
 
   <p>
-    <span className="font-semibold text-gray-600">Tools/Equipment:</span>{' '}
-    <span className="text-blue-600 font-medium">{applicant.tools_equipment}</span>
+    <span className="font-semibold text-gray-700">Job Type:</span>{' '}
+    <span className="text-blue-600">{applicant.job_type}</span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Experience:</span>{' '}
+    <span className="text-blue-600">{applicant.years_experience} yrs</span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-700">Tools/Equipment:</span>{' '}
+    <span className="text-blue-600">{applicant.tools_equipment}</span>
   </p>
 
   <div className="mt-2">{getStatusBadge(applicant.status)}</div>
@@ -1149,13 +1201,16 @@ Service Requests
 
       {/* Right Actions (same as Service Request layout) */}
       <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
-        <button
-          onClick={() => setSelectedProfile(applicant)}
-          className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
-        >
-          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-          <span className="relative text-base font-semibold">View</span>
-        </button>
+ <button
+  onClick={() => {
+    setSelectedApplicant(applicant);
+    setShowApplicantModal(true);
+  }}
+  className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+>
+  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+  <span className="relative text-base font-semibold">View</span>
+</button>
 
         <button
           onClick={() => updateApplicantStatus(applicant.id, "approved")}
@@ -1206,6 +1261,131 @@ Service Requests
           </>
         );
       })()}
+    </div>
+  </div>
+)}
+
+{showApplicantModal && selectedApplicant && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-sm">
+    <div className="bg-white rounded-lg shadow-lg w-full max-w-[1000px] max-h-[90vh] overflow-y-auto p-8 relative">
+      {/* Close Button */}
+      <button
+        onClick={() => setShowApplicantModal(false)}
+        className="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-lg font-bold"
+      >
+        &times;
+      </button>
+
+      {/* Title */}
+      <h2 className="text-3xl font-bold text-center text-purple-700 mb-8">Service Request Applicant Full Profile</h2>
+
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Left Column: Applicant Info */}
+        <div className="space-y-6">
+          {/* Personal Info */}
+          <div>
+            <h3 className="text-lg font-semibold text-purple-700 border-b pb-1 mb-4">Personal Information</h3>
+            <div className="flex flex-col items-center text-center mb-4">
+              <img
+                src={`http://localhost:3000${selectedApplicant.profile_picture}`}
+                alt="Applicant"
+                className="w-24 h-24 rounded-full border-4 border-purple-300 mb-3 object-cover"
+              />
+              <h4 className="text-lg font-bold text-gray-800">{selectedApplicant.fullName}</h4>
+            </div>
+            <p><strong className="text-gray-700">Birth Date:</strong> {new Date(selectedApplicant.birthDate).toLocaleDateString()}</p>
+            <p><strong className="text-gray-700">Age:</strong> {selectedApplicant.age}</p>
+            <p><strong className="text-gray-700">Sex:</strong> {selectedApplicant.sex}</p>
+            <p><strong className="text-gray-700">Contact Number:</strong> {selectedApplicant.contactNumber}</p>
+            <p><strong className="text-gray-700">Email:</strong> {selectedApplicant.email}</p>
+            <p><strong className="text-gray-700">Social Media:</strong> {selectedApplicant.social_media}</p>
+            <p><strong className="text-gray-700">Address:</strong> {selectedApplicant.home_address}</p>
+          </div>
+
+          {/* Application Info */}
+          <div>
+            <h3 className="text-lg font-semibold text-purple-700 border-b pb-1 mb-4">Application Information</h3>
+            <p><strong className="text-gray-700">Job Type:</strong> {selectedApplicant.job_type}</p>
+            <p><strong className="text-gray-700">Experience:</strong> {selectedApplicant.years_experience} yrs</p>
+            <p><strong className="text-gray-700">Tools/Equipment:</strong> {selectedApplicant.tools_equipment}</p>
+            <div className="mt-4">
+              <strong className="text-gray-700">Status:</strong> {getStatusBadge(selectedApplicant.status)}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Documents */}
+        <div className="space-y-5">
+          <h3 className="text-lg font-semibold text-purple-700 border-b pb-1 mb-4">Uploaded Documents</h3>
+
+          {selectedApplicant.primary_id_front && (
+            <div>
+              <p className="text-sm font-semibold text-gray-700 mb-1">Primary ID Front:</p>
+              <img
+                src={`http://localhost:3000${selectedApplicant.primary_id_front}`}
+                alt="Primary ID Front"
+                className="rounded-lg border w-full object-contain max-h-56"
+              />
+            </div>
+          )}
+
+          {selectedApplicant.primary_id_back && (
+            <div>
+              <p className="text-sm font-semibold text-gray-700 mb-1">Primary ID Back:</p>
+              <img
+                src={`http://localhost:3000${selectedApplicant.primary_id_back}`}
+                alt="Primary ID Back"
+                className="rounded-lg border w-full object-contain max-h-56"
+              />
+            </div>
+          )}
+
+          {selectedApplicant.secondary_id && (
+            <div>
+              <p className="text-sm font-semibold text-gray-700 mb-1">Secondary ID:</p>
+              <img
+                src={`http://localhost:3000${selectedApplicant.secondary_id}`}
+                alt="Secondary ID"
+                className="rounded-lg border w-full object-contain max-h-56"
+              />
+            </div>
+          )}
+
+          {selectedApplicant.proof_of_address && (
+            <div>
+              <p className="text-sm font-semibold text-gray-700 mb-1">Proof of Address:</p>
+              <img
+                src={`http://localhost:3000${selectedApplicant.proof_of_address}`}
+                alt="Proof of Address"
+                className="rounded-lg border w-full object-contain max-h-56"
+              />
+            </div>
+          )}
+
+          {selectedApplicant.medical_certificate && (
+            <div>
+              <p className="text-sm font-semibold text-gray-700 mb-1">Medical Certificate:</p>
+              <img
+                src={`http://localhost:3000${selectedApplicant.medical_certificate}`}
+                alt="Medical Certificate"
+                className="rounded-lg border w-full object-contain max-h-56"
+              />
+            </div>
+          )}
+
+          {selectedApplicant.tesda_certificate && (
+            <div>
+              <p className="text-sm font-semibold text-gray-700 mb-1">TESDA Certificate:</p>
+              <img
+                src={`http://localhost:3000${selectedApplicant.tesda_certificate}`}
+                alt="TESDA Certificate"
+                className="rounded-lg border w-full object-contain max-h-56"
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   </div>
 )}
@@ -1312,64 +1492,58 @@ Service Requests
               className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
             />
 
-            <div className="space-y-2 text-[15px] text-gray-700">
-              <h3 className="text-[17px] font-semibold">
-                <span className="text-gray-600">Client Name:</span>{' '}
-                <span className="text-blue-600 text-[18px] font-bold">
-                  {request.first_name} {request.last_name}
-                </span>
-              </h3>
+          <div className="space-y-1 text-sm text-gray-700">
+  <h3 className="text-xl font-bold text-gray-800">
+    <span className="text-gray-600">Client Name:</span>{' '}
+    <span className="text-blue-600">{request.first_name} {request.last_name}</span>
+  </h3>
 
-              <p>
-                <span className="font-semibold text-gray-600">Address:</span>{' '}
-                <span className="text-blue-600 font-medium">
-                  {request.street}, {request.barangay}
-                  {request.additional_address ? `, ${request.additional_address}` : ""}
-                </span>
-              </p>
+  <p>
+    <span className="font-semibold text-gray-700">Address:</span>{' '}
+    <span className="text-blue-600">
+      {request.street}, {request.barangay}
+      {request.additional_address ? `, ${request.additional_address}` : ""}
+    </span>
+  </p>
 
-              <p>
-                <span className="font-semibold text-gray-600">Service:</span>{' '}
-                <span className="text-blue-600 font-medium">
-                  {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
-                </span>
-              </p>
+  <p>
+    <span className="font-semibold text-gray-700">Service:</span>{' '}
+    <span className="text-blue-600">
+      {request.service_type?.charAt(0).toUpperCase() + request.service_type?.slice(1)}
+    </span>
+  </p>
 
-              <p>
-                <span className="font-semibold text-gray-600">Preferred Date:</span>{' '}
-                <span className="text-blue-600 font-medium">
-                  {request.preferred_date
-                    ? new Date(request.preferred_date).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
-                    : "N/A"}
-                </span>
-              </p>
+  <p>
+    <span className="font-semibold text-gray-700">Preferred Date:</span>{' '}
+    <span className="text-blue-600">
+      {request.preferred_date
+        ? new Date(request.preferred_date).toLocaleDateString("en-US", {
+            year: "numeric", month: "long", day: "numeric"
+          })
+        : "N/A"}
+    </span>
+  </p>
 
-              <p>
-                <span className="font-semibold text-gray-600">Preferred Time:</span>{' '}
-                <span className="text-blue-600 font-medium">
-                  {request.preferred_time || "N/A"}
-                </span>
-              </p>
+  <p>
+    <span className="font-semibold text-gray-700">Preferred Time:</span>{' '}
+    <span className="text-blue-600">{request.preferred_time || "N/A"}</span>
+  </p>
 
-              <p>
-                <span className="font-semibold text-gray-600">Urgent:</span>{' '}
-                <span className="text-blue-600 font-medium">
-                  {request.urgent_request ? "Yes" : "No"}
-                </span>
-              </p>
+  <p>
+    <span className="font-semibold text-gray-700">Urgent:</span>{' '}
+    <span className="text-blue-600">{request.urgent_request ? "Yes" : "No"}</span>
+  </p>
 
-              {request.expired && (
-                <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  Expired
-                </span>
-              )}
+  {request.expired && (
+    <p className="mt-1">
+      <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full">
+        Expired
+      </span>
+    </p>
+  )}
 
-              <div className="mt-2">{getStatusBadge(request.status)}</div>
-            </div>
+  <div className="mt-2">{getStatusBadge(request.status)}</div>
+</div>
           </div>
 
           {/* Right Actions */}
