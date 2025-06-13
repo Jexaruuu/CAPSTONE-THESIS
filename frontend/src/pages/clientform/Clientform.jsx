@@ -479,7 +479,7 @@ formData.append("preferredTime", formattedTime);
     )}
   </div>
 
-  <p className="text-sm text-gray-500 mt-2">Upload a photo of the item or area you need fixed (optional).</p>
+  <p className="text-sm text-gray-500 mt-2">Upload a photo of the item or area you need fixed.</p>
 </div>
           </section>
 
