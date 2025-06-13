@@ -23,8 +23,9 @@ exports.submitApplication = async (req, res) => {
       backgroundCheckConsent,
       termsConsent,
       dataPrivacyConsent,
-      homeAddress,               // 🆕 New Field
-      yearsExperience            // 🆕 New Field
+      homeAddress,
+      yearsExperience,
+      serviceRequestId // 👈 Include the service_request_id reference
     } = req.body;
 
     const uploadDir = path.join(__dirname, "../uploads/applications");
@@ -48,17 +49,18 @@ exports.submitApplication = async (req, res) => {
     const medicalCertificate = saveFile(req.files?.medicalCertificate, "med-cert");
     const tesdaCertificate = saveFile(req.files?.tesdaCertificate, "tesda");
 
-    // ✅ Insert into applicant_information (now includes home_address)
+    const userId = req.session.user?.user_id;
+
+    // ✅ Insert into applicant_information
     const [infoResult] = await db.query(
       `INSERT INTO applicant_information 
-        (fullName, email, birthDate, age, sex, contactNumber, social_media, home_address, profile_picture)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [fullName, email, birthDate, age, sex, contactNumber, socialMedia, homeAddress, profilePicture]
+        (fullName, email, birthDate, age, sex, contactNumber, social_media, home_address, profile_picture, service_request_id, user_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [fullName, email, birthDate, age, sex, contactNumber, socialMedia, homeAddress, profilePicture, serviceRequestId, userId]
     );
 
     const applicantId = infoResult.insertId;
 
-    // ✅ Insert into applicant_workinfo (now includes years_experience)
     await db.query(
       `INSERT INTO applicant_workinfo 
         (applicant_id, job_type, tools_equipment, years_experience) 
@@ -66,7 +68,6 @@ exports.submitApplication = async (req, res) => {
       [applicantId, jobType, toolsEquipment, yearsExperience]
     );
 
-    // ✅ Insert into applicant_documents
     await db.query(
       `INSERT INTO applicant_documents 
         (applicant_id, primary_id_front, primary_id_back, secondary_id, proof_of_address, medical_certificate, tesda_certificate)
@@ -82,7 +83,6 @@ exports.submitApplication = async (req, res) => {
       ]
     );
 
-    // ✅ Insert into applicant_agreement
     await db.query(
       `INSERT INTO applicant_agreement 
         (applicant_id, background_check_consent, terms_consent, data_privacy_consent)
@@ -97,7 +97,7 @@ exports.submitApplication = async (req, res) => {
   }
 };
 
-// ✅ GET ALL APPLICANTS CONTROLLER
+// ✅ GET ALL BASIC APPLICANTS
 exports.getAllApplicants = async (req, res) => {
   try {
     const [rows] = await db.query(`SELECT * FROM applicant_information`);
@@ -108,14 +108,14 @@ exports.getAllApplicants = async (req, res) => {
   }
 };
 
-// ✅ GET SERVICE REQUEST APPLICANTS WITH FULL INFO
-// ✅ SAFE GET ALL APPLICANTS WITH FULL JOIN
+// ✅ GET SERVICE REQUEST APPLICANTS WITH FULL JOIN
 exports.getServiceRequestApplicants = async (req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT 
         ai.id, ai.fullName, ai.email, ai.age, ai.birthDate, ai.sex, ai.contactNumber,
         ai.social_media, ai.home_address, ai.profile_picture, ai.status,
+        ai.service_request_id, ai.user_id,
 
         aw.job_type,
         aw.years_experience,
@@ -142,12 +142,11 @@ exports.getServiceRequestApplicants = async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error("❌ BACKEND SQL ERROR:", err.message);
-    console.error("📌 FULL ERROR:", err);
     res.status(500).json({ message: "Internal server error", error: err.message });
   }
 };
 
-// ✅ UPDATE STATUS (APPROVE / REJECT / PENDING)
+// ✅ UPDATE APPLICANT STATUS
 exports.updateApplicantStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -161,3 +160,33 @@ exports.updateApplicantStatus = async (req, res) => {
   }
 };
 
+// ✅ GET APPROVED APPLICANTS FOR LOGGED-IN CLIENT'S SERVICE REQUESTS
+exports.getApprovedApplicants = async (req, res) => {
+  try {
+    const clientId = req.session.user?.user_id;
+    if (!clientId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const [rows] = await db.query(`
+      SELECT 
+        ai.*, aw.job_type, aw.years_experience, aw.tools_equipment,
+        ad.primary_id_front, ad.primary_id_back, ad.secondary_id,
+        ad.proof_of_address, ad.medical_certificate, ad.tesda_certificate
+      FROM applicant_information ai
+      LEFT JOIN applicant_workinfo aw ON ai.id = aw.applicant_id
+      LEFT JOIN applicant_documents ad ON ai.id = ad.applicant_id
+      WHERE ai.status = 'approved'
+        AND ai.service_request_id IN (
+          SELECT service_id FROM service_requests WHERE client_id = ?
+        )
+        AND ai.user_id != ? -- hide self-submitted applications
+      ORDER BY ai.id DESC
+    `, [clientId, clientId]);
+
+    res.json(rows);
+  } catch (error) {
+    console.error("❌ Error fetching approved applicants:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

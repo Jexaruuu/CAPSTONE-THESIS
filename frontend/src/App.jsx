@@ -23,6 +23,7 @@ import Payment from "./pages/payment/Payment";
 import ServiceRequestTracker from "./pages/servicetracker/ServiceRequestTracker";
 import ApplicationOverview from "./pages/applicationoverview/ApplicationOverview";
 import ApplicantsResponse from "./pages/applicantsresponse/ApplicantsResponse"; 
+import ScheduleTracker from "./pages/scheduletracker/ScheduleTracker.jsx"; 
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
         <Route path="/tracker" element={<ProtectedRoute element={<ServiceRequestTracker />} />} />
         <Route path="/application-status" element={<ProtectedRoute element={<ApplicationOverview />} />} />
         <Route path="/applicant-responses" element={<ProtectedRoute element={<ApplicantsResponse />} />} />
+        <Route path="/schedule-tracker" element={<ProtectedRoute element={<ScheduleTracker />} />} />
       </Routes>
     </Router>
   );
