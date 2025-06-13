@@ -1083,7 +1083,7 @@ Service Requests
       </div>
     </div>
 
-    {/* 🧾 Applicant Cards */}
+    {/* 🧾 Applicant Cards + Pagination below */}
     <div className="flex flex-col gap-5 overflow-y-auto pr-2">
       {(() => {
         const filteredApplicants = applicants
@@ -1098,91 +1098,115 @@ Service Requests
           );
         }
 
-        return filteredApplicants
-          .slice((currentApplicantPage - 1) * applicantsPerPage, currentApplicantPage * applicantsPerPage)
-          .map(applicant => (
-            <div
-              key={applicant.id}
-              className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300 mb-4"
-            >
-              {/* Left Info */}
-              <div className="flex items-start gap-5">
-                <img
-                  src={`http://localhost:3000${applicant.profile_picture}`}
-                  alt="Applicant"
-                  className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
-                />
-                <div className="space-y-1 text-sm text-gray-700 text-left">
-                  <h3 className="text-xl font-bold text-gray-800">{applicant.fullName}</h3>
-                  <p>Address: {applicant.address}</p>
-                  <p>Job Type: {applicant.job_type}</p>
-                  <p>Experience: {applicant.years_experience} yrs</p>
-                  <p>Tools/Equipment: {applicant.tools_equipment}</p>
-                  <div className="mt-2">{getStatusBadge(applicant.status)}</div>
-                </div>
-              </div>
+        return (
+          <>
+          {filteredApplicants
+  .slice((currentApplicantPage - 1) * applicantsPerPage, currentApplicantPage * applicantsPerPage)
+  .map(applicant => (
+    <div
+      key={applicant.id}
+      className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
+    >
+      {/* Left Info */}
+      <div className="flex items-start gap-5">
+        <img
+          src={`http://localhost:3000${applicant.profile_picture}`}
+          alt="Applicant"
+          className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
+        />
 
-              {/* Right Buttons */}
-              <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
-                <button
-                  onClick={() => setSelectedProfile(applicant)}
-                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
-                >
-                  <span className="relative text-base font-semibold">View</span>
-                </button>
+<div className="space-y-2 text-[15px] text-gray-700">
+  <h3 className="text-[17px] font-semibold">
+    <span className="text-gray-600">Applicant Name:</span>{' '}
+    <span className="text-blue-600 text-[18px] font-bold">{applicant.fullName}</span>
+  </h3>
 
-                <button
-                  onClick={() => updateApplicantStatus(applicant.id, "approved")}
-                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-                >
-                  <span className="relative text-base font-semibold">Approve</span>
-                </button>
+  <p>
+    <span className="font-semibold text-gray-600">Address:</span>{' '}
+    <span className="text-blue-600 font-medium">
+      {applicant.address || applicant.home_address || applicant.personal_address || 'N/A'}
+    </span>
+  </p>
 
-                <button
-                  onClick={() => updateApplicantStatus(applicant.id, "rejected")}
-                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
-                >
-                  <span className="relative text-base font-semibold">Reject</span>
-                </button>
+  <p>
+    <span className="font-semibold text-gray-600">Job Type:</span>{' '}
+    <span className="text-blue-600 font-medium">{applicant.job_type}</span>
+  </p>
 
-                <button
-                  onClick={() => updateApplicantStatus(applicant.id, "pending")}
-                  className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-                >
-                  <span className="relative text-base font-semibold">Pending</span>
-                </button>
-              </div>
-            </div>
-          ));
+  <p>
+    <span className="font-semibold text-gray-600">Experience:</span>{' '}
+    <span className="text-blue-600 font-medium">{applicant.years_experience} yrs</span>
+  </p>
+
+  <p>
+    <span className="font-semibold text-gray-600">Tools/Equipment:</span>{' '}
+    <span className="text-blue-600 font-medium">{applicant.tools_equipment}</span>
+  </p>
+
+  <div className="mt-2">{getStatusBadge(applicant.status)}</div>
+</div>
+      </div>
+
+      {/* Right Actions (same as Service Request layout) */}
+      <div className="flex flex-wrap justify-end gap-3 md:flex-col md:w-64">
+        <button
+          onClick={() => setSelectedProfile(applicant)}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-gray-800 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 text-white hover:ring-2 hover:ring-offset-2 hover:ring-gray-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-base font-semibold">View</span>
+        </button>
+
+        <button
+          onClick={() => updateApplicantStatus(applicant.id, "approved")}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-600 hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+        >
+          <span className="relative text-base font-semibold">Approve</span>
+        </button>
+
+        <button
+          onClick={() => updateApplicantStatus(applicant.id, "rejected")}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-red-500 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-red-400 transition-all ease-out duration-300"
+        >
+          <span className="relative text-base font-semibold">Reject</span>
+        </button>
+
+        <button
+          onClick={() => updateApplicantStatus(applicant.id, "pending")}
+          className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+        >
+          <span className="relative text-base font-semibold">Pending</span>
+        </button>
+      </div>
+    </div>
+  ))}
+
+            {/* ⏬ Pagination directly under cards */}
+            {(() => {
+              const filteredLength = filteredApplicants.length;
+              const totalPages = Math.ceil(filteredLength / applicantsPerPage);
+             return totalPages >= 1 ? (
+  <div className="mt-2 flex justify-center gap-2">
+    {Array.from({ length: totalPages }, (_, index) => (
+      <button
+        key={index}
+        onClick={() => setCurrentApplicantPage(index + 1)}
+        className={`px-4 py-1 rounded-full text-sm font-semibold ${
+          currentApplicantPage === index + 1
+            ? "bg-blue-600 text-white"
+            : "bg-gray-200 text-gray-800 hover:bg-blue-100"
+        }`}
+      >
+        {index + 1}
+      </button>
+    ))}
+  </div>
+) : null;
+            })()}
+          </>
+        );
       })()}
     </div>
-
-    {/* 🔄 Pagination */}
-    {(() => {
-      const filteredLength = applicants.filter(app =>
-        (selectedJobTypeFilter === "All" || app.job_type?.toLowerCase() === selectedJobTypeFilter.toLowerCase()) &&
-        (selectedStatusFilter === "All" || (app.status || "pending") === selectedStatusFilter.toLowerCase())
-      ).length;
-
-      const totalPages = Math.ceil(filteredLength / applicantsPerPage);
-      return totalPages > 1 ? (
-        <div className="mt-6 flex justify-center gap-2">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentApplicantPage(index + 1)}
-              className={`px-4 py-1 rounded-full text-sm font-semibold ${
-                currentApplicantPage === index + 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-800 hover:bg-blue-100"
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      ) : null;
-    })()}
   </div>
 )}
 
@@ -1280,7 +1304,6 @@ Service Requests
           key={request.client_id}
           className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-gray-200 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300"
         >
-          {/* Your full request rendering block stays here */}
           {/* Left Info */}
           <div className="flex items-start gap-5">
             <img
@@ -1289,16 +1312,62 @@ Service Requests
               className="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-sm"
             />
 
-            <div className="space-y-1 text-sm text-gray-700">
-              <h3 className="text-xl font-bold text-gray-800">{request.first_name} {request.last_name}</h3>
-              <p>Address: {request.street}, {request.barangay}{request.additional_address ? `, ${request.additional_address}` : ""}</p>
-              <p>Service: {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}</p>
-              <p>Preferred Date: {request.preferred_date ? new Date(request.preferred_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "N/A"}</p>
-              <p>Preferred Time: {request.preferred_time || "N/A"}</p>
-              <p>Urgent: {request.urgent_request ? "Yes" : "No"}</p>
+            <div className="space-y-2 text-[15px] text-gray-700">
+              <h3 className="text-[17px] font-semibold">
+                <span className="text-gray-600">Client Name:</span>{' '}
+                <span className="text-blue-600 text-[18px] font-bold">
+                  {request.first_name} {request.last_name}
+                </span>
+              </h3>
+
+              <p>
+                <span className="font-semibold text-gray-600">Address:</span>{' '}
+                <span className="text-blue-600 font-medium">
+                  {request.street}, {request.barangay}
+                  {request.additional_address ? `, ${request.additional_address}` : ""}
+                </span>
+              </p>
+
+              <p>
+                <span className="font-semibold text-gray-600">Service:</span>{' '}
+                <span className="text-blue-600 font-medium">
+                  {request.service_type.charAt(0).toUpperCase() + request.service_type.slice(1)}
+                </span>
+              </p>
+
+              <p>
+                <span className="font-semibold text-gray-600">Preferred Date:</span>{' '}
+                <span className="text-blue-600 font-medium">
+                  {request.preferred_date
+                    ? new Date(request.preferred_date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "N/A"}
+                </span>
+              </p>
+
+              <p>
+                <span className="font-semibold text-gray-600">Preferred Time:</span>{' '}
+                <span className="text-blue-600 font-medium">
+                  {request.preferred_time || "N/A"}
+                </span>
+              </p>
+
+              <p>
+                <span className="font-semibold text-gray-600">Urgent:</span>{' '}
+                <span className="text-blue-600 font-medium">
+                  {request.urgent_request ? "Yes" : "No"}
+                </span>
+              </p>
+
               {request.expired && (
-                <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full">Expired</span>
+                <span className="bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  Expired
+                </span>
               )}
+
               <div className="mt-2">{getStatusBadge(request.status)}</div>
             </div>
           </div>
