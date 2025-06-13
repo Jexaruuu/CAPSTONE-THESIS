@@ -19,9 +19,10 @@ import AdminDashboard from "./pages/admin/Admindashboard";
 import ClientForm from "./pages/clientform/Clientform";
 import AvailableWorkers from "./pages/availableworkers/Workers";
 import UserAvailableServices from "./pages/servicerequest/Servicerequest";
-import Payment from "./pages/payment/Payment"; // ✅ import this
+import Payment from "./pages/payment/Payment"; 
 import ServiceRequestTracker from "./pages/servicetracker/ServiceRequestTracker";
 import ApplicationOverview from "./pages/applicationoverview/ApplicationOverview";
+import ApplicantsResponse from "./pages/applicantsresponse/ApplicantsResponse"; 
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route path="/payment" element={<ProtectedRoute element={<Payment />} />} /> 
         <Route path="/tracker" element={<ProtectedRoute element={<ServiceRequestTracker />} />} />
         <Route path="/application-status" element={<ProtectedRoute element={<ApplicationOverview />} />} />
+        <Route path="/applicant-responses" element={<ProtectedRoute element={<ApplicantsResponse />} />} />
       </Routes>
     </Router>
   );

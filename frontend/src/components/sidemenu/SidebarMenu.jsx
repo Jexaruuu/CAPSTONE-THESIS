@@ -54,17 +54,17 @@ const SidebarMenu = () => {
               Schedule Tracker
             </Link>
           </li>
-          <li>
-            <Link
-              to="/applicant-responses"
-              className={`flex items-center gap-2 px-2 py-1 rounded-md hover:text-blue-600 ${
-                isActive("/applicant-responses") ? "text-blue-700 font-semibold" : "text-gray-600"
-              }`}
-            >
-              <ClipboardListIcon className="w-4 h-4" />
-              Applicant Responses
-            </Link>
-          </li>
+   <li>
+  <Link
+    to="/applicant-responses"
+    className={`flex items-center gap-2 px-2 py-1 rounded-md hover:text-blue-600 ${
+      isActive("/applicant-responses") ? "text-blue-700 font-semibold" : "text-gray-600"
+    }`}
+  >
+    <ClipboardListIcon className="w-4 h-4" />
+    Applicant Responses
+  </Link>
+</li>
         </ul>
 
         <li className="text-gray-500 font-medium text-xs uppercase mt-6 tracking-wide">
