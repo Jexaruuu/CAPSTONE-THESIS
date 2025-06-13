@@ -202,7 +202,7 @@ useEffect(() => {
 
   const navButtons = [
     { id: "personal", icon: "user", text: "Personal Info" },
-    { id: "professional", icon: "briefcase", text: "Professional Info" },
+    { id: "professional", icon: "briefcase", text: "Worker Info" },
     { id: "documents", icon: "file-alt", text: "Documents" },
     { id: "government", icon: "landmark", text: "Government IDs" },
     { id: "agreements", icon: "file-signature", text: "Agreements" }
@@ -286,7 +286,7 @@ const onSubmit = async (data) => {
         {/* Form Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">JD HOMECARE Worker Application</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">Complete this form to join our network of trusted professionals. Fields marked with * are required.</p>
+          <p className="text-gray-600 max-w-2xl mx-auto">Complete this form to be a worker. Fields marked with * are required.</p>
           <div className="w-24 h-1 bg-blue-500 mx-auto mt-4 rounded-full"></div>
         </div>
 
