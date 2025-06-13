@@ -7,25 +7,17 @@ const db = require('./db');
 
 const app = express();
 
-// ❌ REMOVE express-fileupload because you're using multer instead
-// const fileUpload = require('express-fileupload');
-// app.use(fileUpload({ createParentPath: true })); // ❌ REMOVE this line
-
-// ✅ CORS Configuration
 app.use(cors({
     origin: "http://localhost:5173",
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }));
 
-// ✅ Body Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ Session Configuration
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
@@ -37,7 +29,6 @@ app.use(session({
     }
 }));
 
-// ✅ API Routes
 app.use('/api', require('./routes/signupRoutes'));
 app.use('/api', require('./routes/loginRoutes'));
 app.use('/api', require('./routes/logoutRoutes'));
@@ -49,13 +40,10 @@ app.use('/api', require('./routes/adminRoutes'));
 app.use('/api/taskers', require('./routes/taskerRoutes'));
 app.use('/api/clients', require('./routes/clientRoutes'));
 
-// ✅ ✅ Applicant routes (ADDED but not replacing any existing route)
 app.use('/api/applicants', require('./routes/applicationRoutes'));
 
-// ✅ ✅ Payment Routes
 app.use('/api/payment', require('./routes/paymentRoutes'));
 
-// ✅ Default Route
 app.get('/', (req, res) => {
     res.send('Hello, backend is working!');
 });
