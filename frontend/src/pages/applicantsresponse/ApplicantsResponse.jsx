@@ -7,23 +7,39 @@ const ApplicantsResponse = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedGender, setSelectedGender] = useState("All");
   const [applicants, setApplicants] = useState([]);
-  
-useEffect(() => {
-  const fetchApplicants = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/api/applicants/approved", {
-        credentials: "include"
-      });
+  const [error, setError] = useState(""); // ✅ Track error messages
 
-      const data = await res.json();
-      setApplicants(data);
-    } catch (err) {
-      console.error("Failed to fetch applicants:", err);
-    }
-  };
+  useEffect(() => {
+    const fetchApplicants = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/applicants/approved", {
+          credentials: "include", // ✅ Required to include session cookies
+        });
 
-  fetchApplicants();
-}, []);
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Fetch error:", errorData.message || errorData);
+          setError(errorData.message || "Unauthorized access.");
+          setApplicants([]); // Prevent .filter crash
+          return;
+        }
+
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setApplicants(data);
+          setError(""); // ✅ Clear any old error
+        } else {
+          console.error("Unexpected response:", data);
+          setError("Unexpected data format.");
+        }
+      } catch (err) {
+        console.error("Failed to fetch applicants:", err);
+        setError("Server connection failed.");
+      }
+    };
+
+    fetchApplicants();
+  }, []);
 
   const jobTypes = ["All", "Carpenter", "Electrician", "Plumber", "Carwasher", "Laundry"];
   const genders = ["All", "Male", "Female"];
@@ -71,10 +87,10 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Filter by Gender (styled like status filter) */}
+          {/* Filter by Gender */}
           <div className="mb-8">
             <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Filter by Status:
+              Filter by Gender:
             </label>
             <div className="flex flex-wrap gap-3">
               {genders.map((gender) => (
@@ -98,32 +114,41 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Applicant Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredApplicants.map((app) => (
-              <div
-                key={app.id}
-                className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden"
-              >
-                <img src={app.profileImage} alt="Applicant" className="w-full h-40 object-cover" />
-                <div className="p-4 space-y-2">
-                  <h3 className="text-lg font-bold text-gray-800">{app.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    <strong>Job:</strong> {app.jobType}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Gender:</strong> {app.gender}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Address:</strong> {app.address}
-                  </p>
+          {/* 🔴 Show Error Message */}
+          {error && (
+            <div className="text-red-500 text-sm font-semibold mb-4">
+              {error} — Please log in to view applicants.
+            </div>
+          )}
+
+          {/* 🧾 Applicant Cards */}
+          {!error && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredApplicants.map((app) => (
+                <div
+                  key={app.id}
+                  className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden"
+                >
+                  <img src={app.profileImage} alt="Applicant" className="w-full h-40 object-cover" />
+                  <div className="p-4 space-y-2">
+                    <h3 className="text-lg font-bold text-gray-800">{app.fullName}</h3>
+                    <p className="text-sm text-gray-600">
+                      <strong>Job:</strong> {app.jobType}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <strong>Gender:</strong> {app.sex}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <strong>Address:</strong> {app.address}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-            {filteredApplicants.length === 0 && (
-              <div className="text-gray-600">No applicants found for the selected filters.</div>
-            )}
-          </div>
+              ))}
+              {filteredApplicants.length === 0 && (
+                <div className="text-gray-600">No applicants found for the selected filters.</div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <Footer />

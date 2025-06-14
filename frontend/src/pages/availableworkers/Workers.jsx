@@ -226,9 +226,12 @@ const handleHireNow = (worker) => {
 
                     {/* Worker Info */}
                     <div className="flex-grow text-[15px] md:text-base text-gray-700">
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-xl font-bold text-[#000081]">{worker.fullName}</h3>
-                      </div>
+                     <div className="flex justify-between items-center mb-3">
+<p className="text-lg font-semibold text-gray-700">
+  <span className="text-blue-800 font-semibold">Worker Name:</span>{" "}
+  <span className="text-[#000081] text-xl">{worker.fullName}</span>
+</p>
+</div>
                       <p><span className="text-blue-800 font-semibold">Age:</span> {worker.age}</p>
                       <p><span className="text-blue-800 font-semibold">Gender:</span> {worker.gender}</p>
                       <p><span className="text-blue-800 font-semibold">Contact:</span> {formatPhone(worker.contactNumber)}</p>
@@ -315,7 +318,7 @@ const handleHireNow = (worker) => {
 
       {/* ✅ Modal */}
      {showModal && selectedWorker && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-white/30 px-4">
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
     <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-xl relative overflow-y-auto max-h-[90vh]">
       <button
         onClick={closeModal}
@@ -325,6 +328,7 @@ const handleHireNow = (worker) => {
         &times;
       </button>
 
+      {/* 🧑 Worker Details */}
       <div className="flex flex-col md:flex-row items-start gap-8">
         <div className="flex-shrink-0 mx-auto md:mx-0 flex flex-col items-center gap-4">
           <img
@@ -335,7 +339,7 @@ const handleHireNow = (worker) => {
         </div>
 
         <div className="flex-1 text-gray-800 space-y-1">
-          <h2 className="text-2xl font-bold text-[#000081] mb-2">{selectedWorker.fullName}</h2>
+          <h2 className="text-2xl font-bold text-[#000081]">{selectedWorker.fullName}</h2>
           <p><span className="text-blue-800 font-semibold">Job Type:</span></p>
           <div className="flex flex-wrap gap-2 mb-2">
             {(() => {
@@ -393,32 +397,18 @@ const handleHireNow = (worker) => {
         </div>
       </div>
 
-      {/* 📁 Embedded Documents */}
+      {/* 📄 TESDA Certificate Only */}
       <div className="mt-8 border-t pt-6 text-sm text-gray-700">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">📁 Documents</h3>
-        <div className="grid gap-6">
-          {[
-            { label: "Proof of Address", key: "proofOfAddress", route: "proof-of-address" },
-            { label: "Medical Certificate", key: "medicalCertificate", route: "medical-certificate" },
-            { label: "TESDA Certificate", key: "additionalCertificate", route: "optional-certificate" },
-            { label: "Clearance", key: "clearance", route: "clearance" },
-          ].map((doc, index) => (
-            <div key={index}>
-              <p className="font-medium">{doc.label}:</p>
-              {selectedWorker[doc.key] ? (
-                <img
-                  src={`http://localhost:3000/api/taskers/${selectedWorker.id}/${doc.route}`}
-                  alt={doc.label}
-                  className="w-full max-h-72 object-contain border mt-2 rounded shadow"
-                />
-              ) : (
-                <p className={`mt-1 ${doc.key === "additionalCertificate" ? "text-gray-500" : "text-red-500"}`}>
-                  {doc.key === "additionalCertificate" ? "Optional - Not Uploaded" : "Not Provided"}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">📄 TESDA Certificate</h3>
+        {selectedWorker.additionalCertificate ? (
+          <img
+            src={`http://localhost:3000/api/taskers/${selectedWorker.id}/optional-certificate`}
+            alt="TESDA Certificate"
+            className="w-full max-h-72 object-contain border rounded shadow"
+          />
+        ) : (
+          <p className="text-gray-500">No TESDA Certificate uploaded.</p>
+        )}
       </div>
     </div>
   </div>

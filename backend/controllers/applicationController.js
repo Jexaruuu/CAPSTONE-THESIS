@@ -161,18 +161,30 @@ exports.updateApplicantStatus = async (req, res) => {
 };
 
 // ✅ GET APPROVED APPLICANTS FOR LOGGED-IN CLIENT'S SERVICE REQUESTS
+// ✅ GET APPROVED APPLICANTS FOR LOGGED-IN CLIENT'S SERVICE REQUESTS
 exports.getApprovedApplicants = async (req, res) => {
   try {
-    const clientId = req.session.user?.user_id;
-    if (!clientId) {
-      return res.status(401).json({ message: "Unauthorized" });
+    // 🛡️ Ensure session and user exist
+    if (!req.session || !req.session.user || !req.session.user.user_id) {
+      console.warn("⚠️ No session or user found.");
+      return res.status(401).json({ message: "Unauthorized: No active session" });
     }
+
+    const clientId = req.session.user.user_id;
 
     const [rows] = await db.query(`
       SELECT 
-        ai.*, aw.job_type, aw.years_experience, aw.tools_equipment,
+        ai.id, ai.fullName, ai.email, ai.age, ai.birthDate, ai.sex, ai.contactNumber,
+        ai.social_media AS socialMedia, ai.home_address AS address,
+        ai.profile_picture AS profileImage, ai.status, ai.service_request_id, ai.user_id,
+        
+        aw.job_type AS jobType,
+        aw.years_experience AS yearsExperience,
+        aw.tools_equipment AS toolsEquipment,
+        
         ad.primary_id_front, ad.primary_id_back, ad.secondary_id,
         ad.proof_of_address, ad.medical_certificate, ad.tesda_certificate
+
       FROM applicant_information ai
       LEFT JOIN applicant_workinfo aw ON ai.id = aw.applicant_id
       LEFT JOIN applicant_documents ad ON ai.id = ad.applicant_id
@@ -180,13 +192,14 @@ exports.getApprovedApplicants = async (req, res) => {
         AND ai.service_request_id IN (
           SELECT service_id FROM service_requests WHERE client_id = ?
         )
-        AND ai.user_id != ? -- hide self-submitted applications
+        AND ai.user_id != ? -- Don't include applications made by the client themselves
       ORDER BY ai.id DESC
     `, [clientId, clientId]);
 
     res.json(rows);
   } catch (error) {
-    console.error("❌ Error fetching approved applicants:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Error fetching approved applicants:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
